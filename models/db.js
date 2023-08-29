@@ -15,12 +15,13 @@ sequelize.authenticate().then(()=>{
 .catch(err=> console.log('---db err----',err))
 
 
-// sequelize.sync({ force: false }).then(() => {
-//   console.log('---re-sync---');
-// }).catch((err) => {
-//   console.log('----re sync err---', err);
-//   throw err
-// })
+sequelize.sync({ force: true }).then(() => {
+  console.log('----re-sync-----');
+}).catch((err) => {
+  console.log('----re sync err---', err);
+  throw err
+})
 
 
-module.exports= {sequelize};
+module.exports= sequelize;
+//  testing

@@ -14,17 +14,12 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/signupUser', signupUserValid, userCtrl.signup )
 
-router.post('/userlogin', loginUserValid, userCtrl.userlogin);
 
-router.post('/sociallogin', socialloginUserValid, userCtrl.sociallogin);
+router.post('/user/numberLogin', userCtrl.numberLogin);
 
-// router.post('/changePassword',verify_token(process.env.user_secretKey,User), changePasswordValid,userCtrl.changePassword);
+router.put('/user/verifyOtp', verify_token(CONFIG.SCOPE.users), userCtrl.verifyOtp);
 
-//------optimizing--------
-
-router.post('/changePassword', verify_token(CONFIG.SCOPE.users), changePasswordValid,userCtrl.changePassword);
 
 router.get('/logout', verify_token(CONFIG.SCOPE.users),userCtrl.logout);
 
@@ -32,11 +27,7 @@ router.get('/get-userProfile', verify_token(CONFIG.SCOPE.users), userCtrl.userPr
 
 router.put('/edit-userProfile', verify_token(CONFIG.SCOPE.users),editUserValid, userCtrl.editUserProfile);
 
-router.put('/user/forgotPassword', userCtrl.forgotPassword);
 
-router.post('/user/numberLogin', userCtrl.numberLogin);
-
-router.put('/user/verifyOtp', verify_token(CONFIG.SCOPE.users), userCtrl.verifyOtp);
 
 
 

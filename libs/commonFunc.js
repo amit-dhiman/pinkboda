@@ -11,7 +11,7 @@ const authToken = process.env.authToken;
 const client = require('twilio')(accountSid, authToken);
 
 
-const generateAccessToken = async (saveData, token_info, secret_key) => {
+const generateaccess_token = async (saveData, token_info, secret_key) => {
   try {
     console.log('-----------token_info-----------',token_info);
 
@@ -139,7 +139,7 @@ const sendSms = async (number,otp)=>{
 
 
 module.exports= { 
-  generateAccessToken,
+  generateaccess_token,
   verify_token, 
   securePassword,
   compPassword, sendMail,sendSms
