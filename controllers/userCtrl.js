@@ -62,9 +62,9 @@ const numberSignup = async (req, res) => {
 
 const numberLogin = async (req, res) => {
   try {
-    const mobile_number = req.body.mobile_number;
+    const {mobile_number,country_code} = req.body;
 
-    if (!mobile_number) return res.status(400).send("mobile_number is Required");
+    if (!mobile_number || !country_code) return res.status(400).send("mobile_number and country code is Required");
 
     const getData = await libs.getData(User, { where: { mobile_number: mobile_number } });
     // const otp = Math.floor(100000 + Math.random() * 900000);

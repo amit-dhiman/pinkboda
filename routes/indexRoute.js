@@ -4,7 +4,7 @@ const userCtrl = require('../controllers/userCtrl');
 
 const CONFIG = require('../config/scope')
 // require('./users')(router);
-const {signupUserValid,loginUserValid,changePasswordValid,socialloginUserValid,editUserValid,} = require('../config/joiValidations');
+const {signupUserValid,editUserValid,} = require('../config/joiValidations');
 
 const {verify_token} =require('../libs/commonFunc');
 

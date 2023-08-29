@@ -16,6 +16,8 @@ module.exports = (sequelize, DataTypes) => {
 
         booking_status: { type: DataTypes.ENUM("pending", "accept", "reject", "cancel"), default: "pending" },
         amount: { type: DataTypes.INTEGER, default: 10 },
+        ride_type:{type: DataTypes.ENUM("ride","delivery")},
+        driver_gender:{type: DataTypes.ENUM("male","female")},
 
         user_id: {
             type: DataTypes.INTEGER,

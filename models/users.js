@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     otp: {type: DataTypes.INTEGER},
     country_code:{type: DataTypes.INTEGER},
     image: { type: DataTypes.STRING },
-
+    
     access_token: { type: DataTypes.STRING },
     device_type:{ type:DataTypes.ENUM("android","apple"),default:"android"},
     device_token: { type: DataTypes.STRING },    // token 
@@ -25,7 +25,6 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   // Users.hasMany(db, { foreignKey: 'user_id' });
-
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });
   
   return Users;
