@@ -26,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
             references: { model: 'drivers', key: 'id' },
         },
     }, {
-        // timestamps:true,
         createdAt: 'created_at',     // we can change their name
         updatedAt: "updated_at",
     })

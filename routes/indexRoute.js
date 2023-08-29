@@ -15,19 +15,18 @@ router.get('/', function(req, res, next) {
 });
 
 
+router.post('/user/numberSignup', signupUserValid, userCtrl.numberSignup )
 
 router.post('/user/numberLogin', userCtrl.numberLogin);
 
 router.put('/user/verifyOtp', verify_token(CONFIG.SCOPE.users), userCtrl.verifyOtp);
 
 
-router.get('/logout', verify_token(CONFIG.SCOPE.users),userCtrl.logout);
+router.get('/user/logout', verify_token(CONFIG.SCOPE.users),userCtrl.logout);
 
-router.get('/get-userProfile', verify_token(CONFIG.SCOPE.users), userCtrl.userProfile);
+router.get('/user/get-Profile', verify_token(CONFIG.SCOPE.users), userCtrl.userProfile);
 
-router.put('/edit-userProfile', verify_token(CONFIG.SCOPE.users),editUserValid, userCtrl.editUserProfile);
-
-
+router.put('/user/edit-Profile', verify_token(CONFIG.SCOPE.users),editUserValid, userCtrl.editUserProfile);
 
 
 

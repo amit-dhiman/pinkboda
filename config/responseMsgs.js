@@ -45,6 +45,7 @@ exports.ERROR ={
     DATA_NOT_FOUND:(res)=>{
         return res.status(404).json('DATA_NOT_FOUND')
     },
+    
 
 
     INVALID_PASSWORD  :{
@@ -86,8 +87,8 @@ exports.SUCCESS = {
     DEFAULT:(res,data)=> {
         return res.status(StatusCodes.OK || 200).json(data)
     },
-    OTP_SENT:(res,data,msg)=>{
-        return res.status(200).json({access_token: data, message: msg})
+    OTP_SENT:(res,data)=>{
+        return res.status(200).json({access_token: data, message: "otp sent to the number"})
     },
 
     RETURN_ORDER_TIME_OUT : {

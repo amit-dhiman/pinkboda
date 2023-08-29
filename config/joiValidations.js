@@ -2,13 +2,11 @@ const joi = require('joi');
 
 const signupUserValid= async (req,res,next)=>{
     let validation = joi.object({
-        first_name: joi.string().optional(),
-        last_name: joi.string().optional(),
-        username: joi.string().optional(),
-        password: joi.string().min(6).regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-        .message('Password must be at least 6 characters, include at least 1 uppercase letter, 1 lowercase letter, 1 Number.and atleast 1 special case').required(),
-        email: joi.string().email().required(),
-        device_type: joi.string().valid("Android","Apple","Windows").optional(),
+        username: joi.string().required(),
+        country_code: joi.number().required(),
+        mobile_number: joi.string().required(),
+        gender: joi.string().required(),
+        device_type: joi.string().valid("android","apple",).optional(),
         device_token: joi.string().optional(),
     })
 
@@ -61,7 +59,7 @@ const changePasswordValid= async (req,res,next)=>{
         .message('Password must be at least 6 characters, include at least 1 uppercase letter, 1 lowercase letter, 1 Number.and atleast 1 special case').required(),
         confirmPassword: joi.string().min(6).regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
         .message('Password must be at least 6 characters, include at least 1 uppercase letter, 1 lowercase letter, 1 Number.and atleast 1 special case').required(),
-        device_type: joi.string().valid("Android","Apple","Windows").optional(),
+        device_type: joi.string().valid("android","apple").optional(),
         device_token: joi.string().optional(),
     })
 
@@ -79,7 +77,7 @@ const editUserValid= async (req,res,next)=>{
         last_name: joi.string().optional(),
         username: joi.string().optional(),
         gender: joi.string().optional(),
-        device_type: joi.string().valid("Android","Apple","Windows").optional(),
+        device_type: joi.string().valid("android","apple").optional(),
         device_token: joi.string().optional(),
     })
 

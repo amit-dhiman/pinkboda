@@ -1,4 +1,4 @@
-const {Sequelize,DataTypes} = require('sequelize');
+const {Sequelize} = require('sequelize');
 require('dotenv').config();
 
 
@@ -15,7 +15,7 @@ sequelize.authenticate().then(()=>{
 .catch(err=> console.log('---db err----',err))
 
 
-sequelize.sync({ force: true }).then(() => {
+sequelize.sync({ force: false }).then(() => {
   console.log('----re-sync-----');
 }).catch((err) => {
   console.log('----re sync err---', err);

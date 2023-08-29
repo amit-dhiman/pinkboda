@@ -1,21 +1,8 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('./db');
 
-// const sequelize = new Sequelize(process.env.database,process.env.username,process.env.password,{
-//   host: process.env.host,
-//   dialect: process.env.dialect,
-//   logging: true,
-//   // pool:{max:5,min:0,idle:10000}
-// });
 
-// sequelize.authenticate().then(()=>{
-//   console.log('---mysql db connected---');
-// })
-// .catch(err=> console.log('---db err----',err))
-// const db = {};
-// db.Sequelize = Sequelize;
-// db.sequelize = sequelize;
-
+// Define associations here
 let db = {};
 
 db.users = require('./users')(sequelize, DataTypes);
@@ -32,16 +19,12 @@ db.bookings.belongsTo(db.drivers, { foreignKey: 'driver_id' });     // , as: 'dr
 
 
 
-
-// Define associations here
-
 // sequelize.sync({ force: true }).then(() => {
 //   console.log('---re-sync---');
 // }).catch((err) => {
 //   console.log('----re sync err---', err);
 //   throw err;
 // });
-
 
 
 module.exports = db;

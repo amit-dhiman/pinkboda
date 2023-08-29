@@ -1,12 +1,63 @@
 const {Op} = require('sequelize') 
 const db = require("../models/index");
-const User = db.user;
+const User = db.users;
 const libs = require('../libs/queries');
 const commonFunc = require('../libs/commonFunc');
 const ERROR = require('../config/responseMsgs').ERROR;
 const SUCCESS = require('../config/responseMsgs').SUCCESS;
 require('dotenv').config();
 const CONFIG = require('../config/scope');
+
+
+
+
+const numberSignup = async (req, res) => {
+  try {
+    let { username, mobile_number,gender, country_code, device_type, device_token,} = req.body;
+
+    const getData = await libs.getData(User, { where: { mobile_number: mobile_number } });
+    // const otp = Math.floor(100000 + Math.random() * 900000);
+    let otp = 123456;
+    console.log('------otp--------',otp);
+
+    if (getData) {
+      return ERROR.MOBILE_ALREADY_EXIST(res);
+    }
+
+    if (username) { 
+      const getUsername = await libs.getData(User, {where:{
+        username: username,     // id: {[Op.not]: userData.id},
+      }});
+
+      if(getUsername){
+        return ERROR.USER_NAME_ALREADY_EXIST(res);
+      }
+    }
+
+    let data = {
+      otp: otp,
+      username: username,
+      mobile_number: mobile_number,
+      gender: gender,
+      country_code: country_code,
+    };
+
+    if (device_type) {data.device_type = device_type }
+    if (device_token) {data.device_token = device_token }
+
+    let saveData = await libs.saveData(User, data);
+
+    let token_info = { id: saveData.id, mobile_number: saveData.mobile_number };
+
+    let token = await commonFunc.generateAccessToken(saveData, token_info, process.env.user_secretKey);
+    console.log('---------token--------------',token);
+    return SUCCESS.OTP_SENT(res, token.access_token)
+  } catch (err) {
+    ERROR.ERROR_OCCURRED(res, err);
+    // console.log('-----er------',err);
+    // res.status(500).json(err.toString());
+  }
+};
 
 
 const numberLogin = async (req, res) => {
@@ -21,24 +72,28 @@ const numberLogin = async (req, res) => {
     console.log('------otp--------',otp);
 
     if (getData) {
-      commonFunc.sendSms(`+${mobile_number}`, otp);
+      commonFunc.sendSms(`+91${mobile_number}`, otp);
 
       let updatedData = await libs.updateData(getData, { otp: otp });
-      console.log('-------updatedData------',updatedData);
+      let token_info = { id: updatedData.id, mobile_number: updatedData.mobile_number };
 
-      return SUCCESS.OTP_SENT(res, updatedData.access_token, "otp sent to the mobile number");
-    } else {
+      let token= await commonFunc.generateAccessToken(updatedData, token_info, process.env.user_secretKey);
 
-      commonFunc.sendSms(`+${mobile_number}`, otp);
+      return SUCCESS.OTP_SENT(res, token.access_token, "otp sent to the mobile number");
+    } 
+    else {
+      res.status(400).json({error:"User not found with this mobile number"})
 
-      let data = { mobile_number: mobile_number, otp: otp };
+      // commonFunc.sendSms(`+91${mobile_number}`, otp);
 
-      const saveData = await libs.saveData(User, data);
+      // let data = { mobile_number: mobile_number, otp: otp };
 
-      let token_info = { id: saveData.id, email: saveData.email, mobile_number: saveData.mobile_number };
+      // const saveData = await libs.saveData(User, data);
 
-      let updatedData= await commonFunc.generateaccess_token(saveData, token_info, process.env.user_secretKey);
-      return SUCCESS.OTP_SENT(res,updatedData.access_token, "otp sent to the mobile number");
+      // let token_info = { id: saveData.id, email: saveData.email, mobile_number: saveData.mobile_number };
+
+      // let updatedData= await commonFunc.generateAccessToken(saveData, token_info, process.env.user_secretKey);
+      // return SUCCESS.OTP_SENT(res,updatedData.access_token);
     }
   } catch (err) {
     ERROR.ERROR_OCCURRED(res, err);
@@ -50,6 +105,7 @@ const verifyOtp = async (req, res) => {
   try {
     const {otp} = req.body;
     const userData = req.findData;
+
     console.log('----------otp-------------',otp);
     console.log('----------userData-------------',userData);
     if (!otp) {
@@ -57,6 +113,7 @@ const verifyOtp = async (req, res) => {
     }
     
     if (otp == userData.otp) {
+      console.log('----verified-----');
       let verified = await libs.updateData(userData, {otp: null})
       SUCCESS.DEFAULT(res, verified);
     } else {
@@ -120,7 +177,7 @@ const editUserProfile = async (req, res) => {
 
     // let token_info = { id: editProfile.id, email: editProfile.email, social_key: editProfile.social_key };
 
-    // const genToken = await commonFunc.generateaccess_token(editProfile, token_info, process.env.user_secretKey);
+    // const genToken = await commonFunc.generateAccessToken(editProfile, token_info, process.env.user_secretKey);
 
     // console.log('---------gentok------------', genToken);
 
@@ -168,5 +225,5 @@ const editUserProfile = async (req, res) => {
 
 
 
-module.exports = { numberLogin, verifyOtp, logout, userProfile, editUserProfile  };
+module.exports = {numberSignup, numberLogin, verifyOtp, logout, userProfile, editUserProfile  };
 
