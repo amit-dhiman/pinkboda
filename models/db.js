@@ -24,4 +24,4 @@ sequelize.sync({ force: true }).then(() => {
 
 
 module.exports= sequelize;
-//  testing
+//  master
