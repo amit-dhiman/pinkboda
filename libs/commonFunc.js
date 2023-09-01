@@ -5,10 +5,7 @@ const bcrypt = require('bcryptjs');
 let nodeMailer = require('nodemailer');
 require('dotenv').config()
 const Models = require("../models/index");
-
-const accountSid = process.env.accountSid;          // For tiwilio
-const authToken = process.env.authToken;
-const client = require('twilio')(accountSid, authToken);
+const multer = require('multer');
 
 
 const generateAccessToken = async (saveData, token_info, secret_key) => {
@@ -38,6 +35,7 @@ const verify_token = (scope) => {
     let model = null;
 
     if(scope=='users'){model= Models.users, secretKey=process.env.user_secretKey}
+    if(scope=='drivers'){model= Models.drivers, secretKey=process.env.driver_secretKey}
     if(scope=='admins'){model= Models.admins, secretKey=process.env.admin_secretKey}
 
     let token = req.headers.authorization;
@@ -47,18 +45,18 @@ const verify_token = (scope) => {
     console.log('------decoded-------',decoded);
 
     if(decoded){
-      const findData = await libs.getData(model,{where:{access_token: token}});
-      if(findData){
-        req.findData = findData;
+      const creds = await libs.getData(model,{where:{access_token: token}});
+      if(creds){
+        req.creds = creds;
         next();
       }else{
         return ERROR.UNAUTHORIZED(res)
       }
     }else{ return ERROR.INVALID_TOKEN(res);}
-  } catch (err) {
-    return ERROR.ERROR_OCCURRED(res,err)
+    } catch (err) {
+      return ERROR.ERROR_OCCURRED(res,err)
+    }
   }
-}
 }
 
 
@@ -79,7 +77,6 @@ const compPassword = async (password ,dbPassword)=>{
     throw err
   }
 }
-
 
 let sendMail = (otp,email)=>{
 
@@ -111,25 +108,34 @@ transport.sendMail(options, function(err, info){
 })
 }
 
-
-const sendSms = async (number,otp)=>{
-  try {
-    console.log('-----sendSms----------');
-    let result = await client.messages.create({
-        body: `Hello, this is a otp ${otp}`,
-        from: +12518423377,
-        to: number
-    })
-    .then(message => console.log('Message sent:', message.sid))
-    .catch(error => console.error('---Error sending message:--', error));
+// const sendSms = async (number,otp)=>{
+//   try {
+//     console.log('-----sendSms----------');
+//     let result = await client.messages.create({
+//         body: `Hello, this is a otp ${otp}`,
+//         from: +12518423377,
+//         to: number
+//     })
+//     .then(message => console.log('Message sent:', message.sid))
+//     .catch(error => console.error('---Error sending message:--', error));
     
-    return result;
-  } catch (err) {
-    throw err
+//     return result;
+//   } catch (err) {
+//     throw err
+//   }
+// }
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, `uploads`)
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix =`${Date.now()}.png`;
+    cb(null, file.fieldname + '-' + uniqueSuffix)
   }
-}
+})
 
-
+const upload = multer({ storage: storage })
 
 
 
@@ -140,5 +146,6 @@ module.exports= {
   generateAccessToken,
   verify_token, 
   securePassword,
-  compPassword, sendMail,sendSms
+  compPassword, sendMail,//sendSms,
+  upload
 }

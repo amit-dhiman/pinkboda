@@ -2,19 +2,22 @@ const { StatusCodes }= require('http-status-codes');
 
 exports.ERROR ={
     ERROR_OCCURRED:(res,err)=>{
-        res.status(StatusCodes.ERROR_OCCURRED||500).json(err.toString()||"ERROR_OCCURRED")
-    },
-    EMAIL_ALREADY_EXIST:(res)=>{
-        return res.status(StatusCodes.CONFLICT).send("email already exist")
+        res.status(StatusCodes.ERROR_OCCURRED||500).json({
+            code: 500,
+            message:err.message,
+            error: err.toString()||"ERROR_OCCURRED",
+        })
     },
     MOBILE_ALREADY_EXIST:(res)=>{
-        return res.status(StatusCodes.CONFLICT).send("MOBILE already exist")
+        return res.status(StatusCodes.CONFLICT).send({
+            code: StatusCodes.CONFLICT,
+            message: "MOBILE already exist",
+        })
     },
-
  
     USER_NAME_ALREADY_EXIST:(res)=>{
         return res.status(StatusCodes.CONFLICT).json({
-            // statusCode: code,
+            statusCode: StatusCodes.CONFLICT,
             message: 'user name already exists',
         })
     },
@@ -45,6 +48,9 @@ exports.ERROR ={
     DATA_NOT_FOUND:(res)=>{
         return res.status(404).json('DATA_NOT_FOUND')
     },
+    JOI_ERROR:(res,err)=>{
+        res.status(StatusCodes.ERROR_OCCURRED||400).json({code: StatusCodes.ERROR_OCCURRED, error:err.toString()||"ERROR_OCCURRED"})
+    },
     
 
 
@@ -55,12 +61,15 @@ exports.ERROR ={
     },
 
     UNAUTHORIZED:(res)=>{ 
-        return res.status(401).send("You are not authorized to perform this action")
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            code:StatusCodes.UNAUTHORIZED,
+            message:"You are not authorized to perform this action"
+        })
     },
-    INVALID_CREDENTIALS: {
+    INVALID_creds: {
         statusCode: 400,
         message: 'Phone Number or Password is incorrect.',
-        type: 'INVALID_CREDENTIALS '
+        type: 'INVALID_creds '
     },    
     WRONG_PASSWORD:(res)=> {
         return res.status(400).json("Password is incorrect")
@@ -71,54 +80,52 @@ exports.ERROR ={
     },
 
     // INVALID_EMAIL :{
-    //     statusCode: 400,
+    //     code: 400,
     //     message: 'Email is Incorrect.',
     //     type: 'INVALID_EMAIL'
     // },
 
     // INVALID_TOKEN :{
-    //     statusCode: 400,
+    //     code: 400,
     //     message: 'invalid token please check again',
     // },
 }
 
 
 exports.SUCCESS = {
-    DEFAULT:(res,data)=> {
-        return res.status(StatusCodes.OK || 200).json(data)
-    },
-    OTP_SENT:(res,data)=>{
-        return res.status(200).json({access_token: data, message: "otp sent to the number"})
+    DEFAULT:(res,msg,data)=> {
+        return res.status(StatusCodes.OK || 200).json({code:StatusCodes.OK ,message:msg, data:data})
     },
 
+
     RETURN_ORDER_TIME_OUT : {
-        statusCode: 400,    
+        code: 400,    
         message : 'you cannot return product because return time out',
         type: 'RETURN_ORDER_TIME_OUT'
     },
 
     ADDED : {
-        statusCode: 200,
+        code: 200,
         message : 'Added successfully.',
         type: 'ADDED'
     },
     FORGOT_PASSWORD: {
-        statusCode: 200,
+        code: 200,
         message: "A reset password link is sent to your registered email address.",
         type: 'FORGOT_PASSWORD'
     },
     PASSWORD_RESET_SUCCESSFULL:{
-        statusCode:200,
+        code:200,
         message :"Your Password has been Successfully Changed",
         type:'PASSWORD_RESET_SUCCESSFULL'
     },
     RESET_PASSWORD:{
-        statusCode:200,
+        code:200,
         message:"A reset password OTP has been sent to your registered Phone Number",
         type: 'RESET_PASSWORD'
     },
     // DEFAULT:{
-    //    statusCode: code,
+    //    code: code,
     //    message: 'Success',
     //    data: data
     // },

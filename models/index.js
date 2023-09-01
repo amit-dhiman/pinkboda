@@ -10,7 +10,7 @@ db.drivers = require('./drivers')(sequelize, DataTypes);
 db.bookings = require('./bookings')(sequelize, DataTypes);
 
 
-db.users.hasMany(db.bookings, { foreignKey: 'user_id'});             // ,as:"user_id" 
+db.users.hasMany(db.bookings, { foreignKey: 'user_id'});             // ,as:"user_id" maybe as:"bookings" 
 db.drivers.hasMany(db.bookings, { foreignKey: 'driver_id'});         // ,as:"driver_id" 
 
 

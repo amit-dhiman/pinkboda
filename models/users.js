@@ -11,17 +11,18 @@ module.exports = (sequelize, DataTypes) => {
     gender:{ type: DataTypes.ENUM("male","female","others"),default:"male" },
 
     mobile_number: {type: DataTypes.STRING},
-    otp: {type: DataTypes.INTEGER},
-    country_code:{type: DataTypes.INTEGER},
+    country_code:{type: DataTypes.STRING},
     image: { type: DataTypes.STRING },
     
     access_token: { type: DataTypes.STRING },
     device_type:{ type:DataTypes.ENUM("android","apple"),default:"android"},
     device_token: { type: DataTypes.STRING },    // token 
-  }, {
-    // timestamps:true,
+  },{
+    paranoid: true,
     createdAt: 'created_at',
     updatedAt: "updated_at",
+    deletedAt: 'deleted_at',
+    defaultScope:{where:{deleted_at: null}},
   })
 
   // Users.hasMany(db, { foreignKey: 'user_id' });

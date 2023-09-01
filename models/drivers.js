@@ -9,9 +9,8 @@ module.exports = (sequelize, DataTypes) => {
     username:{ type: DataTypes.STRING },
     gender:{ type: DataTypes.ENUM("male","female","others"),default:"male" },
 
-    otp: {type: DataTypes.INTEGER},
     mobile_number: {type: DataTypes.STRING},
-    country_code:{type: DataTypes.INTEGER},
+    country_code:{type: DataTypes.STRING},
     profile_image: { type: DataTypes.STRING },
     license: { type: DataTypes.STRING },
     id_card: { type: DataTypes.STRING },
@@ -21,18 +20,22 @@ module.exports = (sequelize, DataTypes) => {
     license_plate : { type: DataTypes.STRING },
     year:{ type:DataTypes.INTEGER },
 
+    is_admin_verified:{ type:DataTypes.ENUM("accepted","rejected","pending") },
+
     access_token: { type: DataTypes.STRING },
     device_type:{type:DataTypes.ENUM("android","apple"),default:"android"},
     device_token: { type: DataTypes.STRING },    // token 
   }, {
-    // timestamps:true,
-    createdAt: 'created_at',     // we can change their name
+    paranoid: true,
+    createdAt: "created_at",
     updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    defaultScope:{where:{deleted_at: null}},
   })
 
   // Drivers.hasMany(db.bookings, { foreignKey: 'driver_id' });
 
-//   Drivers.hasMany(Booking, { foreignKey: 'driver_id', as: 'bookings' }); 
+  // Drivers.hasMany(Booking, { foreignKey: 'driver_id', as: 'booking_id' }); 
   return Drivers;
 }
 

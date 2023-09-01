@@ -1,13 +1,13 @@
 
-const saveData = async (model, data) => {
+const createData = async (model, data) => {
     try {
-        let saveData = null;
+        let createData = null;
         if (Array.isArray(data)) {
-            saveData = await model.bulkCreate(data);
+            createData = await model.bulkCreate(data);
         } else {
-            saveData = await model.create(data);
+            createData = await model.create(data);
         }
-        return saveData;
+        return createData;
     } catch (err) {
         throw err;
     }
@@ -70,14 +70,15 @@ const updateData = async (model, data,query) => {
     }
 }
 
-// const updateData = async (model, data,query) => {
-//     try {
-//         let updateData = await model.update(data,query);
-//         return updateData;
-//     } catch (err) {
-//         throw err;
-//     }
-// }
+const destroyData = async (model, query) => {
+    try {
+        let updateData = await model.destroy(query);
+        console.log('------updateData------',updateData);
+        return updateData;
+    } catch (err) {
+        throw err;
+    }
+}
 
 
 
@@ -88,13 +89,9 @@ const updateData = async (model, data,query) => {
 
 
 module.exports={ 
-    saveData,
-    getData,
-    checkEmail,
-    updateData,
-    setData,
-    findAndUpdate,
-    
+    createData,
+    getData,checkEmail,updateData,
+    setData,findAndUpdate,destroyData
 
 };
 

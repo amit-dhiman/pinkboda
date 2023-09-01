@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 require('./models/db');
 const indexRouter = require('./routes/indexRoute');
+const driverRouter = require('./routes/drivers/index');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/driver', driverRouter.driverRoutes);
 
 
 // error handler
