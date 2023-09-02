@@ -14,7 +14,7 @@ const signupUserValid= async (req,res,next)=>{
     let {error}= validation.validate(req.body);
     if(error){
         console.log('------------joi err-----------',error);
-        return ERROR.JOI_ERROR(error.details[0].message);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
     }
     next();
 }
@@ -31,7 +31,7 @@ const loginUserValid= async (req,res,next)=>{
     let {error}= validation.validate(req.body);
     if(error){
         console.log('--------joi err-------',error);
-        return  ERROR.JOI_ERROR(error.details[0].message);
+        return  ERROR.JOI_ERROR(res,error.details[0].message);
     }
     next();
 }
@@ -46,7 +46,7 @@ const socialloginUserValid= async (req,res,next)=>{
     let {error}= validation.validate(req.body);
     if(error){
         console.log('--------joi err-------',error);
-        return ERROR.JOI_ERROR(error.details[0].message);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
     }
     next();
 }
@@ -61,7 +61,7 @@ const editUserValid= async (req,res,next)=>{
     let {error}= validation.validate(req.body);
     if(error){
         console.log('--------joi err-------',error);
-        return ERROR.JOI_ERROR(error.details[0].message);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
     }
     next();
 }
@@ -79,7 +79,7 @@ const findRideValid= async (req,res,next)=>{
     let {error}= validation.validate(req.body);
     if(error){
         console.log('-----joi err----',error);
-        return ERROR.JOI_ERROR(error.details[0].message);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
     }
     next();
 }
@@ -88,10 +88,11 @@ const findRideValid= async (req,res,next)=>{
 //--------------Drivers-------------------
 
 const signupDriverValid= async (req,res,next)=>{
+    console.log('---------req.body-----------',req.body);
     let validation = joi.object({
-        username: joi.string().required(),
-        gender: joi.number().valid("male","female","others").required(),
-        mobile_number: joi.string().required(),
+        username: joi.string().optional(),
+        gender: joi.number().valid("male","female","others").optional(),
+        mobile_number: joi.string().optional(),
         license: joi.object().optional(),   //Ihave to do required all these fields
         id_card: joi.object().optional(),
         passport_photo: joi.object().optional(),
@@ -107,7 +108,7 @@ const signupDriverValid= async (req,res,next)=>{
     let {error}= validation.validate(req.body);
     if(error){
         console.log('------joi err------',error);
-        return ERROR.JOI_ERROR(error.details[0].message);
+        return ERROR.JOI_ERROR(res,error.details[0].message);   
     }
     next();
 }

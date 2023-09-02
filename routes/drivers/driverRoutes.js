@@ -13,9 +13,9 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.post('/driver/Signup', signupDriverValid,upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.driverSignup);
+// router.post('/driver/Signup', signupDriverValid, driverCtrl.driverSignup);
 
-// router.post('/driver/Signup', signupDriverValid,upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.driverSignup);
+router.post('/driver/Signup', signupDriverValid,upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.driverSignup);
 
 // router.post('/driver/login', driverCtrl.login);
 

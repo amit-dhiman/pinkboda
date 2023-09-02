@@ -115,6 +115,7 @@ const editUserProfile = async (req, res,next) => {
     const userData = req.creds;
     const {device_type,device_token,gender,username} = req.body;
     console.log('============',req.body);
+    console.log('======---file---======',req.file);
     let update = {};
 
     // if (username) { 
@@ -133,9 +134,13 @@ const editUserProfile = async (req, res,next) => {
     if (gender) { update.gender = gender }
     if (device_type) { update.device_type = device_type }
     if (device_token) { update.device_token = device_token }
-    if(req.file){update.image= req.file.path};
-
+    if(req.file){update.image= req.file.filename};
+    console.log('-----update------',update);
+    
     const editProfile = await libs.updateData(userData, update);
+    // editProfile.toJSON();
+
+    editProfile.image = `${process.env.image_base_url}/${editProfile.image}`
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
   } catch (err) {
