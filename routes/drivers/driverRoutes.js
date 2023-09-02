@@ -4,7 +4,7 @@ const driverCtrl = require('../../controllers/drivers/driverControllers');
 const CONFIG = require('../../config/scope')
 
 const {signupDriverValid} = require('../../config/joiValidations');
-const {verify_token,upload} =require('../../libs/commonFunc');
+const {verify_token,upload,driver_upload} =require('../../libs/commonFunc');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 
 // router.post('/driver/Signup', signupDriverValid, driverCtrl.driverSignup);
 
-router.post('/driver/Signup', signupDriverValid,upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.driverSignup);
+router.post('/driver/Signup', signupDriverValid, driver_upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.driverSignup);
 
 // router.post('/driver/login', driverCtrl.login);
 

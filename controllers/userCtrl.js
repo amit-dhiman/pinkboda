@@ -134,13 +134,15 @@ const editUserProfile = async (req, res,next) => {
     if (gender) { update.gender = gender }
     if (device_type) { update.device_type = device_type }
     if (device_token) { update.device_token = device_token }
-    if(req.file){update.image= req.file.filename};
+    if(req.file){
+      fs.unlink(`${process.env.user_image_baseUrl}/${userData.image}`,(err)=>{if(err)return})
+      update.image= req.file.filename
+    };
     console.log('-----update------',update);
     
     const editProfile = await libs.updateData(userData, update);
-    // editProfile.toJSON();
 
-    editProfile.image = `${process.env.image_base_url}/${editProfile.image}`
+    editProfile.image = `${process.env.user_image_baseUrl}/${editProfile.image}`
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
   } catch (err) {

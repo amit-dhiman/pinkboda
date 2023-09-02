@@ -6,7 +6,7 @@ let nodeMailer = require('nodemailer');
 require('dotenv').config()
 const Models = require("../models/index");
 const multer = require('multer');
-
+const path = require('path');
 
 const generateAccessToken = async (saveData, token_info, secret_key) => {
   try {
@@ -127,6 +127,7 @@ transport.sendMail(options, function(err, info){
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log('-----user--------');
     cb(null, `uploads`)
   },
   filename: function (req, file, cb) {
@@ -135,17 +136,32 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 
+
+const driverPath= path.join(`${__dirname}`,'../uploads/drivers');
+
+const driverstorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    console.log('-----driverPath-------',driverPath);
+    cb(null, driverPath)
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix =`${Date.now()}.png`;
+    console.log('-----file-------');
+    cb(null, file.fieldname + '-' + uniqueSuffix)
+  }
+})
+
+const driver_upload = multer({ storage: driverstorage })
 
 
 
 
 
 module.exports= { 
-  generateAccessToken,
-  verify_token, 
-  securePassword,
-  compPassword, sendMail,//sendSms,
-  upload
+  generateAccessToken,verify_token, securePassword,
+  compPassword,sendMail,//sendSms,
+  upload, 
+  driver_upload
 }
