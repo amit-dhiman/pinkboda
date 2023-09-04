@@ -3,8 +3,8 @@ const router = express.Router();
 const driverCtrl = require('../../controllers/drivers/driverControllers');
 const CONFIG = require('../../config/scope')
 
-const {signupDriverValid} = require('../../config/joiValidations');
-const {verify_token,upload,driver_upload} =require('../../libs/commonFunc');
+const {signupDriverValid,editdriverValid} = require('../../config/joiValidations');
+const {verify_token,driver_upload} =require('../../libs/commonFunc');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -17,17 +17,17 @@ router.get('/', function(req, res, next) {
 
 router.post('/driver/Signup', signupDriverValid, driver_upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.driverSignup);
 
-// router.post('/driver/login', driverCtrl.login);
+router.post('/driver/login', driverCtrl.login);
 
-// router.put('/driver/verifyOtp', verify_token(CONFIG.SCOPE.drivers), driverCtrl.verifyOtp);
+router.get('/driver/logout', verify_token(CONFIG.SCOPE.drivers),driverCtrl.logout);
 
-// router.get('/driver/logout', verify_token(CONFIG.SCOPE.drivers),driverCtrl.logout);
+router.get('/driver/get-profile', verify_token(CONFIG.SCOPE.drivers), driverCtrl.driverProfile);
 
-// router.get('/driver/get-Profile', verify_token(CONFIG.SCOPE.drivers), driverCtrl.driverProfile);
+router.put('/driver/edit-profile', verify_token(CONFIG.SCOPE.drivers),editdriverValid,driver_upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.editDriverProfile);
 
-// router.put('/driver/edit-Profile', verify_token(CONFIG.SCOPE.drivers),editdriverValid, driverCtrl.editdriverProfile);
+router.get('/user/delete-account', verify_token(CONFIG.SCOPE.drivers),driverCtrl.deleteDriverAccount);
 
-// router.post('/driver/find-ride', verify_token(CONFIG.SCOPE.drivers),findRideValid, driverCtrl.findRide);
+// router.post('/driver/accept-ride', verify_token(CONFIG.SCOPE.drivers),findRideValid, driverCtrl.findRide);
 
 
 

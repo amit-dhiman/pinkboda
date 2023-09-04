@@ -100,9 +100,8 @@ const logout = async (req, res) => {
 
 const userProfile = async (req, res) => {
   try {
-    // const getProfile = await libs.getData(req.creds,{access_token:null});
-
-    return SUCCESS.DEFAULT(res,"users profile", req.creds);
+    const getProfile = req.creds;
+    return SUCCESS.DEFAULT(res,"users profile", getProfile);
   } catch (err) {
     console.log('----err-----',err);
     res.status(500).json({code:500,message:err.message});

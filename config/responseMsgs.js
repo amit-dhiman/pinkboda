@@ -21,10 +21,11 @@ exports.ERROR ={
             message: 'user name already exists',
         })
     },
-    INTERNAL_SERVER_ERROR:(res)=>{
+    INTERNAL_SERVER_ERROR:(res,err)=>{
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+            code: StatusCodes.INTERNAL_SERVER_ERROR,
             message: "Internal Server Error",
+            error:err
         })
     },
 

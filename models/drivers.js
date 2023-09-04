@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     license_plate : { type: DataTypes.STRING },
     year:{ type:DataTypes.INTEGER },
 
-    is_admin_verified:{ type:DataTypes.ENUM("accepted","rejected","pending") },
+    is_admin_verified:{type:DataTypes.ENUM("accepted","rejected","pending"),default:"accepted"},
 
     access_token: { type: DataTypes.STRING },
     device_type:{type:DataTypes.ENUM("android","apple"),default:"android"},

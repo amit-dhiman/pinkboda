@@ -36,20 +36,20 @@ const loginUserValid= async (req,res,next)=>{
     next();
 }
 
-const socialloginUserValid= async (req,res,next)=>{
-    let validation = joi.object({
-        social_key: joi.string().required(),
-        device_type: joi.string().valid("android","apple").optional(),
-        device_token: joi.string().optional(),
-    })
+// const socialloginUserValid= async (req,res,next)=>{
+//     let validation = joi.object({
+//         social_key: joi.string().required(),
+//         device_type: joi.string().valid("android","apple").optional(),
+//         device_token: joi.string().optional(),
+//     })
 
-    let {error}= validation.validate(req.body);
-    if(error){
-        console.log('--------joi err-------',error);
-        return ERROR.JOI_ERROR(res,error.details[0].message);
-    }
-    next();
-}
+//     let {error}= validation.validate(req.body);
+//     if(error){
+//         console.log('--------joi err-------',error);
+//         return ERROR.JOI_ERROR(res,error.details[0].message);
+//     }
+//     next();
+// }
 
 const editUserValid= async (req,res,next)=>{
     let validation = joi.object({
@@ -99,7 +99,7 @@ const signupDriverValid= async (req,res,next)=>{
         vechile_insurance: joi.object().optional(),
         model: joi.string().optional(),
         license_plate: joi.string().optional(),
-        year: joi.string().optional(),
+        year: joi.number().optional(),
         
         device_token: joi.string().optional(),
         device_type: joi.string().valid("android","apple").optional(),
@@ -114,9 +114,29 @@ const signupDriverValid= async (req,res,next)=>{
 }
 
 
+const editdriverValid= async (req,res,next)=>{
+    let validation = joi.object({
+        username: joi.string().optional(),
+        gender: joi.number().valid("male","female","others").optional(),
+        profile_image: joi.object().optional(),
+        license: joi.object().optional(),
+        id_card: joi.object().optional(),
+        passport_photo: joi.object().optional(),
+        vechile_insurance: joi.object().optional(),
+        model: joi.string().optional(),
+        license_plate: joi.string().optional(),
+        year: joi.number().optional(),
+    })
+
+    let {error}= validation.validate(req.body);
+    if(error){
+        console.log('--------joi err-------',error);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
+    }
+    next();
+}
 
 
 
-
-module.exports= { signupUserValid,loginUserValid, socialloginUserValid, editUserValid,findRideValid,signupDriverValid };
+module.exports= { signupUserValid,loginUserValid, editUserValid,findRideValid,signupDriverValid,editdriverValid };
 

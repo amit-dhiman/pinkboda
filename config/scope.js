@@ -1,4 +1,5 @@
 exports.SCOPE={
     users:"users",
-    admins:"admins"
+    drivers:"drivers",
+    admins:"admins",
 }
