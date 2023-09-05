@@ -7,7 +7,10 @@ module.exports = (sequelize, DataTypes) => {
 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     username:{ type: DataTypes.STRING },
-    gender:{ type: DataTypes.ENUM("male","female","others"),default:"male" },
+    gender:{ type: DataTypes.ENUM("male","female","others"),default:"male"},
+
+    latitude: { type: DataTypes.FLOAT(10, 6)},     // latitude
+    longitude: { type: DataTypes.FLOAT(10, 6)},    // longitude
 
     mobile_number: {type: DataTypes.STRING},
     country_code:{type: DataTypes.STRING},
@@ -34,7 +37,6 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   // Drivers.hasMany(db.bookings, { foreignKey: 'driver_id' });
-
   // Drivers.hasMany(Booking, { foreignKey: 'driver_id', as: 'booking_id' }); 
   return Drivers;
 }

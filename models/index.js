@@ -4,6 +4,7 @@ const sequelize = require('./db');
 
 // Define associations here
 let db = {};
+db.sequelize= sequelize;
 
 db.users = require('./users')(sequelize, DataTypes);
 db.drivers = require('./drivers')(sequelize, DataTypes);
@@ -19,17 +20,7 @@ db.bookings.belongsTo(db.drivers, { foreignKey: 'driver_id' });     // , as: 'dr
 
 
 
-// sequelize.sync({ force: true }).then(() => {
-//   console.log('---re-sync---');
-// }).catch((err) => {
-//   console.log('----re sync err---', err);
-//   throw err;
-// });
 
 
 module.exports = db;
-
-
-
-
 

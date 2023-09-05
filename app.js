@@ -4,8 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 require('./models/db');
-const indexRouter = require('./routes/indexRoute');
-const driverRouter = require('./routes/drivers/index');
+const indexRouter = require('./routes/userRoute');
+const driverRouter = require('./routes/index');
 
 
 // view engine setup

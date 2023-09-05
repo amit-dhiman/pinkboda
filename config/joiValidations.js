@@ -66,14 +66,16 @@ const editUserValid= async (req,res,next)=>{
     next();
 }
 
-const findRideValid= async (req,res,next)=>{
+const bookRideRideValid= async (req,res,next)=>{
     let validation = joi.object({
         pickup_long: joi.number().min(-180).max(180).required(),
         pickup_lat: joi.number().min(-90).max(90).required(),
         drop_long: joi.number().min(-180).max(180).required(),
-        drop_lat: joi.number().min(-90).max(90)().required(),
+        drop_lat: joi.number().min(-90).max(90).required(),
         pickup_address: joi.string().required(),
         drop_address: joi.string().required(),
+        ride_type:joi.string().valid("ride","delivery").required(),
+        driver_gender:joi.string().valid("male","female","both").required(),
     })
 
     let {error}= validation.validate(req.body);
@@ -138,5 +140,5 @@ const editdriverValid= async (req,res,next)=>{
 
 
 
-module.exports= { signupUserValid,loginUserValid, editUserValid,findRideValid,signupDriverValid,editdriverValid };
+module.exports= { signupUserValid,loginUserValid, editUserValid,bookRideRideValid,signupDriverValid,editdriverValid };
 

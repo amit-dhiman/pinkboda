@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const driverCtrl = require('../../controllers/drivers/driverControllers');
-const CONFIG = require('../../config/scope')
+const driverCtrl = require('../controllers/driverCtrl');
+const CONFIG = require('../config/scope')
 
-const {signupDriverValid,editdriverValid} = require('../../config/joiValidations');
-const {verify_token,driver_upload} =require('../../libs/commonFunc');
+const {signupDriverValid,editdriverValid} = require('../config/joiValidations');
+const {verify_token,driver_upload} =require('../libs/commonFunc');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -25,7 +25,11 @@ router.get('/driver/get-profile', verify_token(CONFIG.SCOPE.drivers), driverCtrl
 
 router.put('/driver/edit-profile', verify_token(CONFIG.SCOPE.drivers),editdriverValid,driver_upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.editDriverProfile);
 
-router.get('/user/delete-account', verify_token(CONFIG.SCOPE.drivers),driverCtrl.deleteDriverAccount);
+router.get('/driver/delete-account', verify_token(CONFIG.SCOPE.drivers),driverCtrl.deleteDriverAccount);
+
+router.get('/driver/pendingListing', verify_token(CONFIG.SCOPE.drivers),driverCtrl.pendingListing);
+
+router.post('/driver/updateDriversLocation', verify_token(CONFIG.SCOPE.drivers),driverCtrl.updateDriversLocation);
 
 // router.post('/driver/accept-ride', verify_token(CONFIG.SCOPE.drivers),findRideValid, driverCtrl.findRide);
 

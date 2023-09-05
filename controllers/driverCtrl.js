@@ -1,12 +1,10 @@
-const { Op } = require('sequelize')
-const db = require('../../models/index');
-const libs = require('../../libs/queries');
-const commonFunc = require('../../libs/commonFunc');
-const {upload,driver_upload} = require('../../libs/commonFunc');
+const db = require('../models/index');
+const libs = require('../libs/queries');
+const commonFunc = require('../libs/commonFunc');
 require('dotenv').config();
-const CONFIG = require('../../config/scope');
-const ERROR= require('../../config/responseMsgs').ERROR;
-const SUCCESS= require('../../config/responseMsgs').SUCCESS;
+const CONFIG = require('../config/scope');
+const ERROR= require('../config/responseMsgs').ERROR;
+const SUCCESS= require('../config/responseMsgs').SUCCESS;
 const fs = require('fs');
 
 
@@ -21,7 +19,7 @@ const driverSignup = async (req, res) => {
             if (req.files) {
                 Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
             }
-            return res.status(400).json({error:"mobile number already exist"});
+            return res.status(409).json({code:409,message:"mobile number already exist"});
         }
 
         let data = {
@@ -32,6 +30,7 @@ const driverSignup = async (req, res) => {
             model:model,
             license_plate:license_plate,
             year:year,
+            is_admin_verified: "accepted"
         };
 
         if(req.files.license){data.license= req.files.license[0].filename}
@@ -69,6 +68,7 @@ const login = async(req,res) => {
         }
         console.log('---------country_code---------',country_code);
         const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
+        console.log('-----2');
         if(!getData){
             return res.status(400).json({code:400,message:"mobile number does't exist"})
         }
@@ -89,6 +89,7 @@ const login = async(req,res) => {
     
             return SUCCESS.DEFAULT(res,"login successfully", token)
         }
+        res.status(400).json({code:400,message:"your previous request is null check db"})
     } catch (err) {
         ERROR.INTERNAL_SERVER_ERROR(res, err);
     }
@@ -145,7 +146,7 @@ const editDriverProfile = async (req, res,next) => {
       ERROR.INTERNAL_SERVER_ERROR(res, err);
     }
 };
-  
+
 
 const deleteDriverAccount = async (req, res) => {
     try {
@@ -156,16 +157,35 @@ const deleteDriverAccount = async (req, res) => {
       ERROR.ERROR_OCCURRED(res, err);
     }
 };
+
+// ----location update eveytime-----
+const updateDriversLocation = async (req, res) => {
+    try {
+      let updateLocation =await libs.updateData(req.creds,{lat:req.body.lat,long:req.body.long});
+
+      res.status(200).json({code:204,message:"drivers location update successfully",data:updateLocation});    
   
+    } catch (err) {
+      ERROR.ERROR_OCCURRED(res, err);
+    }
+};
+
+// To show Accept Or Reject Rides
+
+const pendingListing = async (req, res) => {
+    try {
+    //   let pendingList =await libs.getData(db.bookings,{where})
+      res.status(200).json({code:204,message:"show pending list",data:pendingList});    
+  
+    } catch (err) {
+      ERROR.ERROR_OCCURRED(res, err);
+    }
+};
+
+//  create some Users and Drivers ans then add drivers lat long then test haversine formula and send noti to nearby drivers
 
 
 
 
-
-
-
-
-
-
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount }
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,pendingListing, }
 

@@ -24,7 +24,6 @@ const setData = async (data, update) => {
 
 const findAndUpdate = async (model,query, updateData) => {
     try {
-        console.log('-----model,query,updateData-----',typeof model, model);
         const user = await model.findByPk(query);
         const updatedUser= await user.update(updateData);
         return updatedUser;
@@ -91,7 +90,7 @@ const destroyData = async (model, query) => {
 module.exports={ 
     createData,
     getData,checkEmail,updateData,
-    setData,findAndUpdate,destroyData
+    setData,findAndUpdate,destroyData,getAllData
 
 };
 
