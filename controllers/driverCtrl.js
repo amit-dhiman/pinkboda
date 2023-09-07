@@ -12,7 +12,7 @@ const driverSignup = async (req, res) => {
     try {
         let {username,gender,country_code,mobile_number,model,license_plate,year,device_type, device_token} = req.body;
         console.log('------req.files-------',req.files); 
-        const getData=await libs.getData(db.drivers,{where:{mobile_number:mobile_number}});
+        const getData=await libs.getData(db.drivers,{where:{mobile_number: mobile_number}});
 
         if (getData) {
             console.log('----getData----', getData);
@@ -27,9 +27,9 @@ const driverSignup = async (req, res) => {
             gender: gender,
             mobile_number: mobile_number,
             country_code: country_code,
-            model:model,
-            license_plate:license_plate,
-            year:year,
+            model: model,
+            license_plate: license_plate,
+            year: year,
             is_admin_verified: "accepted"
         };
 
@@ -47,6 +47,12 @@ const driverSignup = async (req, res) => {
 
         let token_info = { id: saveData.id, mobile_number: saveData.mobile_number };
         let token = await commonFunc.generateAccessToken(saveData, token_info, process.env.driver_secretKey);
+        console.log('-----token-------',token);
+
+        if(req.files.license){token.license= `${process.env.driver_image_baseUrl}/${req.files.license[0].filename}`}
+        if(req.files.id_card){token.id_card= `${process.env.driver_image_baseUrl}/${req.files.id_card[0].filename}`}
+        if(req.files.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}/${req.files.passport_photo[0].filename}`}
+        if(req.files.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}/${req.files.vechile_insurance[0].filename}`}
 
         return SUCCESS.DEFAULT(res,"signUp successfully", token)
     } catch (err) {
@@ -121,7 +127,7 @@ const driverProfile = async (req, res) => {
 const editDriverProfile = async (req, res,next) => {
     try {
       const userData = req.creds;
-      const {username,gender,model,license_plate,year} = req.body;
+      const {username,gender,model,license_plate,year,profile_image} = req.body;
       let update = {};
   
       if (username) {update.username = username }
@@ -129,15 +135,21 @@ const editDriverProfile = async (req, res,next) => {
       if (model) {update.model = model }
       if (license_plate) {update.license_plate = license_plate }
       if (year) {update.year = year }
+    //   if (profile_image) {update.profile_image = profile_image }
   
       if(req.files){
         for(let key in req.files){
             fs.unlink(`${process.env.driver_image_baseUrl}/${userData[key]}`,(err)=>{if(err)return})
             update[key] = req.files[key][0].filename
         }
-      }
+      } 
       console.log('---------update----------',update);
       const editProfile = await libs.updateData(userData, update);
+      if(req.files){
+        for(let key in req.files){
+            editProfile[key] = `${process.env.driver_image_baseUrl}/${req.files[key][0].filename}`
+        }
+      }
       return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
     } catch (err) {
         if(req.files){
