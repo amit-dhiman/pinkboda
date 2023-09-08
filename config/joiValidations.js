@@ -66,7 +66,7 @@ const editUserValid= async (req,res,next)=>{
     next();
 }
 
-const bookRideRideValid= async (req,res,next)=>{
+const bookRideValid= async (req,res,next)=>{
     let validation = joi.object({
         pickup_long: joi.number().min(-180).max(180).required(),
         pickup_lat: joi.number().min(-90).max(90).required(),
@@ -74,8 +74,8 @@ const bookRideRideValid= async (req,res,next)=>{
         drop_lat: joi.number().min(-90).max(90).required(),
         pickup_address: joi.string().required(),
         drop_address: joi.string().required(),
-        ride_type:joi.string().valid("ride","delivery").required(),
-        driver_gender:joi.string().valid("male","female","both").required(),
+        ride_type:joi.string().valid("Ride","Delivery").required(),
+        driver_gender:joi.string().valid("Male","Female","Both").required(),
     })
 
     let {error}= validation.validate(req.body);
@@ -93,7 +93,7 @@ const signupDriverValid= async (req,res,next)=>{
     console.log('---------req.body-----------',req.body);
     let validation = joi.object({
         username: joi.string().optional(),
-        gender: joi.number().valid("male","female","others").optional(),
+        gender: joi.number().valid("Male","Female","Both").optional(),
         mobile_number: joi.string().optional(),
         license: joi.object().optional(),   //Ihave to do required all these fields
         id_card: joi.object().optional(),
@@ -119,7 +119,7 @@ const signupDriverValid= async (req,res,next)=>{
 const editdriverValid= async (req,res,next)=>{
     let validation = joi.object({
         username: joi.string().optional(),
-        gender: joi.number().valid("male","female","others").optional(),
+        gender: joi.number().valid("Male","Female","others").optional(),
         profile_image: joi.object().optional(),
         license: joi.object().optional(),
         id_card: joi.object().optional(),
@@ -140,5 +140,5 @@ const editdriverValid= async (req,res,next)=>{
 
 
 
-module.exports= { signupUserValid,loginUserValid, editUserValid,bookRideRideValid,signupDriverValid,editdriverValid };
+module.exports= { signupUserValid,loginUserValid, editUserValid,bookRideValid,signupDriverValid,editdriverValid };
 

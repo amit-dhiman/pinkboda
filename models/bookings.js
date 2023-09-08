@@ -13,12 +13,12 @@ module.exports = (sequelize, DataTypes) => {
         pickup_address: { type: DataTypes.STRING },
         drop_address: { type: DataTypes.STRING },
 
-        booking_status: { type: DataTypes.ENUM("pending", "accept", "reject", "cancel"),
+        booking_status: { type: DataTypes.ENUM("pending","accept","reject","cancel"),
         default: "pending"},
 
         amount: { type: DataTypes.INTEGER, default: 10 },
-        ride_type:{type: DataTypes.ENUM("ride","delivery")},
-        driver_gender:{type: DataTypes.ENUM("male","female","both")},
+        ride_type:{type: DataTypes.ENUM("Ride","Delivery")},
+        driver_gender:{type: DataTypes.ENUM("Male","Female","Both")},
 
         user_id: {
             type: DataTypes.INTEGER,

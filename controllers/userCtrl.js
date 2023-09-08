@@ -196,10 +196,10 @@ const bookRide = async (req, res) => {
     )`;
     
     const findDrivers = await db.drivers.findAll({
-      attributes: ['*',[db.sequelize.literal(haversine),'distance']],
-      where: db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
-      order: db.sequelize.col('distance'),
+      attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
+      where:db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
       raw: true,
+      order: db.sequelize.col('distance'),
     });
 
     //------------Send Notifications to nearby drivers---------------
@@ -212,17 +212,21 @@ const bookRide = async (req, res) => {
       booking_id: saveData.id,
       // more Data
     }
-    
+    console.log('------notify_data------',notify_data);
+
     for(let i=0;i<findDrivers.length;i++){
-      saveNotify.push(notify_data.driver_id=findDrivers[i].id);
-      deviceTokens.push(findDrivers[i].device_token)
+      saveNotify.push(notify_data.driver_id= findDrivers[i].id);
+      deviceTokens.push(findDrivers[i].device_token= findDrivers[i].device_token)
     }
+    console.log('----deviceTokens-----',deviceTokens);
+    console.log('----saveNotify------',saveNotify);
 
-    let sendNotify = await notify.sendNotify(notify_data,deviceTokens);
+    // let sendNotify = await notify.sendNotify(notify_data,deviceTokens);
     
 
 
-    res.status(500).json({code:200,data: saveData});    
+    res.status(500).json({code:200,data: saveData});   
+  
   } catch (err) {
     res.status(500).json({code:500,message:err.message});
   }
@@ -271,42 +275,41 @@ const findPreviousRide = async (req, res) => {
 
 
 const findNearbyDrivers = async (req, res) => {
-  try {    
-    const latitude =  30.718522;
-    const longitude =  76.717959;
-    const distance = 6;
+  try {
+    let getAcceptedDetail = await db.notifications.
+    while(){
+      const latitude = 30.718522;
+      const longitude = 76.717959;
+      const distance = 6;
 
-    const haversine = `(
-      6371 * acos(cos(radians(${latitude}))* cos(radians(latitude))* cos(radians(longitude) - radians(${longitude}))+ sin(radians(${latitude})) * sin(radians(latitude)))
-    )`;
-    
-    const findDrivers = await db.drivers.findAll({
-      attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
-      where:db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
-      raw: true,
-      order: db.sequelize.col('distance'),
-    });
-    console.log('----------findDrivers----------',findDrivers);
-
-    let deviceTokens=[];
-    let saveNotify= [];
+      const haversine = `(
+        6371 * acos(cos(radians(${latitude}))* cos(radians(latitude))* cos(radians(longitude) - radians(${longitude}))+ sin(radians(${latitude})) * sin(radians(latitude)))
+      )`;
       
-    const notify_data= {
-      user_id: req.creds.id,
-      booking_id: 2,
-      // more Data
-    }
-    
-    for(let i=0;i<findDrivers.length;i++){
-      console.log('------------findDrivers[i]--------------',findDrivers[i]);
-      saveNotify.push(notify_data.driver_id=findDrivers[i].id);
-      deviceTokens.push(findDrivers[i].device_token)
-    }
-    console.log('---------deviceTokens--------',deviceTokens);
-    console.log('---------saveNotify----------',saveNotify);
+      const findDrivers = await db.drivers.findAll({
+        attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
+        where:db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
+        raw: true,
+        order: db.sequelize.col('distance'),
+      });
+      // console.log('----------findDrivers----------',findDrivers);
 
-    res.status(200).json({code:200,message: "find nearby drivers",data:findDrivers});
+      let deviceTokens=[];
+      let saveNotify= [];
+        
+      const notify_data= {user_id: req.creds.id,booking_id: 2}
+      
+      for(let i=0;i<findDrivers.length;i++){
+        saveNotify.push(notify_data.driver_id=findDrivers[i].id);
+        deviceTokens.push(findDrivers[i].device_token=findDrivers[i].device_token)
+      }
+      console.log('---------deviceTokens--------',deviceTokens);
+      console.log('---------saveNotify----------',saveNotify);
+    }
+
+    res.status(200).json({code:200,message:"find nearby drivers",data:findDrivers});
   } catch (err) {
+    console.log('-----err-------',err);
     res.status(500).json({code:500,message: err.message});
   }
 };

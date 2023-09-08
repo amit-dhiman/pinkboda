@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     username:{ type: DataTypes.STRING },
-    gender:{ type: DataTypes.ENUM("male","female","others"),default:"male"},
+    gender:{ type: DataTypes.ENUM("Male","Female","Others"),default:"Male"},
 
     latitude: { type: DataTypes.FLOAT(10, 6)},     // latitude
     longitude: { type: DataTypes.FLOAT(10, 6)},    // longitude

@@ -4,13 +4,13 @@ const userCtrl = require('../controllers/userCtrl');
 
 const CONFIG = require('../config/scope')
 // require('./users')(router);
-const {signupUserValid,editUserValid,bookRideRideValid} = require('../config/joiValidations');
+const {signupUserValid,editUserValid,bookRideValid} = require('../config/joiValidations');
 
 const {verify_token,upload} =require('../libs/commonFunc');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log('------------');
+  console.log('-----userRoute------');
   res.render('index', { title: 'Express' });
 });
 
@@ -29,48 +29,13 @@ router.get('/user/deleteAccount', verify_token(CONFIG.SCOPE.users),userCtrl.dele
 
 router.post('/user/calc-ride-amount', verify_token(CONFIG.SCOPE.users), userCtrl.calcRideAmount);
 
-router.post('/user/book-ride', verify_token(CONFIG.SCOPE.users),bookRideRideValid,userCtrl.bookRide);
+router.post('/user/book-ride', verify_token(CONFIG.SCOPE.users),bookRideValid,userCtrl.bookRide);
 
 router.post('/user/cancel-ride', verify_token(CONFIG.SCOPE.users),userCtrl.cancelRide);
 
 router.get('/user/find-previous-ride', verify_token(CONFIG.SCOPE.users),userCtrl.findPreviousRide);
 
-router.get('/user/findNearbyDrivers',userCtrl.findNearbyDrivers);
-
-
-
-
-
-
-
-// const latitude = 28.626137
-// const longitude = 79.821602
-// const distance = 1;
-
-// const haversine = `(
-// //     6371 * acos(
-// //         cos(radians(${latitude}))
-// //         * cos(radians(latitude))
-// //         * cos(radians(longitude) - radians(${longitude}))
-// //         + sin(radians(${latitude})) * sin(radians(latitude))
-// //     )
-// // )`;
-
-// const users = await User.findAll({
-//     attributes: [
-//         'id',
-//         [sequelize.literal(haversine), 'distance'],
-//     ],
-//     where: {
-//         [Op.and]: [
-//             sequelize.where(sequelize.literal(haversine), '<=', distance),
-//             { status: true }
-//         ]
-//     },
-//     order: sequelize.col('distance'),
-//     limit: 5
-// });
-
+router.get('/user/findNearbyDrivers',verify_token(CONFIG.SCOPE.users),userCtrl.findNearbyDrivers);
 
 
 

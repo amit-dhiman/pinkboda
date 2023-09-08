@@ -1,6 +1,6 @@
 const FCM = require('fcm-push');
 
-const sendNotification = async (data,deviceToken) => {
+const sendNotify = async (data,deviceToken) => {
     // var fcm = new FCM(Config.APP_CONSTANTS.SERVER.NOTIFICATION_KEY);
     var fcm = new FCM("AAAA6rtcmlA:APA91bGQBAz5SfoAH-npu5iZ9KnFxG3RTosUIVEb3V-7CEvsrb0nXVZe3aqZ4nj2gQFa0mBD1YCs1lR4B4rDeCnNFqfFMRZ0hA0RGWZl0f61IkQu5PNiV6Psgs_csOYYayGYHmtGTdWj");
     if(!deviceToken){
@@ -34,3 +34,7 @@ const sendNotification = async (data,deviceToken) => {
         else{console.log("---------result",result)}
     });
 };
+
+
+module.exports={sendNotify};
+
