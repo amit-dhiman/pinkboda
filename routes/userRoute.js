@@ -4,7 +4,7 @@ const userCtrl = require('../controllers/userCtrl');
 
 const CONFIG = require('../config/scope')
 // require('./users')(router);
-const {signupUserValid,editUserValid,bookRideValid} = require('../config/joiValidations');
+const {signupUserValid,editUserValid,bookRideValid,sendMsgValid,reportValid,ratingValid,supportValid} = require('../config/joiValidations');
 
 const {verify_token,upload} =require('../libs/commonFunc');
 
@@ -31,13 +31,29 @@ router.post('/user/calc-ride-amount', verify_token(CONFIG.SCOPE.users), userCtrl
 
 router.post('/user/book-ride', verify_token(CONFIG.SCOPE.users),bookRideValid,userCtrl.bookRide);
 
-router.post('/user/cancel-ride', verify_token(CONFIG.SCOPE.users),userCtrl.cancelRide);
+router.post('/user/cancel-ride',verify_token(CONFIG.SCOPE.users),userCtrl.cancelRide);
 
-router.get('/user/find-previous-ride', verify_token(CONFIG.SCOPE.users),userCtrl.findPreviousRide);
+router.get('/user/find-previous-ride',verify_token(CONFIG.SCOPE.users),userCtrl.findPreviousRide);
 
-router.get('/user/findNearbyDrivers',verify_token(CONFIG.SCOPE.users),userCtrl.findNearbyDrivers);
+// router.get('/user/findNearbyDrivers',verify_token(CONFIG.SCOPE.users),userCtrl.findNearbyDrivers);
 
+router.post('/user/sendMessage',verify_token(CONFIG.SCOPE.users),sendMsgValid, userCtrl.sendMessage);
 
+router.post('/user/reportOnDriver',verify_token(CONFIG.SCOPE.users),reportValid, userCtrl.reportOnDriver);
+
+router.post('/user/giveRating',verify_token(CONFIG.SCOPE.users),ratingValid, userCtrl.giveRating);
+
+router.post('/user/support',verify_token(CONFIG.SCOPE.users),supportValid, userCtrl.support);
+
+router.get('/user/getNotifications',verify_token(CONFIG.SCOPE.users), userCtrl.getNotifications);
+
+router.get('/user/clearNotifications',verify_token(CONFIG.SCOPE.users), userCtrl.clearNotifications);
+
+router.get('/user/getMyRides',verify_token(CONFIG.SCOPE.users), userCtrl.getMyRides);
+
+router.get('/user/getSingleRide',verify_token(CONFIG.SCOPE.users), userCtrl.getSingleRide);
+
+router.get('/user/getOffers',verify_token(CONFIG.SCOPE.users), userCtrl.getOffers);
 
 
 

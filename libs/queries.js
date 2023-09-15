@@ -71,9 +71,8 @@ const updateData = async (model, data,query) => {
 
 const destroyData = async (model, query) => {
     try {
-        let updateData = await model.destroy(query);
-        console.log('------updateData------',updateData);
-        return updateData;
+        let destroyData = await model.destroy(query);
+        return destroyData;
     } catch (err) {
         throw err;
     }

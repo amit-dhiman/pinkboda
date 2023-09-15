@@ -15,6 +15,10 @@ sequelize.authenticate().then(()=>{
 .catch(err=> console.log('---db err----',err))
 
 
+// sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true }).then(() => {
+// sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
+// })
+
 sequelize.sync({ force: false }).then(() => {
   console.log('----re-sync-----');
 }).catch((err) => {

@@ -7,7 +7,7 @@ const SUCCESS = require('../config/responseMsgs').SUCCESS;
 require('dotenv').config();
 const CONFIG = require('../config/scope');
 const fs = require('fs');
-const notify = require('../libs/notifications');
+const Notify = require('../libs/notifications');
 
 const numberSignup = async (req, res) => {
   try {
@@ -72,7 +72,7 @@ const numberLogin = async (req, res) => {
       return SUCCESS.DEFAULT(res, "logged in", token);
     } 
     else {
-      res.status(400).json({code:400,error:"mobile number not found"})
+      res.status(400).json({code:400,message:"mobile number not found"})
      }
   } catch (err) {
     ERROR.ERROR_OCCURRED(res, err);
@@ -191,40 +191,36 @@ const bookRide = async (req, res) => {
     const longitude = data.pickup_long || 76.717959;
     const distance = 6;
 
-    const haversine = `(
-      6371 * acos(cos(radians(${latitude}))* cos(radians(latitude))* cos(radians(longitude) - radians(${longitude}))+ sin(radians(${latitude})) * sin(radians(latitude)))
-    )`;
-    
-    const findDrivers = await db.drivers.findAll({
-      attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
-      where:db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
-      raw: true,
-      order: db.sequelize.col('distance'),
-    });
+    let findDrivers = null;
+    // while(){
+    //   const latitude = 30.718522;
+    //   const longitude = 76.717959;
+    //   const distance = 6;
 
-    //------------Send Notifications to nearby drivers---------------
-    // const deviceTokens = findDrivers.map((dt)=>{return dt.device_token});
-    let deviceTokens=[];
-    let saveNotify= [];
+    //   const haversine = `(
+    //     6371 * acos(cos(radians(${latitude}))* cos(radians(latitude))* cos(radians(longitude) - radians(${longitude}))+ sin(radians(${latitude})) * sin(radians(latitude)))
+    //   )`;
+      
+    //   findDrivers = await db.drivers.findAll({
+    //     attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
+    //     where:db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
+    //     raw: true,
+    //     order: db.sequelize.col('distance'),
+    //   });
+    //   // console.log('----------findDrivers----------',findDrivers);
+
+    //   let deviceTokens=[];
+    //   let saveNotify= [];
         
-    const notify_data= {
-      user_id: req.creds.id,
-      booking_id: saveData.id,
-      // more Data
-    }
-    console.log('------notify_data------',notify_data);
-
-    for(let i=0;i<findDrivers.length;i++){
-      saveNotify.push(notify_data.driver_id= findDrivers[i].id);
-      deviceTokens.push(findDrivers[i].device_token= findDrivers[i].device_token)
-    }
-    console.log('----deviceTokens-----',deviceTokens);
-    console.log('----saveNotify------',saveNotify);
-
-    // let sendNotify = await notify.sendNotify(notify_data,deviceTokens);
-    
-
-
+    //   const notify_data= {user_id: req.creds.id,booking_id: 2}
+      
+    //   for(let i=0;i<findDrivers.length;i++){
+    //     saveNotify.push(notify_data.driver_id=findDrivers[i].id);
+    //     deviceTokens.push(findDrivers[i].device_token=findDrivers[i].device_token)
+    //   }
+    //   console.log('---------deviceTokens--------',deviceTokens);
+    //   console.log('---------saveNotify----------',saveNotify);
+    // }
     res.status(500).json({code:200,data: saveData});   
   
   } catch (err) {
@@ -240,15 +236,31 @@ const cancelRide = async (req, res) => {
       id: req.body.booking_id,
       // booking_status:"pending"
     }
-    let deleteData = await libs.destroyData(db.bookings,{where:query,force:true});
-    console.log('----deleteData---',deleteData);
-
+    let updateMsg= await libs.updateData(db.bookings,{cancel_reason:req.body.cancel_reason});
     if(req.body.driver_id){
+      let deleteData = await libs.destroyData(db.bookings,{where:query});
       
-      //  ---------send notification----------
+      if(deleteData){
+        let getDriverData= await libs.getData(db.drivers,{id:req.body.driver_id});
+
+        //  ---------send notification----------
+        let data = {
+          title:"Ride cancelation",
+          message:"your ride has been canceled"
+        }
+        let deviceTokens= [req.creds.device_token,getDriverData.device_token];
+
+        const sendNotify= await Notify.sendNotify(data,deviceTokens)
+
+        return res.status(200).json({code:200,message:"your ride has been canceled"});
+      }
+      res.status(200).json({code:200,message:"cant cancelled the ride"});
+    }else{
       
+      let deleteData = await libs.destroyData(db.bookings,{where:query});
+      console.log('----deleteData---',deleteData);
+      res.status(200).json({code:200,message:"your ride has been canceled"});
     }
-    res.status(200).json({code:200,message:"your ride has been canceled",data:deleteData});
   } catch (err) {
     res.status(500).json({code:500,message:err.message});
   }
@@ -269,56 +281,246 @@ const findPreviousRide = async (req, res) => {
 
     res.status(200).json({code:200,message: "your ride has been canceled",data:findRide});
   } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+// const findNearbyDrivers = async (req, res) => {
+//   try {
+//     let getAcceptedDetail = await db.notifications.
+//     let findDrivers = null;
+//     while(){
+//       const latitude = 30.718522;
+//       const longitude = 76.717959;
+//       const distance = 6;
+
+//       const haversine = `(
+//         6371 * acos(cos(radians(${latitude}))* cos(radians(latitude))* cos(radians(longitude) - radians(${longitude}))+ sin(radians(${latitude})) * sin(radians(latitude)))
+//       )`;
+      
+//       findDrivers = await db.drivers.findAll({
+//         attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
+//         where:db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
+//         raw: true,
+//         order: db.sequelize.col('distance'),
+//       });
+//       // console.log('----------findDrivers----------',findDrivers);
+
+//       let deviceTokens=[];
+//       let saveNotify= [];
+        
+//       const notify_data= {user_id: req.creds.id,booking_id: 2}
+      
+//       for(let i=0;i<findDrivers.length;i++){
+//         saveNotify.push(notify_data.driver_id=findDrivers[i].id);
+//         deviceTokens.push(findDrivers[i].device_token=findDrivers[i].device_token)
+//       }
+//       console.log('---------deviceTokens--------',deviceTokens);
+//       console.log('---------saveNotify----------',saveNotify);
+//     }
+
+//     res.status(200).json({code:200,message:"find nearby drivers",data:findDrivers});
+//   } catch (err) {
+//     console.log('-----err-------',err);
+//     res.status(500).json({code:500,message: err.message});
+//   }
+// };
+
+
+const sendMessage = async (req, res) => {
+  try {
+    let data= {
+      sender_id: req.creds.id,
+      receiver_id: req.body.receiver_id,
+      booking_id: req.body.booking_id,
+      message: req.body.message,
+    }
+    console.log('------data--------',data);
+    let saveData = await libs.createData(db.chats,data);
+    console.log('----saveData---',saveData);
+
+    res.status(200).json({code:200,message:"message saved",data: saveData});
+  } catch (err) {
+    console.log('------err------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const reportOnDriver = async (req, res) => {
+  try {
+    let data= {
+      user_id: req.creds.id,
+      driver_id: req.body.driver_id,
+      booking_id: req.body.booking_id,
+      report_message: req.body.report_message,
+    }
+    let saveReport = await libs.createData(db.reports, data);
+    console.log('----saveReport---',saveReport);
+
+    // let saveReport = await libs.getData(db.bookings,{
+    //   where:{id:1},
+    //   include:{model: db.reports }
+    // })
+
+    res.status(200).json({code:200,message:"Reported successfully"});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const giveRating = async (req, res) => {
+  try {
+    let data= {
+      user_id: req.creds.id,
+      driver_id: req.body.driver_id,
+      booking_id: req.body.booking_id,
+      star: req.body.star,
+    }
+    let saveRatings = await libs.createData(db.ratings, data);
+    console.log('----saveRatings----',saveRatings);
+
+    res.status(200).json({code:200,message:"Rating successful"});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+const support = async (req, res) => {
+  try {
+    let data= {
+      user_id: req.creds.id,
+      email: req.body.email,
+      message: req.body.message,
+    }
+    let saveSupport = await libs.createData(db.supports, data);
+    console.log('----saveSupport----',saveSupport);
+
+    res.status(200).json({code:200,message:"Your messages has been sent successfully"});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const getNotifications = async (req, res) => {
+  try {
+    // let data= {
+    //   user_id: req.creds.id,
+    //   email: "abc@gmail.com",
+    //   message: "hiii",
+    //   title: "chat"
+    // }
+
+    // let save = await libs.createData(db.notifications, data);
+    // console.log('-----save------',save.toJSON());
+
+    let getNotify = await libs.getAllData(db.notifications, {where:{user_id: req.creds.id}});
+
+    res.status(200).json({code:200,message:"get All Notifications",data: getNotify});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const clearNotifications = async (req, res) => {
+  try {
+    let getNotify = await libs.destroyData(db.notifications, {where:{user_id: req.creds.id}});
+
+    res.status(200).json({code:200,message:"Cleared All Notifications",data: getNotify});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const getMyRides = async (req, res) => {
+  try {
+    // let data = {
+    //   "pickup_long": 76.717957,
+    //   "pickup_lat": 30.718521,
+    //   "drop_long": 20.655001,
+    //   "drop_lat": 25.569,
+    //   "pickup_address": "mohali",
+    //   "drop_address": "chandigarh",
+    //   "vechile_type": "Bike",
+    //   "amount": 10,
+    //   "ride_status": "Completed",
+    //   "user_id": req.creds.id,
+    //   "driver_id": 1,
+    //   "booking_id": 1,
+    // }
+    // // bookings me se data find kr k rides wali mw save krva do manually api se hi
+    // let save = await libs.createData(db.myrides,data);
+
+    let getRides = await libs.getAllData(db.myrides, {
+      where:{user_id: req.creds.id},
+      include:[{
+        model: db.drivers,
+        attributes: ['username','profile_image'],
+      }],
+    });
+
+    let arr = []
+    for(let i=0;i<getRides.length; i++){
+      let a = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
+      let jsonData = getRides[i].toJSON();
+      jsonData.star = a.star
+      arr.push(jsonData) 
+    }
+
+    res.status(200).json({code:200,message:"My All Rides",data: arr});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const getSingleRide = async (req, res) => {
+  try {
+    let booking_id = req.query.booking_id;
+
+    let getOneNotify = await libs.getData(db.myrides, {where:{user_id: req.creds.id,booking_id:booking_id}});
+
+    let getDriverData = await libs.getData(db.drivers, {where:{id:getOneNotify.driver_id}});
+
+    let edit_data = getOneNotify.toJSON();
+
+    edit_data.driver_username = getDriverData.username
+    edit_data.driver_profile_image = getDriverData.profile_image
+
+    let getRating = await libs.getData(db.ratings, {where:{booking_id: booking_id}});
+    edit_data.star = getRating.star
+
+    res.status(200).json({code:200,message:"detail of 1 notification",data: edit_data});
+  } catch (err) {
     res.status(500).json({code:500,message:err.message});
   }
 };
 
-
-const findNearbyDrivers = async (req, res) => {
+const getOffers = async (req, res) => {
   try {
-    let getAcceptedDetail = await db.notifications.
-    while(){
-      const latitude = 30.718522;
-      const longitude = 76.717959;
-      const distance = 6;
+    // let data = {
+    //   user_id:req.creds.id,
+    //   title:"Wow!",
+    //   message:"you have completed 20 rides. Get a free ride now"
+    // }
 
-      const haversine = `(
-        6371 * acos(cos(radians(${latitude}))* cos(radians(latitude))* cos(radians(longitude) - radians(${longitude}))+ sin(radians(${latitude})) * sin(radians(latitude)))
-      )`;
-      
-      const findDrivers = await db.drivers.findAll({
-        attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
-        where:db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
-        raw: true,
-        order: db.sequelize.col('distance'),
-      });
-      // console.log('----------findDrivers----------',findDrivers);
-
-      let deviceTokens=[];
-      let saveNotify= [];
-        
-      const notify_data= {user_id: req.creds.id,booking_id: 2}
-      
-      for(let i=0;i<findDrivers.length;i++){
-        saveNotify.push(notify_data.driver_id=findDrivers[i].id);
-        deviceTokens.push(findDrivers[i].device_token=findDrivers[i].device_token)
-      }
-      console.log('---------deviceTokens--------',deviceTokens);
-      console.log('---------saveNotify----------',saveNotify);
-    }
-
-    res.status(200).json({code:200,message:"find nearby drivers",data:findDrivers});
+    // let add = await libs.createData(db.offers,data);
+    
+    let getData = await libs.getAllData(db.offers, {where:{ user_id: req.creds.id }});
+    res.status(200).json({code:200,message:"detail of 1 notification",data: getData});
   } catch (err) {
-    console.log('-----err-------',err);
-    res.status(500).json({code:500,message: err.message});
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
 
 
 
-
-
-
-
-module.exports = {numberSignup, numberLogin, logout, userProfile, editUserProfile,deleteUserAccount,calcRideAmount,bookRide,cancelRide,findPreviousRide,findNearbyDrivers };
+module.exports = {numberSignup, numberLogin, logout, userProfile, editUserProfile,deleteUserAccount,calcRideAmount,bookRide,cancelRide,findPreviousRide,//findNearbyDrivers ,
+sendMessage, reportOnDriver, giveRating,support, getNotifications,clearNotifications,getMyRides,getSingleRide,getOffers
+};
 

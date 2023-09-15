@@ -86,6 +86,64 @@ const bookRideValid= async (req,res,next)=>{
     next();
 }
 
+const sendMsgValid= async (req,res,next)=>{
+    let validation = joi.object({
+        receiver_id: joi.number().required(),
+        booking_id: joi.number().required(),
+        message: joi.string().required(),
+    })
+
+    let {error}= validation.validate(req.body);
+    if(error){
+        console.log('-----joi err---',error);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
+    }
+    next();
+}
+
+const reportValid= async (req,res,next)=>{
+    let validation = joi.object({
+        driver_id: joi.number().required(),
+        booking_id: joi.number().required(),
+        report_message: joi.string().required(),
+    })
+
+    let {error}= validation.validate(req.body);
+    if(error){
+        console.log('-----joi err---',error);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
+    }
+    next();
+}
+
+const ratingValid= async (req,res,next)=>{
+    let validation = joi.object({
+        driver_id: joi.number().required(),
+        booking_id: joi.number().required(),
+        star: joi.number().min(1).max(5).required(),
+    })
+
+    let {error}= validation.validate(req.body);
+    if(error){
+        console.log('-----joi err---',error);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
+    }
+    next();
+}
+
+const supportValid= async (req,res,next)=>{
+    let validation = joi.object({
+        email: joi.string().email().required(),
+        message: joi.string().required(),
+    })
+
+    let {error}= validation.validate(req.body);
+    if(error){
+        console.log('-----joi err---',error);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
+    }
+    next();
+}
 
 //--------------Drivers-------------------
 
@@ -139,6 +197,5 @@ const editdriverValid= async (req,res,next)=>{
 }
 
 
-
-module.exports= { signupUserValid,loginUserValid, editUserValid,bookRideValid,signupDriverValid,editdriverValid };
+module.exports= {signupUserValid,loginUserValid,editUserValid,bookRideValid,signupDriverValid,editdriverValid,sendMsgValid,reportValid,ratingValid,supportValid, };
 

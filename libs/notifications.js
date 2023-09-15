@@ -30,8 +30,8 @@ const sendNotify = async (data,deviceToken) => {
     console.log("---------push_data---------",message)
 
     fcm.send(message, function (err, result) {
-        if(err) {console.log("----------err",err)}
-        else{console.log("---------result",result)}
+        if(err) {console.log("-----fcm err-----",err)}
+        else{console.log("-------fcm result----",result)}
     });
 };
 

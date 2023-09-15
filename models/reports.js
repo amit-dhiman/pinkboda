@@ -1,9 +1,7 @@
 'use strict';
-
-const moment = require('moment');
 module.exports = (sequelize, DataTypes) => {
 
-  const Notifications = sequelize.define('notifications', {
+  const Reports = sequelize.define('reports', {
 
     id: {type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
     user_id: {
@@ -16,25 +14,21 @@ module.exports = (sequelize, DataTypes) => {
     },
     booking_id: {
       type: DataTypes.INTEGER,
-      references: { model: 'bookings', key:'id' },
+      references:{model:'bookings',key:'id'},
     },
-    title: { type: DataTypes.STRING },
-    message: { type: DataTypes.STRING },
-    // push_type:{type: DataTypes.ENUM("chat","offers")}
-    created_at: {
-      type: DataTypes.INTEGER,
-    },
+    
+    report_message: { type: DataTypes.STRING},
+
   },{
     paranoid: true,
-    // timestamps:true,
     createdAt: 'created_at',
     updatedAt: "updated_at",
     deletedAt: 'deleted_at',
     defaultScope:{where:{deleted_at: null}},
   })
-  Notifications.beforeCreate((notification) => {
-    notification.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
-  });
 
-  return Notifications;
+  // Users.hasMany(db, { foreignKey: 'user_id' });
+  // Reports.belongsTo(sequelize.model.users, { foreignKey: 'booking_id'});      //, as: 'bookings'
+  return Reports;
 }
+

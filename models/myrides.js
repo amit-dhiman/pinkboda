@@ -1,9 +1,10 @@
 // const db= require('./index');
+const moment = require('moment');
 module.exports = (sequelize, DataTypes) => {
 
-    const Bookings = sequelize.define('bookings', {
+    const myrides = sequelize.define('myrides', {
 
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        id: {type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
 
         pickup_long: { type: DataTypes.FLOAT(10, 6)},
         pickup_lat: { type: DataTypes.FLOAT(10, 6)},
@@ -13,13 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         pickup_address: { type: DataTypes.STRING },
         drop_address: { type: DataTypes.STRING },
 
-        booking_status: { type: DataTypes.ENUM("pending","accept","reject","cancel"),
-        default: "pending"},
-        cancel_reason:{type: DataTypes.STRING },
+        vechile_type: { type: DataTypes.STRING},
+        amount: { type: DataTypes.INTEGER },
 
-        amount: { type: DataTypes.INTEGER, default: 10 },
-        ride_type:{type: DataTypes.ENUM("Ride","Delivery")},
-        driver_gender:{type: DataTypes.ENUM("Male","Female","Both")},
+        ride_status: { type: DataTypes.ENUM("Completed","Cancelled")},
 
         user_id: {
             type: DataTypes.INTEGER,
@@ -29,9 +27,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             references: { model: 'drivers', key: 'id' },
         },
+        booking_id: {
+            type: DataTypes.INTEGER,
+            references: { model:'bookings', key: 'id' },
+        },
         created_at: {
             type: DataTypes.INTEGER,
-          },
+        },
     }, {
         paranoid: true,
         createdAt: 'created_at',
@@ -40,13 +42,13 @@ module.exports = (sequelize, DataTypes) => {
         defaultScope:{where:{deleted_at: null}},
       })
 
-      Bookings.beforeCreate((book) => {
-        book.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
+      myrides.beforeCreate((ride) => {
+        ride.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
       });
-
-    // Bookings.belongsTo(db.users, { foreignKey: 'user_id', as: 'user_id'  });
-    // Bookings.belongsTo(db.drivers, { foreignKey: 'driver_id', as: 'driver_id' });
     
-    return Bookings;
+    // Bookings.belongsTo(db.users,{foreignKey:'user_id',as:'user_id'});
+    // Bookings.belongsTo(db.drivers,{foreignKey:'driver_id',as:'driver_id'});
+    
+    return myrides;
 }
 
