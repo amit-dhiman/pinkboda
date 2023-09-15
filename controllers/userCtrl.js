@@ -107,8 +107,9 @@ const userProfile = async (req, res) => {
 const editUserProfile = async (req, res,next) => {
   try {
     const userData = req.creds;
+    console.log('---------userData----------',userData);
     const {device_type,device_token,gender,username} = req.body;
-    console.log('============',req.body);
+    // console.log('============',req.body);
     console.log('======---file---======',req.file);
     let update = {};
 
@@ -129,7 +130,9 @@ const editUserProfile = async (req, res,next) => {
     if (device_type) { update.device_type = device_type }
     if (device_token) { update.device_token = device_token }
     if(req.file){
-      fs.unlink(`${process.env.user_image_baseUrl}/${userData.image}`,(err)=>{if(err)return})
+      if(userData.image){
+        fs.unlink(`${process.env.user_image_baseUrl}/${userData.image}`,(err)=>{if(err)return})
+      }
       update.image= req.file.filename
     };
     console.log('-----update------',update);
