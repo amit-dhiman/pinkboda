@@ -68,6 +68,9 @@ const numberLogin = async (req, res) => {
       let token_info = { id: getData.id, mobile_number: getData.mobile_number };
 
       let token= await commonFunc.generateAccessToken(getData, token_info, process.env.user_secretKey);
+      if(token.image){
+        token.image = `${process.env.user_image_baseUrl}/${token.image}`
+      }
 
       return SUCCESS.DEFAULT(res, "logged in", token);
     } 
@@ -138,7 +141,9 @@ const editUserProfile = async (req, res,next) => {
     console.log('-----update------',update);
     
     const editProfile = await libs.updateData(userData, update);
-    editProfile.image = `${process.env.user_image_baseUrl}/${editProfile.image}`
+    if(editProfile.image){
+      editProfile.image = `${process.env.user_image_baseUrl}/${editProfile.image}`
+    }
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
   } catch (err) {
@@ -515,7 +520,7 @@ const getOffers = async (req, res) => {
     // let add = await libs.createData(db.offers,data);
     
     let getData = await libs.getAllData(db.offers, {where:{ user_id: req.creds.id }});
-    res.status(200).json({code:200,message:"detail of 1 notification",data: getData});
+    res.status(200).json({code:200,message:"users offer",data: getData});
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }

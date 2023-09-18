@@ -15,9 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     title: {type: DataTypes.STRING},
     message: {type: DataTypes.STRING},
     
-    created_at: {
-      type: DataTypes.INTEGER,
-    }
+    created_at: {type: DataTypes.INTEGER},
+    updated_at: {type: DataTypes.INTEGER}
   },{
     paranoid: true,
     createdAt: 'created_at',
@@ -27,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Offers.beforeCreate((offer) => {
-    offer.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
+    offer.created_at = moment().unix(); // Set created_at to current timestamp in seconds
+    offer.updated_at = moment().unix(); // Set updated_at to current timestamp in seconds
   });
   // Users.hasMany(db, { foreignKey: 'user_id' });
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });

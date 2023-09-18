@@ -185,7 +185,7 @@ const updateDriversLocation = async (req, res) => {
 // To show Accept Or Reject Rides
 
 const pendingListing = async (req, res) => {
-    try {
+    try {   // {where: bookin_id: , booking_status:"pending"}
     //   let pendingList =await libs.getData(db.bookings,{where})
       res.status(200).json({code:204,message:"show pending list",data:pendingList});    
   
@@ -194,10 +194,151 @@ const pendingListing = async (req, res) => {
     }
 };
 
-//  create some Users and Drivers ans then add drivers lat long then test haversine formula and send noti to nearby drivers
+const reportOnUser = async (req, res) => {
+    try {
+        console.log('------req.body---------',req.body);
+        let data= {
+            driver_id: req.creds.id,
+            user_id: req.body.user_id,
+            booking_id: req.body.booking_id,
+            report_message: req.body.report_message,
+        }
+        let saveReport = await libs.createData(db.reports, data);
+        console.log('----saveReport---',saveReport);
+
+        // let saveReport = await libs.getData(db.bookings,{
+        //   where:{id:1},
+        //   include:{model: db.reports }
+        // })
+
+        res.status(200).json({code:200,message:"Reported successfully"});
+    } catch (err) {
+        ERROR.INTERNAL_SERVER_ERROR(res,err);
+    }
+};
+
+const support = async (req, res) => {
+    try {
+      let data= {
+        driver_id: req.creds.id,
+        email: req.body.email,
+        message: req.body.message,
+      }
+      let saveSupport = await libs.createData(db.supports, data);
+      console.log('----saveSupport----',saveSupport);
+  
+      res.status(200).json({code:200,message:"Your messages has been sent successfully"});
+    } catch (err) {
+        console.log('-----err-----------',err);
+      ERROR.INTERNAL_SERVER_ERROR(res,err);
+    }
+};
+
+
+const getNotifications = async (req, res) => {
+    try {
+    //   let data= {
+    //     driver_id: req.creds.id,
+    //     email: "abc@gmail.com",
+    //     message: "hiii",
+    //     title: "chat"
+    //   }
+  
+    //   let save = await libs.createData(db.notifications, data);
+    //   console.log('-----save------',save.toJSON());
+  
+      let getNotify = await libs.getAllData(db.notifications, {where:{driver_id: req.creds.id}});
+  
+      res.status(200).json({code:200,message:"get All Notifications",data: getNotify});
+    } catch (err) {
+      ERROR.INTERNAL_SERVER_ERROR(res,err);
+    }
+};
+
+const clearNotifications = async (req, res) => {
+    try {
+      let getNotify = await libs.destroyData(db.notifications, {where:{driver_id: req.creds.id}});
+  
+      res.status(200).json({code:200,message:"Cleared All Notifications",data: getNotify});
+    } catch (err) {
+      ERROR.INTERNAL_SERVER_ERROR(res,err);
+    }
+};
+
+const getMyRides = async (req, res) => {
+    try {
+    //   let data = {
+    //     "pickup_long": 76.717957,
+    //     "pickup_lat": 30.718521,
+    //     "drop_long": 20.655001,
+    //     "drop_lat": 25.569,
+    //     "pickup_address": "mohali",
+    //     "drop_address": "chandigarh",
+    //     "vechile_type": "Bike",
+    //     "amount": 10,
+    //     "ride_status": "Completed",
+    //     "driver_id": req.creds.id,
+    //     "user_id": 1,
+    //     "booking_id": 1,
+    //   }
+    //   // bookings me se data find kr k rides wali mw save krva do manually api se hi
+    //   let save = await libs.createData(db.myrides,data);
+    //   console.log('-------save--------',save.toJSON());
+      
+      let getRides = await libs.getAllData(db.myrides, {
+        where:{driver_id: req.creds.id},
+        include:[{
+            model: db.users,
+            attributes: ['username','image'],
+        }],
+      });
+        
+        let arr = []
+        if(getRides.length){
+            for(let i=0;i<getRides.length; i++){
+                console.log('-------getRides-----------',getRides[i].toJSON());
+              let getRating = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
+              let jsonData = getRides[i].toJSON();
+              console.log('----------getRating----------',getRating);
+              if(getRating){
+                jsonData.star = getRating.star
+              }
+              arr.push(jsonData)
+            }
+        }
+  
+      res.status(200).json({code:200,message:"My All Rides",data: arr});
+    } catch (err) {
+      ERROR.INTERNAL_SERVER_ERROR(res,err);
+    }
+};
+
+const getSingleRide = async (req, res) => {
+    try {
+      let booking_id = req.query.booking_id;
+  
+      let getOneNotify = await libs.getData(db.myrides, {where:{driver_id: req.creds.id,booking_id:booking_id}});
+  
+    //   let getDriverData = await libs.getData(db.drivers, {where:{id:getOneNotify.driver_id}});
+  
+    //   let edit_data = getOneNotify.toJSON();
+  
+    //   edit_data.driver_username = getDriverData.username
+    //   edit_data.driver_profile_image = getDriverData.profile_image
+  
+    //   let getRating = await libs.getData(db.ratings, {where:{booking_id: booking_id}});
+    //   edit_data.star = getRating.star
+  
+      res.status(200).json({code:200,message:"detail of 1 notification",data: edit_data});
+    } catch (err) {
+      res.status(500).json({code:500,message: err.message});
+    }
+};
+  
 
 
 
 
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,pendingListing, }
+
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide}
 

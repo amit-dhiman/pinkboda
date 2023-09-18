@@ -1,9 +1,8 @@
 'use strict';
 // const db= require('./bookings');
-// console.log('---------db ind------------',db);
+const moment= require('moment');
 
 module.exports = (sequelize, DataTypes) => {
-
   const Users = sequelize.define('users', {
 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -17,6 +16,9 @@ module.exports = (sequelize, DataTypes) => {
     access_token: { type: DataTypes.STRING },
     device_type:{ type:DataTypes.ENUM("android","apple"),default:"android"},
     device_token: { type: DataTypes.STRING },    // token 
+
+    created_at: { type: DataTypes.INTEGER},
+    updated_at: { type: DataTypes.INTEGER},
   },{
     paranoid: true,
     createdAt: 'created_at',
@@ -24,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
     deletedAt: 'deleted_at',
     defaultScope:{where:{deleted_at: null}},
   })
+
+  Users.beforeCreate((user) => {
+    user.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
+    user.updated_at = moment().unix(); // Set createdAt to current timestamp in seconds
+  });
 
   // Users.hasMany(db, { foreignKey: 'user_id' });
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });

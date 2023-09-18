@@ -19,11 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       references:{model:'bookings',key:'id'},
     },
     
-    star: { type: DataTypes.STRING, defaultValue:1},
-    created_at: {
-      type: DataTypes.INTEGER,
-    },
+    star: { type: DataTypes.INTEGER, defaultValue:1},
 
+    created_at: {type: DataTypes.INTEGER},
+    updated_at: {type: DataTypes.INTEGER},
   },{
     paranoid: true,
     createdAt: 'created_at',
@@ -34,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Ratings.beforeCreate((rating) => {
     rating.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
+    rating.updated_at = moment().unix(); // Set createdAt to current timestamp in seconds
   });
   // Users.hasMany(db, { foreignKey: 'user_id' });
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });

@@ -1,10 +1,9 @@
 'use strict';
-
 const moment = require('moment');
+
 module.exports = (sequelize, DataTypes) => {
-
+  
   const Notifications = sequelize.define('notifications', {
-
     id: {type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
     user_id: {
       type: DataTypes.INTEGER,
@@ -21,9 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     title: { type: DataTypes.STRING },
     message: { type: DataTypes.STRING },
     // push_type:{type: DataTypes.ENUM("chat","offers")}
-    created_at: {
-      type: DataTypes.INTEGER,
-    },
+    
+    created_at: { type: DataTypes.INTEGER },
+    updated_at: { type: DataTypes.INTEGER },
   },{
     paranoid: true,
     // timestamps:true,
@@ -34,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
   })
   Notifications.beforeCreate((notification) => {
     notification.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
+    notification.updated_at = moment().unix(); // Set createdAt to current timestamp in seconds
   });
 
   return Notifications;

@@ -31,9 +31,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             references: { model:'bookings', key: 'id' },
         },
-        created_at: {
-            type: DataTypes.INTEGER,
-        },
+        created_at: {type: DataTypes.INTEGER},
+        updated_at: {type: DataTypes.INTEGER},
     }, {
         paranoid: true,
         createdAt: 'created_at',
@@ -44,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 
       myrides.beforeCreate((ride) => {
         ride.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
+        ride.updated_at = moment().unix(); // Set createdAt to current timestamp in seconds
       });
     
     // Bookings.belongsTo(db.users,{foreignKey:'user_id',as:'user_id'});

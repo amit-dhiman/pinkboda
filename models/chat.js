@@ -2,9 +2,8 @@
 // const db= require('./bookings');
 
 module.exports = (sequelize, DataTypes) => {
-
   const Users = sequelize.define('chats', {
-
+    
     id: {type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
     sender_id: {
       type: DataTypes.INTEGER,
@@ -28,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
     deletedAt: 'deleted_at',
     defaultScope:{where:{deleted_at: null}},
   })
+
+  Users.beforeCreate((user) => {
+    user.created_at = moment().unix();        // Set created_at to current timestamp in seconds
+    user.updated_at = moment().unix();        // Set updated_at to current timestamp in seconds
+  });
 
   // Users.hasMany(db, { foreignKey: 'user_id' });
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });

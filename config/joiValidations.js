@@ -103,7 +103,8 @@ const sendMsgValid= async (req,res,next)=>{
 
 const reportValid= async (req,res,next)=>{
     let validation = joi.object({
-        driver_id: joi.number().required(),
+        user_id: joi.number().optional(),
+        driver_id: joi.number().optional(),
         booking_id: joi.number().required(),
         report_message: joi.string().required(),
     })

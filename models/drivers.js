@@ -36,6 +36,11 @@ module.exports = (sequelize, DataTypes) => {
     defaultScope:{where:{deleted_at: null}},
   })
 
+  Drivers.beforeCreate((driver) => {
+    driver.created_at = moment().unix();        // Set createdAt to current timestamp in seconds
+    driver.updated_at = moment().unix();        // Set createdAt to current timestamp in seconds
+  });
+
   // Drivers.hasMany(db.bookings, { foreignKey: 'driver_id' });
   // Drivers.hasMany(Booking, { foreignKey: 'driver_id', as: 'booking_id' }); 
   return Drivers;

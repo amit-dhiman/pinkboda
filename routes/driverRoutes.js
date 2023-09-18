@@ -3,7 +3,7 @@ const router = express.Router();
 const driverCtrl = require('../controllers/driverCtrl');
 const CONFIG = require('../config/scope')
 
-const {signupDriverValid,editdriverValid} = require('../config/joiValidations');
+const {signupDriverValid,editdriverValid,reportValid,supportValid} = require('../config/joiValidations');
 const {verify_token,driver_upload} =require('../libs/commonFunc');
 
 /* GET home page. */
@@ -31,6 +31,17 @@ router.post('/driver/updateDriversLocation', verify_token(CONFIG.SCOPE.drivers),
 
 // router.post('/driver/accept-ride', verify_token(CONFIG.SCOPE.drivers),findRideValid, driverCtrl.findRide);
 
+router.post('/driver/reportOnUser',verify_token(CONFIG.SCOPE.drivers),reportValid, driverCtrl.reportOnUser);
+
+router.post('/driver/support',verify_token(CONFIG.SCOPE.drivers),supportValid, driverCtrl.support);
+
+router.get('/driver/getNotifications',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getNotifications);
+
+router.get('/driver/clearNotifications',verify_token(CONFIG.SCOPE.drivers),driverCtrl.clearNotifications);
+
+router.get('/driver/getMyRides',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getMyRides);
+
+router.get('/driver/getSingleRide',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getSingleRide);
 
 
 
