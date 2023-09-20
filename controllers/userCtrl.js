@@ -56,7 +56,7 @@ const numberSignup = async (req, res) => {
 
 const numberLogin = async (req, res) => {
   try {
-    const {mobile_number,country_code} = req.body;
+    const {mobile_number,country_code,device_type,device_token} = req.body;
     
     if (!(mobile_number.length <= 10)) return res.status(400).json({code:400,error:"mobile number should be less than 10 digits"});
     if (!mobile_number || !country_code) return res.status(400).json({code:400,error:"mobile_number,country_code is Required"});
@@ -66,7 +66,9 @@ const numberLogin = async (req, res) => {
     if (getData) {
 
       let token_info = { id: getData.id, mobile_number: getData.mobile_number };
-
+      if (device_type) { token_info.device_type = device_type }
+      if (device_token) { token_info.device_token = device_token }
+      
       let token= await commonFunc.generateAccessToken(getData, token_info, process.env.user_secretKey);
       if(token.image){
         token.image = `${process.env.user_image_baseUrl}/${token.image}`
@@ -244,7 +246,7 @@ const cancelRide = async (req, res) => {
       id: req.body.booking_id,
       // booking_status:"pending"
     }
-    let updateMsg= await libs.updateData(db.bookings,{cancel_reason:req.body.cancel_reason});
+    let updateMsg= await libs.updateData(db.bookings,{cancel_reason:req.body.cancel_reason, cancelled_by:"User"});
     if(req.body.driver_id){
       let deleteData = await libs.destroyData(db.bookings,{where:query});
       
@@ -256,9 +258,8 @@ const cancelRide = async (req, res) => {
           title:"Ride cancelation",
           message:"your ride has been canceled"
         }
-        let deviceTokens= [req.creds.device_token,getDriverData.device_token];
 
-        const sendNotify= await Notify.sendNotify(data,deviceTokens)
+        const sendNotify= await Notify.sendNotify(data,getDriverData.device_token)
 
         return res.status(200).json({code:200,message:"your ride has been canceled"});
       }
@@ -390,6 +391,20 @@ const giveRating = async (req, res) => {
     let saveRatings = await libs.createData(db.ratings, data);
     console.log('----saveRatings----',saveRatings);
 
+    let getRatings = await libs.getAllData(db.ratings, {where:{ driver_id: req.creds.id}});
+
+    if(getRatings){
+      let totalStars = 0;
+      for (const item of getRatings) {
+        totalStars += item.star;
+      }
+
+      const averageRating = totalStars / getRatings.length;
+      console.log("Average Star Rating:", averageRating);
+
+      await libs.updateData(db.drivers,{over_all_rating: averageRating.toFixed(2)},{where:{ id:req.body.driver_id }});
+    }
+
     res.status(200).json({code:200,message:"Rating successful"});
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -474,9 +489,11 @@ const getMyRides = async (req, res) => {
 
     let arr = []
     for(let i=0;i<getRides.length; i++){
-      let a = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
+      let getRating = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
       let jsonData = getRides[i].toJSON();
-      jsonData.star = a.star
+      if(getRating){
+        jsonData.star = getRating.star
+      }
       arr.push(jsonData) 
     }
 
@@ -486,7 +503,7 @@ const getMyRides = async (req, res) => {
   }
 };
 
-
+ 
 const getSingleRide = async (req, res) => {
   try {
     let booking_id = req.query.booking_id;
@@ -499,9 +516,10 @@ const getSingleRide = async (req, res) => {
 
     edit_data.driver_username = getDriverData.username
     edit_data.driver_profile_image = getDriverData.profile_image
+    edit_data.star = null
 
     let getRating = await libs.getData(db.ratings, {where:{booking_id: booking_id}});
-    edit_data.star = getRating.star
+    if(getRating){edit_data.star = getRating.star}
 
     res.status(200).json({code:200,message:"detail of 1 notification",data: edit_data});
   } catch (err) {
@@ -518,10 +536,13 @@ const getOffers = async (req, res) => {
     // }
 
     // let add = await libs.createData(db.offers,data);
+
+    // // let del = await libs.destroyData(db.offers,{where:{user_id:req.creds.id}})
     
     let getData = await libs.getAllData(db.offers, {where:{ user_id: req.creds.id }});
     res.status(200).json({code:200,message:"users offer",data: getData});
   } catch (err) {
+    console.log('------err---------',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };

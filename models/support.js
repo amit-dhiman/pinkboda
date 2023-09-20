@@ -10,10 +10,20 @@ module.exports = (sequelize, DataTypes) => {
     driver_id:{ type: DataTypes.INTEGER, references:{model:'drivers',key:'id'}},
    
     message: { type: DataTypes.STRING, defaultValue:1},
-
-    created_at: {type: DataTypes.INTEGER},
-    updated_at: {type: DataTypes.INTEGER},
-  },{
+    created_at:{type: DataTypes.BIGINT},
+    updated_at:{type: DataTypes.BIGINT},
+    deleted_at: {type: DataTypes.BIGINT},
+    },{
+        hooks: {
+          beforeValidate: (instance, options) => {
+          instance.created_at = +new Date(Date.now());
+          instance.updated_at = +new Date(Date.now());
+          },
+        },
+        beforeDestroy: (instance, options) => {
+          instance.deleted_at = +new Date(Date.now())
+        },
+        timestamps: true,
     paranoid: true,
     createdAt: 'created_at',
     updatedAt: "updated_at",
@@ -21,10 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     defaultScope:{where:{deleted_at: null}},
   })
 
-  Supports.beforeCreate((support) => {
-    support.created_at = moment().unix(); // Set created_at to current timestamp in seconds
-    support.updated_at = moment().unix(); // Set updated_at to current timestamp in seconds
-  });
+  // Supports.beforeCreate((support) => {
+  //   support.created_at = moment().unix(); // Set created_at to current timestamp in seconds
+  //   support.updated_at = moment().unix(); // Set updated_at to current timestamp in seconds
+  // });
 
   // Users.hasMany(db, { foreignKey: 'user_id' });
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });

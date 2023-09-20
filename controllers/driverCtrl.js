@@ -6,6 +6,7 @@ const CONFIG = require('../config/scope');
 const ERROR= require('../config/responseMsgs').ERROR;
 const SUCCESS= require('../config/responseMsgs').SUCCESS;
 const fs = require('fs');
+const Notify = require('../libs/notifications');
 
 
 const driverSignup = async (req, res) => {
@@ -68,36 +69,44 @@ const driverSignup = async (req, res) => {
 
 const login = async(req,res) => {
     try {
-        const {country_code, mobile_number,device_type,device_token} = req.body;
-        if(!country_code || !mobile_number){
-            return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
-        }
-        console.log('---------country_code---------',country_code);
-        const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
-        console.log('-----2');
-        if(!getData){
-            return res.status(400).json({code:400,message:"mobile number does't exist"})
-        }
-        if(getData.is_admin_verified=="pending"){
-            return res.status(400).json({code:400,message:"your previous request is still pending"})
-        }
-        if(getData.is_admin_verified=="rejected"){
-            return res.status(400).json({code:400,message:"your previous request has been rejected"})
-        }
+      const {country_code, mobile_number,device_type,device_token} = req.body;
+      if(!country_code || !mobile_number){
+          return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
+      }
+      console.log('---------country_code---------',country_code);
+      const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
+      console.log('-----2');
+      if(!getData){
+          return res.status(400).json({code:400,message:"mobile number does't exist"})
+      }
+      if(getData.is_admin_verified=="pending"){
+          return res.status(400).json({code:400,message:"your previous request is still pending"})
+      }
+      if(getData.is_admin_verified=="rejected"){
+          return res.status(400).json({code:400,message:"your previous request has been rejected"})
+      }
 
-        if(getData.is_admin_verified=="accepted"){
-            let token_info = { id: getData.id, mobile_number: getData.mobile_number };
+      if(getData.is_admin_verified=="accepted"){
+        let token_info = { id: getData.id, mobile_number: getData.mobile_number };
 
-            if (device_type) { token_info.device_type = device_type }
-            if (device_token) { token_info.device_token = device_token }
-    
-            let token = await commonFunc.generateAccessToken(getData, token_info, process.env.driver_secretKey);
-    
-            return SUCCESS.DEFAULT(res,"login successfully", token)
-        }
-        res.status(400).json({code:400,message:"your previous request is null check db"})
+        if (device_type) { token_info.device_type = device_type }
+        if (device_token) { token_info.device_token = device_token }
+
+        let token = await commonFunc.generateAccessToken(getData, token_info, process.env.driver_secretKey);
+
+
+        if(token.profile_image){token.profile_image= `${process.env.driver_image_baseUrl}/${token.profile_image}`}
+        if(token.license){token.license= `${process.env.driver_image_baseUrl}/${token.license}`}
+        if(token.id_card){token.id_card= `${process.env.driver_image_baseUrl}/${token.id_card}`}
+        if(token.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}/${token.passport_photo}`}
+        if(token.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}/${token.vechile_insurance}`}
+
+
+        return SUCCESS.DEFAULT(res,"login successfully", token)
+      }
+      res.status(400).json({code:400,message:"your previous request is null check db"})
     } catch (err) {
-        ERROR.INTERNAL_SERVER_ERROR(res, err);
+      ERROR.INTERNAL_SERVER_ERROR(res, err);
     }
 }
 
@@ -139,21 +148,31 @@ const editDriverProfile = async (req, res,next) => {
   
       if(req.files){
         for(let key in req.files){
-            fs.unlink(`${process.env.driver_image_baseUrl}/${userData[key]}`,(err)=>{if(err)return})
-            update[key] = req.files[key][0].filename
+          fs.unlink(`${process.env.driver_image_baseUrl}/${userData[key]}`,(err)=>{if(err)return})
+          update[key] = req.files[key][0].filename
         }
       } 
-      console.log('---------update----------',update);
+      console.log('---------req.files----------',req.files);
       const editProfile = await libs.updateData(userData, update);
+
+      if(editProfile.license && !req.files.license){editProfile.license= `${process.env.driver_image_baseUrl}/${editProfile.license}`}
+
+      if(editProfile.id_card && !req.files.id_card){editProfile.id_card= `${process.env.driver_image_baseUrl}/${editProfile.id_card}`}
+
+      if(editProfile.passport_photo && !req.files.passport_photo){editProfile.passport_photo= `${process.env.driver_image_baseUrl}/${editProfile.passport_photo}`}
+
+      if(editProfile.vechile_insurance && !req.files.vechile_insurance){editProfile.vechile_insurance= `${process.env.driver_image_baseUrl}/${req.files.vechile_insurance}`}
+
       if(req.files){
         for(let key in req.files){
-            editProfile[key] = `${process.env.driver_image_baseUrl}/${req.files[key][0].filename}`
+          editProfile[key] = `${process.env.driver_image_baseUrl}/${req.files[key][0].filename}`
         }
       }
+
       return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
     } catch (err) {
         if(req.files){
-            Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
+          Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
         }
       ERROR.INTERNAL_SERVER_ERROR(res, err);
     }
@@ -180,6 +199,54 @@ const updateDriversLocation = async (req, res) => {
     } catch (err) {
       ERROR.ERROR_OCCURRED(res, err);
     }
+};
+
+
+const cancelRide = async (req, res) => {
+  try {
+    let query= {
+      driver_id: req.creds.id,
+      id: req.body.booking_id,
+      // booking_status:"pending"
+    }
+    let updateMsg= await libs.updateData(db.bookings,{cancel_reason: req.body.cancel_reason, cancelled_by:"Driver"});
+    let deleteData = await libs.destroyData(db.bookings,{where:query});
+    
+    if(deleteData){
+      let getUserData= await libs.getData(db.users,{id:req.body.user_id});
+
+      //  ---------send notification----------
+      let notifyData = {
+        title: "Ride cancelation",
+        message: "your ride has been canceled",
+        user_id: req.body.user_id,
+        driver_id: req.creds.id,
+        booking_id: req.body.booking_id
+      }
+
+      const sendNotify= await Notify.sendNotifyToUser(notifyData,getUserData.device_token);
+      console.log('-----sendNotify---------',sendNotify);
+
+      // notifyData
+
+      const saveNotify= await libs.createData(db.notifications,notifyData)
+
+      return res.status(200).json({code:200,message:"your ride has been canceled"});
+    }
+    res.status(200).json({code:200,message:"cant cancelled the ride or maybe wrong boooking id"});
+  } catch (err) {
+    res.status(500).json({code:500,message:err.message});
+  }
+};
+
+const endRide = async (req, res) => {
+  try {
+
+    res.status(200).json({code:200,message:"Your ride has been sent successfully"});
+  } catch (err) {
+    console.log('-----err-------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
 };
 
 // To show Accept Or Reject Rides
@@ -267,45 +334,44 @@ const clearNotifications = async (req, res) => {
 
 const getMyRides = async (req, res) => {
     try {
-    //   let data = {
-    //     "pickup_long": 76.717957,
-    //     "pickup_lat": 30.718521,
-    //     "drop_long": 20.655001,
-    //     "drop_lat": 25.569,
-    //     "pickup_address": "mohali",
-    //     "drop_address": "chandigarh",
-    //     "vechile_type": "Bike",
-    //     "amount": 10,
-    //     "ride_status": "Completed",
-    //     "driver_id": req.creds.id,
-    //     "user_id": 1,
-    //     "booking_id": 1,
-    //   }
-    //   // bookings me se data find kr k rides wali mw save krva do manually api se hi
-    //   let save = await libs.createData(db.myrides,data);
-    //   console.log('-------save--------',save.toJSON());
+      // let data = {
+      //   "pickup_long": 76.717957,
+      //   "pickup_lat": 30.718521,
+      //   "drop_long": 20.655001,
+      //   "drop_lat": 25.569,
+      //   "pickup_address": "mohali",
+      //   "drop_address": "chandigarh",
+      //   "vechile_type": "Bike",
+      //   "amount": 10,
+      //   "ride_status": "Completed",
+      //   "driver_id": req.creds.id,
+      //   "user_id": 1,
+      //   "booking_id": 1,
+      // }
+      // // bookings me se data find kr k rides wali mw save krva do manually api se hi
+      // let save = await libs.createData(db.myrides,data);
+      // console.log('-------save--------',save.toJSON());
       
       let getRides = await libs.getAllData(db.myrides, {
         where:{driver_id: req.creds.id},
         include:[{
-            model: db.users,
-            attributes: ['username','image'],
+          model: db.users,
+          attributes: ['username','image'],
         }],
       });
         
-        let arr = []
-        if(getRides.length){
-            for(let i=0;i<getRides.length; i++){
-                console.log('-------getRides-----------',getRides[i].toJSON());
-              let getRating = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
-              let jsonData = getRides[i].toJSON();
-              console.log('----------getRating----------',getRating);
-              if(getRating){
-                jsonData.star = getRating.star
-              }
-              arr.push(jsonData)
-            }
+      let arr = []
+      if(getRides.length){
+        for(let i=0;i<getRides.length; i++){
+          let getRating = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
+          let jsonData = getRides[i].toJSON();
+          if(jsonData.user.image){jsonData.user.image= `${process.env.user_image_baseUrl}/${jsonData.user.image}`}
+
+          if(getRating){ jsonData.star = getRating.star }
+
+          arr.push(jsonData)
         }
+      }
   
       res.status(200).json({code:200,message:"My All Rides",data: arr});
     } catch (err) {
@@ -314,31 +380,92 @@ const getMyRides = async (req, res) => {
 };
 
 const getSingleRide = async (req, res) => {
-    try {
-      let booking_id = req.query.booking_id;
-  
-      let getOneNotify = await libs.getData(db.myrides, {where:{driver_id: req.creds.id,booking_id:booking_id}});
-  
-    //   let getDriverData = await libs.getData(db.drivers, {where:{id:getOneNotify.driver_id}});
-  
-    //   let edit_data = getOneNotify.toJSON();
-  
-    //   edit_data.driver_username = getDriverData.username
-    //   edit_data.driver_profile_image = getDriverData.profile_image
-  
-    //   let getRating = await libs.getData(db.ratings, {where:{booking_id: booking_id}});
-    //   edit_data.star = getRating.star
-  
-      res.status(200).json({code:200,message:"detail of 1 notification",data: edit_data});
-    } catch (err) {
-      res.status(500).json({code:500,message: err.message});
+  try {
+    let booking_id = req.query.booking_id;
+
+    let getOneNotify = await libs.getData(db.myrides, {where:{driver_id: req.creds.id,booking_id:booking_id}});
+    if(!getOneNotify){
+      res.status(404).json({code:404,message:"notification not found",data: getOneNotify });
     }
+
+    let getUserData = await libs.getData(db.users, {where:{id: getOneNotify.user_id}});
+
+    let edit_data = getOneNotify.toJSON();
+
+    edit_data.user_username = getUserData.username;
+    edit_data.user_profile_image = getUserData.profile_image;
+    edit_data.star= null;
+
+    let getRating = await libs.getData(db.ratings, {where:{booking_id: booking_id}});
+    if(getRating){edit_data.star = getRating.star}
+
+    res.status(200).json({code:200,message:"detail of 1 notification",data: edit_data });
+  } catch (err) {
+    console.log('--------err--------',err);
+    res.status(500).json({code:500,message: err.message,error:err});
+  }
 };
+
+const getTotalRatings = async (req, res) => {
+  try {
+    let getNotify = await libs.getAllData(db.ratings, {
+      where:{ driver_id: req.creds.id},
+      include:[{
+        model: db.users,
+        attributes: ["username","image"]
+    }]
+    });
+
+    const allRatings = getNotify.map(item => {
+      if(item.user.image){item.user.image=`${process.env.user_image_baseUrl}/${item.user.image}`}
+      return item;
+    });
+
+    function calculateStarPercentages(data) {
+      const totalRatings = data.length;
+      const starCounts = [0, 0, 0, 0, 0]; 
   
+      for (const item of data) {
+        starCounts[item.star - 1]++;
+      }
+  
+      const starPercentages = starCounts.map(count => (count / totalRatings) * 100);
+      return starPercentages;
+    }
+  
+    const starPercentages = calculateStarPercentages(allRatings);
+
+    let obj = {
+      star_5: starPercentages[4] || 0,
+      star_4: starPercentages[3] || 0,
+      star_3: starPercentages[2] || 0,
+      star_2: starPercentages[1] || 0,
+      star_1: starPercentages[0] || 0,
+    };
+
+
+    let totalStars = 0;
+
+    for (const item of allRatings) {
+      totalStars += item.star;
+    }
+
+    const averageRating = totalStars / allRatings.length;
+    console.log("Average Star Rating:", averageRating);
+
+    res.status(200).json({code:200,message:"get All Ratings",
+    overAllRating: averageRating, 
+    totalReviews:allRatings.length,
+    percentageData: obj,
+    data: allRatings
+    });
+  } catch (err) {
+    console.log('------err--------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
 
 
 
-
-
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide}
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings}
 

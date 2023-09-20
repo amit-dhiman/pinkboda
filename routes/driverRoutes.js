@@ -30,6 +30,9 @@ router.get('/driver/pendingListing', verify_token(CONFIG.SCOPE.drivers),driverCt
 router.post('/driver/updateDriversLocation', verify_token(CONFIG.SCOPE.drivers),driverCtrl.updateDriversLocation);
 
 // router.post('/driver/accept-ride', verify_token(CONFIG.SCOPE.drivers),findRideValid, driverCtrl.findRide);
+router.post('/driver/cancel-ride',verify_token(CONFIG.SCOPE.drivers),driverCtrl.cancelRide);
+
+router.post('/driver/endRide',verify_token(CONFIG.SCOPE.drivers),driverCtrl.endRide);
 
 router.post('/driver/reportOnUser',verify_token(CONFIG.SCOPE.drivers),reportValid, driverCtrl.reportOnUser);
 
@@ -42,6 +45,8 @@ router.get('/driver/clearNotifications',verify_token(CONFIG.SCOPE.drivers),drive
 router.get('/driver/getMyRides',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getMyRides);
 
 router.get('/driver/getSingleRide',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getSingleRide);
+
+router.get('/driver/getTotalRatings',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getTotalRatings);
 
 
 

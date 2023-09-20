@@ -12,12 +12,17 @@ const generateAccessToken = async (saveData, token_info, secret_key) => {
   try {
     console.log('-----------token_info-----------',token_info);
 
-    const gen_token = jwt.sign(token_info,secret_key);
+    let tokenPayload = {...token_info};
+    if(tokenPayload.device_token){delete tokenPayload.device_token}
+
+    const gen_token = jwt.sign(tokenPayload,secret_key);
 
     let update = { access_token: gen_token };
 
     if (token_info.device_token) { update.device_token = token_info.device_token }
-    if (token_info.device_type) { update.device_type = token_info.device_type }
+    if (token_info.device_type) { update.device_type = token_info.device_type };
+
+    console.log('---------token_info----------',token_info);
 
     let updatedData= await libs.setData(saveData,update);
     return updatedData;

@@ -1,6 +1,6 @@
 'use strict';
 // const db= require('./index');
-
+const moment = require('moment')
 module.exports = (sequelize, DataTypes) => {
 
   const Drivers = sequelize.define('drivers', {
@@ -24,11 +24,27 @@ module.exports = (sequelize, DataTypes) => {
     year:{ type:DataTypes.INTEGER },
 
     is_admin_verified:{type:DataTypes.ENUM("accepted","rejected","pending"),default:"accepted"},
+    over_all_rating: { type: DataTypes.STRING },
+    driving_status:{ type: DataTypes.ENUM("Online","Offline")},
 
     access_token: { type: DataTypes.STRING },
     device_type:{type:DataTypes.ENUM("android","apple"),default:"android"},
-    device_token: { type: DataTypes.STRING },    // token 
-  }, {
+    device_token: { type: DataTypes.STRING },
+
+    created_at:{type: DataTypes.BIGINT},
+    updated_at:{type: DataTypes.BIGINT},
+    deleted_at: {type: DataTypes.BIGINT},
+    },{
+        hooks: {
+          beforeValidate: (instance, options) => {
+          instance.created_at = +new Date(Date.now());
+          instance.updated_at = +new Date(Date.now());
+          },
+        },
+        beforeDestroy: (instance, options) => {
+          instance.deleted_at = +new Date(Date.now())
+        },
+        timestamps: true,
     paranoid: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
@@ -36,10 +52,10 @@ module.exports = (sequelize, DataTypes) => {
     defaultScope:{where:{deleted_at: null}},
   })
 
-  Drivers.beforeCreate((driver) => {
-    driver.created_at = moment().unix();        // Set createdAt to current timestamp in seconds
-    driver.updated_at = moment().unix();        // Set createdAt to current timestamp in seconds
-  });
+  // Drivers.beforeCreate((driver) => {
+  //   driver.created_at = moment().unix();        // Set createdAt to current timestamp in seconds
+  //   driver.updated_at = moment().unix();        // Set createdAt to current timestamp in seconds
+  // });
 
   // Drivers.hasMany(db.bookings, { foreignKey: 'driver_id' });
   // Drivers.hasMany(Booking, { foreignKey: 'driver_id', as: 'booking_id' }); 

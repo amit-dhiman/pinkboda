@@ -31,21 +31,27 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             references: { model:'bookings', key: 'id' },
         },
-        created_at: {type: DataTypes.INTEGER},
-        updated_at: {type: DataTypes.INTEGER},
-    }, {
-        paranoid: true,
-        createdAt: 'created_at',
-        updatedAt: "updated_at",
-        deletedAt: 'deleted_at',
-        defaultScope:{where:{deleted_at: null}},
-      })
+        created_at:{type: DataTypes.BIGINT},
+        updated_at:{type: DataTypes.BIGINT},
+        deleted_at: {type: DataTypes.BIGINT},
+        },{
+        hooks: {
+          beforeValidate: (instance, options) => {
+          instance.created_at = +new Date(Date.now());
+          instance.updated_at = +new Date(Date.now());
+          },
+        },
+        beforeDestroy: (instance, options) => {
+          instance.deleted_at = +new Date(Date.now())
+        },
+        timestamps: true,
+            paranoid: true,
+            createdAt: 'created_at',
+            updatedAt: "updated_at",
+            deletedAt: 'deleted_at',
+            defaultScope:{where:{deleted_at: null}},
+        })
 
-      myrides.beforeCreate((ride) => {
-        ride.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
-        ride.updated_at = moment().unix(); // Set createdAt to current timestamp in seconds
-      });
-    
     // Bookings.belongsTo(db.users,{foreignKey:'user_id',as:'user_id'});
     // Bookings.belongsTo(db.drivers,{foreignKey:'driver_id',as:'driver_id'});
     
