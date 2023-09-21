@@ -1,5 +1,7 @@
 const {Sequelize} = require('sequelize');
 require('dotenv').config();
+// const libs = require('../libs/queries');
+// const db = require('../models/index');
 
 const sequelize = new Sequelize(process.env.database,process.env.user_name,process.env.password,{
   host: process.env.host,
@@ -24,6 +26,8 @@ sequelize.sync({ force: false }).then(() => {
   console.log('----re sync err---', err);
   throw err
 })
+
+
 
 
 module.exports= sequelize;

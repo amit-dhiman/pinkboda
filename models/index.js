@@ -8,6 +8,7 @@ db.sequelize= sequelize;
 db.DataTypes= DataTypes;
 
 db.users = require('./users')(sequelize, DataTypes);
+db.admins = require('./admins')(sequelize, DataTypes);
 db.drivers = require('./drivers')(sequelize, DataTypes);
 db.bookings = require('./bookings')(sequelize, DataTypes);
 db.notifications = require('./notifications')(sequelize, DataTypes);
@@ -18,7 +19,6 @@ db.ratings = require('./ratings')(sequelize, DataTypes);
 db.supports = require('./support')(sequelize, DataTypes);
 db.myrides = require('./myrides')(sequelize, DataTypes);
 db.offers = require('./offers')(sequelize, DataTypes);
-
 
 
 
@@ -93,6 +93,4 @@ db.myrides.belongsTo(db.bookings,{foreignKey:"booking_id"})
 
 
 
-
 module.exports = db;
-

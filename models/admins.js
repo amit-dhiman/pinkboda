@@ -1,21 +1,19 @@
 'use strict';
-// const db= require('./bookings');
-const moment= require('moment');
-
 module.exports = (sequelize, DataTypes) => {
-  const Users = sequelize.define('users', {
+  const Admin = sequelize.define('admins', {
 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    username:{ type: DataTypes.STRING },
-    gender:{ type: DataTypes.ENUM("Male","Female","Others"),default:"Male" },
-
+    full_name:{ type: DataTypes.STRING },
     mobile_number: {type: DataTypes.STRING},
     country_code:{type: DataTypes.STRING},
-    image: { type: DataTypes.STRING },
+    profile_image: { type: DataTypes.STRING },
+    email: { type: DataTypes.STRING },
+    password: { type: DataTypes.STRING },
     
     access_token: { type: DataTypes.STRING },
-    device_type:{ type:DataTypes.ENUM("Android","Apple"),default:"Android"},
+    device_type:{ type:DataTypes.ENUM("Android","Apple","Windows"),default:"Android"},
     device_token: { type: DataTypes.STRING },
+
     created_at:{type: DataTypes.BIGINT},
     updated_at:{type: DataTypes.BIGINT},
     deleted_at: {type: DataTypes.BIGINT},
@@ -38,9 +36,8 @@ module.exports = (sequelize, DataTypes) => {
   })
 
 
-  // Users.hasMany(db, { foreignKey: 'user_id' });
-  // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });
+  // Admin.hasMany(db, { foreignKey: 'user_id' });
+  // Admin.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });
   
-  return Users;
+  return Admin;
 }
-

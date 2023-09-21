@@ -16,9 +16,9 @@ module.exports = (sequelize, DataTypes) => {
         booking_status: { type: DataTypes.ENUM("pending","accept","reject","cancel"),
         default: "pending"},
         cancel_reason:{type: DataTypes.STRING },
-        cancelled_by:{ type: DataTypes.ENUM("Driver","User") },
+        cancelled_by:{ type: DataTypes.ENUM("Driver","User")},
 
-        amount: { type: DataTypes.INTEGER, default: 10 },
+        amount: { type: DataTypes.INTEGER, default: 10},
         ride_type:{type: DataTypes.ENUM("Ride","Delivery")},
         driver_gender:{type: DataTypes.ENUM("Male","Female","Both")},
 

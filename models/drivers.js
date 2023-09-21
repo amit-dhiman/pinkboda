@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     driving_status:{ type: DataTypes.ENUM("Online","Offline")},
 
     access_token: { type: DataTypes.STRING },
-    device_type:{type:DataTypes.ENUM("android","apple"),default:"android"},
+    device_type:{type:DataTypes.ENUM("Android","Apple"),default:"Android"},
     device_token: { type: DataTypes.STRING },
 
     created_at:{type: DataTypes.BIGINT},

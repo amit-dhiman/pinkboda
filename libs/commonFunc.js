@@ -54,9 +54,7 @@ const verify_token = (scope) => {
       if(creds){
         req.creds = creds;
         next();
-      }else{
-        return ERROR.UNAUTHORIZED(res)
-      }
+      }else{return ERROR.UNAUTHORIZED(res)}
     }else{ return ERROR.INVALID_TOKEN(res);}
     } catch (err) {
       return ERROR.ERROR_OCCURRED(res,err)

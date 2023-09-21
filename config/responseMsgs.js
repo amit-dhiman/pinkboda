@@ -35,7 +35,10 @@ exports.ERROR ={
         type: 'SOCIAL_KEY_NOT_EXSIST'
     },
     TOKEN_REQUIRED:(res)=>{
-        return res.status(407).json("Token is Required") 
+        return res.status(407).json({
+            code: 407,
+            message: "Token is Required",
+        })
     },
     INVALID_TOKEN:(res)=>{
         return res.status(407).json('invalid token please check again') 

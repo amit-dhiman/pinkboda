@@ -4,8 +4,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 require('./models/db');
-const indexRouter = require('./routes/userRoute');
-const driverRouter = require('./routes/index');
+require('./models/index');
+const Router = require('./routes/index');
+
 
 
 // view engine setup
@@ -19,9 +20,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/', indexRouter, driverRouter.driverRoutes);
+app.use('/', Router.userRoutes, Router.driverRoutes,Router.adminRoutes);
 // app.use('/driver', driverRouter.driverRoutes);
-
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -33,5 +33,10 @@ app.use(function(err, req, res, next) {
   // res.status(err.status || 500).json(err);
   // res.render('error');
 });
+
+
+
+
+
 
 module.exports = app;

@@ -7,7 +7,7 @@ const {signupDriverValid,editdriverValid,reportValid,supportValid} = require('..
 const {verify_token,driver_upload} =require('../libs/commonFunc');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/driver', function(req, res, next) {
   console.log('-----driver-------');
   res.render('index', { title: 'driver' });
 });

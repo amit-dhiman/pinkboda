@@ -7,7 +7,7 @@ const signupUserValid= async (req,res,next)=>{
         country_code: joi.string().required(),
         mobile_number: joi.string().required(),
         gender: joi.string().required(),
-        device_type: joi.string().valid("android","apple",).optional(),
+        device_type: joi.string().valid("Android","Apple",).optional(),
         device_token: joi.string().optional(),
     })
 
@@ -39,7 +39,7 @@ const loginUserValid= async (req,res,next)=>{
 // const socialloginUserValid= async (req,res,next)=>{
 //     let validation = joi.object({
 //         social_key: joi.string().required(),
-//         device_type: joi.string().valid("android","apple").optional(),
+//         device_type: joi.string().valid("Android","Apple").optional(),
 //         device_token: joi.string().optional(),
 //     })
 
@@ -163,7 +163,7 @@ const signupDriverValid= async (req,res,next)=>{
         year: joi.number().optional(),
         
         device_token: joi.string().optional(),
-        device_type: joi.string().valid("android","apple").optional(),
+        device_type: joi.string().valid("Android","Apple").optional(),
     })
 
     let {error}= validation.validate(req.body);
