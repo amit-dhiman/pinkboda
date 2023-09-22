@@ -1,6 +1,5 @@
 'use strict';
 // const db= require('./bookings');
-const moment= require('moment');
 
 module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define('users', {
@@ -12,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
     mobile_number: {type: DataTypes.STRING},
     country_code:{type: DataTypes.STRING},
     image: { type: DataTypes.STRING },
+
+    total_rides:{ type: DataTypes.INTEGER },   //may be it will be updated by end ride time
+    action: { type: DataTypes.ENUM("Enable","Disable")},
     
     access_token: { type: DataTypes.STRING },
     device_type:{ type:DataTypes.ENUM("Android","Apple"),default:"Android"},

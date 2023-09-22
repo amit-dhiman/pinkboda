@@ -19,6 +19,8 @@ router.get('/admin/getAllDrivers',verify_token(CONFIG.SCOPE.admins), adminCtrl.g
 
 router.get('/admin/getAllRiders',verify_token(CONFIG.SCOPE.admins), adminCtrl.getAllRiders);
 
+router.post('/admin/actionOnDriver',verify_token(CONFIG.SCOPE.admins), adminCtrl.actionOnDriver);
+
 
 
 

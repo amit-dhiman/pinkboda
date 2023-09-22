@@ -1,5 +1,4 @@
 // const db= require('./index');
-const moment = require('moment');
 module.exports = (sequelize, DataTypes) => {
 
     const myrides = sequelize.define('myrides', {

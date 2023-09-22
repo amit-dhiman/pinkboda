@@ -52,6 +52,15 @@ const getAllData = async (model, query) => {
     }
 }
 
+const getLimitData = async (model, query,skp) => {
+    try {
+        let getData= await model.findAll(query).limit(10).skip(skp);
+        return getData;
+    } catch (err) {
+        throw err;
+    }
+}
+
 const checkEmail = async (model, email) => {
     try {
         let getData= await model.findOne({where:{email:email.toLowerCase()}});
@@ -80,16 +89,7 @@ const destroyData = async (model, query) => {
 
 
 
-
-
-
-
-
-
 module.exports={ 
-    createData,
-    getData,checkEmail,updateData,
-    setData,findAndUpdate,destroyData,getAllData
-
+    createData,getData,checkEmail,updateData,setData,findAndUpdate,destroyData,getAllData,getLimitData
 };
 

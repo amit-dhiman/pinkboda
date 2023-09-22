@@ -27,9 +27,9 @@ const login = async(req, res) => {
       if (getData) {
         let checkPswrd = await commonFunc.compPassword(password, getData.password)
         if(!checkPswrd){
-            if(getData.password != password){
-                res.status(400).json({code:400,message:"password not match"})
-            }
+          if(getData.password != password){
+            res.status(400).json({code:400,message:"password not match"})
+          }
         }
 
         let token_info = { id: getData.id, email: getData.email };
@@ -84,22 +84,28 @@ const changePassword = async (req, res) => {
 const logout = async (req, res) => {
     try {
         const logoutUser = await libs.updateData(req.creds,{access_token:null});
+        if(!logoutUser){
+          res.status(400).json({code:400,message:"no user ound with this token"})
+        }
 
         return SUCCESS.DEFAULT(res,logoutUser);
     } catch (err) {
-        return res.status(500).json(err.message);
+        res.status(5).json({code:500,message:"password not match"})
     }
 };
 
 
 const getAllUsers = async (req, res) => {
-    try {
-        
-      res.status(200).json({code:200,message:"Your ride has been sent successfully"});
-    } catch (err) {
-      console.log('-----err-------',err);
-      ERROR.INTERNAL_SERVER_ERROR(res,err);
-    }
+  try {
+    let skp = req.body.skip || 0;
+    let getDrivers= await libs.getLimitData(db.drivers,{},skp);
+    let getUsers= await libs.getLimitData(db.users,{},skp);
+
+    res.status(200).json({code:200,message:"ALL Drivers and Riders",data:[...getDrivers,...getUsers]});
+  } catch (err) {
+    console.log('-----err-------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
 };
 
 const getAllDrivers = async (req, res) => {
@@ -122,8 +128,18 @@ const getAllRiders = async (req, res) => {
     }
 };
 
+const actionOnDriver = async (req, res) => {
+  try {
+    let query= req.body.driver_id;
+    let saveAction= await libs.findAndUpdate(db.drivers,query,{action:req.body.action});
+    res.status(200).json({code:200,message:saveAction.action});
+  } catch (err) {
+    console.log('---err---',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
 
 
 
-module.exports= {addAdmin,login,changePassword,logout,getAllUsers,getAllDrivers,getAllRiders,}
+module.exports= {addAdmin,login,changePassword,logout,getAllUsers,getAllDrivers,getAllRiders,actionOnDriver}
 

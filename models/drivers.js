@@ -1,6 +1,5 @@
 'use strict';
 // const db= require('./index');
-const moment = require('moment')
 module.exports = (sequelize, DataTypes) => {
 
   const Drivers = sequelize.define('drivers', {
@@ -26,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     is_admin_verified:{type:DataTypes.ENUM("accepted","rejected","pending"),default:"accepted"},
     over_all_rating: { type: DataTypes.STRING },
     driving_status:{ type: DataTypes.ENUM("Online","Offline")},
+
+    total_rides: { type: DataTypes.INTEGER },
+    action: { type: DataTypes.ENUM("Enable","Disable")},
 
     access_token: { type: DataTypes.STRING },
     device_type:{type:DataTypes.ENUM("Android","Apple"),default:"Android"},
