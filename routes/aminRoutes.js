@@ -11,7 +11,8 @@ const {verify_token,upload} =require('../libs/commonFunc');
 router.get('/addAdmin', adminCtrl.addAdmin);
 router.post('/admin/login', adminCtrl.login);
 router.post('/admin/changePassword',verify_token(CONFIG.SCOPE.admins), adminCtrl.changePassword);
-
+// ,upload.single('image')
+router.put('/admin/editProfile',verify_token(CONFIG.SCOPE.admins),adminCtrl.editProfile);
 
 router.get('/admin/getAllUsers',verify_token(CONFIG.SCOPE.admins), adminCtrl.getAllUsers);
 

@@ -8,6 +8,7 @@ require('dotenv').config();
 const CONFIG = require('../config/scope');
 const fs = require('fs');
 const Notify = require('../libs/notifications');
+const { Op } = require('sequelize')
 
 const numberSignup = async (req, res) => {
   try {
@@ -344,12 +345,28 @@ const sendMessage = async (req, res) => {
       receiver_id: req.body.receiver_id,
       booking_id: req.body.booking_id,
       message: req.body.message,
+      sender_type: "User"
     }
     console.log('------data--------',data);
     let saveData = await libs.createData(db.chats,data);
     console.log('----saveData---',saveData);
 
     res.status(200).json({code:200,message:"message saved",data: saveData});
+  } catch (err) {
+    console.log('------err------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const getAllMessages = async (req, res) => {
+  try {
+    let query= { where: {booking_id:req.query.booking_id}}
+
+    let getData = await libs.getAllData(db.chats,query);
+    console.log('----getData---',getData);
+
+    res.status(200).json({code:200,message:"message saved",data: getData});
   } catch (err) {
     console.log('------err------',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -364,6 +381,7 @@ const reportOnDriver = async (req, res) => {
       driver_id: req.body.driver_id,
       booking_id: req.body.booking_id,
       report_message: req.body.report_message,
+      reported_by:"User"
     }
     let saveReport = await libs.createData(db.reports, data);
     console.log('----saveReport---',saveReport);
@@ -390,8 +408,11 @@ const giveRating = async (req, res) => {
     }
     let saveRatings = await libs.createData(db.ratings, data);
     console.log('----saveRatings----',saveRatings);
+    
 
     let getRatings = await libs.getAllData(db.ratings, {where:{ driver_id: req.creds.id}});
+ 
+    //  update OverAll rating in drivers models
 
     if(getRatings){
       let totalStars = 0;
@@ -402,14 +423,23 @@ const giveRating = async (req, res) => {
       const averageRating = totalStars / getRatings.length;
       console.log("Average Star Rating:", averageRating);
 
-      await libs.updateData(db.drivers,{over_all_rating: averageRating.toFixed(2)},{where:{ id:req.body.driver_id }});
+      let updateOverAllRating= await libs.findAndUpdate(db.drivers,req.body.driver_id,{over_all_rating:averageRating.toFixed(2)});
+
+      //  ---------send notification----------
+      let notify_data = {
+        title:"rating",
+        message:"user sents you stars"
+      }
+      const sendNotify= await Notify.sendNotifyToDriver(notify_data,updateOverAllRating.device_token)
     }
 
     res.status(200).json({code:200,message:"Rating successful"});
   } catch (err) {
+    console.log('--------err--------',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
+
 
 const support = async (req, res) => {
   try {
@@ -550,6 +580,6 @@ const getOffers = async (req, res) => {
 
 
 module.exports = {numberSignup, numberLogin, logout, userProfile, editUserProfile,deleteUserAccount,calcRideAmount,bookRide,cancelRide,findPreviousRide,//findNearbyDrivers ,
-sendMessage, reportOnDriver, giveRating,support, getNotifications,clearNotifications,getMyRides,getSingleRide,getOffers
+sendMessage,getAllMessages, reportOnDriver, giveRating,support, getNotifications,clearNotifications,getMyRides,getSingleRide,getOffers
 };
 

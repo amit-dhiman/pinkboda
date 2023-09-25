@@ -8,9 +8,9 @@ const sendNotifyToUser = async (data,deviceToken) => {
       // mine f23's
       deviceToken = "cdWfcVZSSVKAS9Ks-HkDRR:APA91bFkmIIByTf4Cy7D8qIxJaPo_qJKv_Kc_n5hENGIvX32vcsSsrlv-ai7xtWWlBLBO6S58oSoNXGvGE7SOeZ6OIhl_PqJ6AVPbgcwJpwNEiNjm9Vw-rfPo0w8HPu8yXb-L6RHlSrn"
     }
-console.log('--------process.env.user_serverKey--------',process.env.user_serverKey);
-console.log('--------deviceToken--------',deviceToken);
-console.log('--------data--------',data);
+    console.log('--------process.env.user_serverKey--------',process.env.user_serverKey);
+    console.log('--------deviceToken--------',deviceToken);
+    console.log('--------data--------',data);
 
     let message = {
         to : deviceToken,
@@ -42,7 +42,7 @@ console.log('--------data--------',data);
 
 
 const sendNotifyToDriver = async (data,deviceToken) => {
-    let fcm = new FCM(proces.env.driver_serverKey);
+    let fcm = new FCM(process.env.driver_serverKey);
 
     if(!deviceToken){
       deviceToken = "cdWfcVZSSVKAS9Ks-HkDRR:APA91bFkmIIByTf4Cy7D8qIxJaPo_qJKv_Kc_n5hENGIvX32vcsSsrlv-ai7xtWWlBLBO6S58oSoNXGvGE7SOeZ6OIhl_PqJ6AVPbgcwJpwNEiNjm9Vw-rfPo0w8HPu8yXb-L6RHlSrn"

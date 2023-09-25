@@ -89,15 +89,15 @@ let sendMail = (otp,email)=>{
   secure: false,
   requireTLS: true,
   auth:{
-    user:"amitdhiman212001@gmail.com",
-    pass: "agbgvwuoetonakyx"
+    user:"",
+    pass: ""
   }  
 })
 
 let options ={
-  from:"amit.dharmani12@gmail.com",
+  from:"",
   // from: email,
-  to:"amit.dharmani12@gmail.com",
+  to:"",
   subject:"from nodemailer",
   text: `your otp is: ${otp}`
 }
@@ -162,7 +162,5 @@ const driver_upload = multer({ storage: driverstorage })
 
 module.exports= { 
   generateAccessToken,verify_token, securePassword,
-  compPassword,sendMail,//sendSms,
-  upload, 
-  driver_upload
+  compPassword,sendMail,upload, driver_upload
 }

@@ -5,15 +5,11 @@ module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define('chats', {
     
     id: {type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
-    sender_id: {
-      type: DataTypes.INTEGER,
-      // references: {model:'users',key:'id'},
-    },
-    receiver_id: {
-      type: DataTypes.INTEGER,
-      // references:{model:'drivers',key:'id'},
-    },
+    sender_id: {type: DataTypes.INTEGER},
+    receiver_id: {type: DataTypes.INTEGER},
+    
     message: { type: DataTypes.STRING},
+    sender_type: { type: DataTypes.ENUM("User","Driver")},
     
     booking_id: {
       type: DataTypes.INTEGER,

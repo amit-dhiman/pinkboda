@@ -39,6 +39,8 @@ router.get('/user/find-previous-ride',verify_token(CONFIG.SCOPE.users),userCtrl.
 
 router.post('/user/sendMessage',verify_token(CONFIG.SCOPE.users),sendMsgValid, userCtrl.sendMessage);
 
+router.get('/user/getAllMessages',verify_token(CONFIG.SCOPE.users), userCtrl.getAllMessages);
+
 router.post('/user/reportOnDriver',verify_token(CONFIG.SCOPE.users),reportValid, userCtrl.reportOnDriver);
 
 router.post('/user/giveRating',verify_token(CONFIG.SCOPE.users),ratingValid, userCtrl.giveRating);

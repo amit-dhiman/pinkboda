@@ -34,6 +34,10 @@ router.post('/driver/cancel-ride',verify_token(CONFIG.SCOPE.drivers),driverCtrl.
 
 router.post('/driver/endRide',verify_token(CONFIG.SCOPE.drivers),driverCtrl.endRide);
 
+router.post('/driver/sendMessage',verify_token(CONFIG.SCOPE.drivers), driverCtrl.sendMessage);
+
+router.get('/driver/getAllMessages',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getAllMessages);
+
 router.post('/driver/reportOnUser',verify_token(CONFIG.SCOPE.drivers),reportValid, driverCtrl.reportOnUser);
 
 router.post('/driver/support',verify_token(CONFIG.SCOPE.drivers),supportValid, driverCtrl.support);

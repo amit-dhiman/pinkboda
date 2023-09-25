@@ -23,7 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     year:{ type:DataTypes.INTEGER },
 
     is_admin_verified:{type:DataTypes.ENUM("accepted","rejected","pending"),default:"accepted"},
-    over_all_rating: { type: DataTypes.STRING },
+
+    over_all_rating: { type: DataTypes.STRING },    // OverAll Rating
+
     driving_status:{ type: DataTypes.ENUM("Online","Offline")},
 
     total_rides: { type: DataTypes.INTEGER },

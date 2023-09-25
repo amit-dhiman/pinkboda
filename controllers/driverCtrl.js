@@ -228,7 +228,6 @@ const cancelRide = async (req, res) => {
       console.log('-----sendNotify---------',sendNotify);
 
       // notifyData
-
       const saveNotify= await libs.createData(db.notifications,notifyData)
 
       return res.status(200).json({code:200,message:"your ride has been canceled"});
@@ -249,6 +248,42 @@ const endRide = async (req, res) => {
   }
 };
 
+const sendMessage = async (req, res) => {
+  try {
+    let data= {
+      sender_id: req.creds.id,
+      receiver_id: req.body.receiver_id,
+      booking_id: req.body.booking_id,
+      message: req.body.message,
+      sender_type: "Driver"
+    }
+    console.log('----data-----',data);
+    let saveData = await libs.createData(db.chats,data);
+    console.log('----saveData---',saveData);
+
+    res.status(200).json({code:200,message:"message saved",data: saveData});
+  } catch (err) {
+    console.log('------err------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+const getAllMessages = async (req, res) => {
+  try {
+    let query= {where: { booking_id: req.query.booking_id }}
+
+    let getData = await libs.getAllData(db.chats,query);
+    console.log('----getData---',getData);
+
+    res.status(200).json({code:200,message:"get my all messages",data: getData});
+  } catch (err) {
+    console.log('------err------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
 // To show Accept Or Reject Rides
 
 const pendingListing = async (req, res) => {
@@ -262,26 +297,27 @@ const pendingListing = async (req, res) => {
 };
 
 const reportOnUser = async (req, res) => {
-    try {
-        console.log('------req.body---------',req.body);
-        let data= {
-            driver_id: req.creds.id,
-            user_id: req.body.user_id,
-            booking_id: req.body.booking_id,
-            report_message: req.body.report_message,
-        }
-        let saveReport = await libs.createData(db.reports, data);
-        console.log('----saveReport---',saveReport);
-
-        // let saveReport = await libs.getData(db.bookings,{
-        //   where:{id:1},
-        //   include:{model: db.reports }
-        // })
-
-        res.status(200).json({code:200,message:"Reported successfully"});
-    } catch (err) {
-        ERROR.INTERNAL_SERVER_ERROR(res,err);
+  try {
+    console.log('------req.body---------',req.body);
+    let data= {
+      driver_id: req.creds.id,
+      user_id: req.body.user_id,
+      booking_id: req.body.booking_id,
+      report_message: req.body.report_message,
+      reported_by:"Driver"
     }
+    let saveReport = await libs.createData(db.reports, data);
+    console.log('----saveReport---',saveReport);
+
+    // let saveReport = await libs.getData(db.bookings,{
+    //   where:{id:1},
+    //   include:{model: db.reports }
+    // })
+
+    res.status(200).json({code:200,message:"Reported successfully"});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
 };
 
 const support = async (req, res) => {
@@ -301,25 +337,24 @@ const support = async (req, res) => {
     }
 };
 
-
 const getNotifications = async (req, res) => {
-    try {
-    //   let data= {
-    //     driver_id: req.creds.id,
-    //     email: "abc@gmail.com",
-    //     message: "hiii",
-    //     title: "chat"
-    //   }
-  
-    //   let save = await libs.createData(db.notifications, data);
-    //   console.log('-----save------',save.toJSON());
-  
-      let getNotify = await libs.getAllData(db.notifications, {where:{driver_id: req.creds.id}});
-  
-      res.status(200).json({code:200,message:"get All Notifications",data: getNotify});
-    } catch (err) {
-      ERROR.INTERNAL_SERVER_ERROR(res,err);
-    }
+  try {
+  //   let data= {
+  //     driver_id: req.creds.id,
+  //     email: "abc@gmail.com",
+  //     message: "hiii",
+  //     title: "chat"
+  //   }
+
+  //   let save = await libs.createData(db.notifications, data);
+  //   console.log('-----save------',save.toJSON());
+
+    let getNotify = await libs.getAllData(db.notifications, {where:{driver_id: req.creds.id}});
+
+    res.status(200).json({code:200,message:"get All Notifications",data: getNotify});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
 };
 
 const clearNotifications = async (req, res) => {
@@ -379,6 +414,7 @@ const getMyRides = async (req, res) => {
     }
 };
 
+// get single notification detail
 const getSingleRide = async (req, res) => {
   try {
     let booking_id = req.query.booking_id;
@@ -428,7 +464,6 @@ const getTotalRatings = async (req, res) => {
       for (const item of data) {
         starCounts[item.star - 1]++;
       }
-  
       const starPercentages = starCounts.map(count => (count / totalRatings) * 100);
       return starPercentages;
     }
@@ -443,9 +478,7 @@ const getTotalRatings = async (req, res) => {
       star_1: starPercentages[0] || 0,
     };
 
-
     let totalStars = 0;
-
     for (const item of allRatings) {
       totalStars += item.star;
     }
@@ -454,10 +487,10 @@ const getTotalRatings = async (req, res) => {
     console.log("Average Star Rating:", averageRating);
 
     res.status(200).json({code:200,message:"get All Ratings",
-    overAllRating: averageRating, 
-    totalReviews:allRatings.length,
-    percentageData: obj,
-    data: allRatings
+    "overAllRating": averageRating, 
+    "totalReviews":allRatings.length,
+    "percentageData": obj,
+    "data": allRatings
     });
   } catch (err) {
     console.log('------err--------',err);
@@ -467,5 +500,5 @@ const getTotalRatings = async (req, res) => {
 
 
 
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings}
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings}
 

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       references:{model:'bookings',key:'id'},
     },
+    reported_by:{type:DataTypes.ENUM("User","Driver")},
     
     report_message: { type: DataTypes.STRING},
     created_at:{type: DataTypes.BIGINT},
