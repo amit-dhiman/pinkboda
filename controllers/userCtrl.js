@@ -169,9 +169,22 @@ const deleteUserAccount = async (req, res) => {
 
 const calcRideAmount = async (req, res) => {
   try {
-   
-    
-    res.status(500).json({code:200,data: "calcRide Amount api"});    
+    const data={
+      pickup_long: req.body.pickup_long,
+      pickup_lat: req.body.pickup_lat,
+      drop_long: req.body.drop_long,
+      drop_lat: req.body.drop_lat,
+      pickup_address: req.body.pickup_address,
+      drop_address: req.body.drop_address,
+      booking_status:"pending",
+      ride_type: req.body.ride_type,
+      driver_gender: req.body.driver_gender,
+      user_id: req.creds.id
+    }
+    data.amount =10
+
+    let saveData= await libs.createData(db.search_history,data);
+    res.status(500).json({code:200,message:"calcRide Amount api",data:saveData});    
   } catch (err) {
     res.status(500).json({code:500,message:err.message});
   }
@@ -267,7 +280,7 @@ const cancelRide = async (req, res) => {
       res.status(200).json({code:200,message:"cant cancelled the ride"});
     }else{
       
-      let deleteData = await libs.destroyData(db.bookings,{where:query});
+      let deleteData = await libs.destroyData(db.bookings,{where:query},{force:true});
       console.log('----deleteData---',deleteData);
       res.status(200).json({code:200,message:"your ride has been canceled"});
     }

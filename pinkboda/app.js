@@ -6,16 +6,17 @@ const logger = require('morgan');
 require('./models/db');
 require('./models/index');
 const Router = require('./routes/index');
+var cors = require('cors');
 
-
-
+app.use(cors()); 
+ 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

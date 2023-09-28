@@ -87,7 +87,6 @@ const editProfile = async (req, res,next) => {
 };
 
 
-
 const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword,confirmPassword } = req.body;
@@ -130,22 +129,65 @@ const logout = async (req, res) => {
     }
 };
 
-
+ 
 // render full index.ejs
-const getAllUsers = async (req, res) => {
+const renderIndex = async (req, res) => {
   try {
     let skp = req.body.skip || 0;
-    let getDrivers= await libs.getLimitData(db.drivers,{},skp);
-    let getUsers= await libs.getLimitData(db.users,{},skp);
+    // let query= {where:{},limit:10,offset:skp};
+    let query= {};
+    let getDrivers = await libs.getAllData(db.drivers,query,skp);
+    
+    let drivers = getDrivers.map(driver => {
+      let modifiedDriver = { ...driver.toJSON() };
+      modifiedDriver.role = 'driver';
+      return modifiedDriver;
+    });
+
+    let getRiders= await libs.getAllData(db.users,query,skp);
+
+    let riders = getRiders.map(rider => {
+      let modifiedRider = { ...rider.toJSON() };
+      modifiedRider.role = 'rider';
+      return modifiedRider;
+    });
 
 
+    // res.status(200).json({code:200,message:"ALL Drivers and Riders",
+    res.render('index',{
+      allUsers_url:`${ process.env.local_url_ejs}`,
+      getRiders: riders,
+      getDrivers: drivers,
+      totalUsers:[...drivers,...riders],
+    });
 
-    res.status(200).json({code:200,message:"ALL Drivers and Riders",data:[...getDrivers,...getUsers]});
   } catch (err) {
-    console.log('-----err-------',err);
+    console.log('-----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
+
+const renderRider = async (req, res) => {
+  try {
+    let skp = req.body.skip || 0;
+    // let query= {where:{},limit:10,offset:skp};
+    let query= {};
+
+    let getDrivers = await libs.getAllData(db.drivers,query,skp);
+    
+    // res.status(200).json({code:200,message:"getDrivers",
+    res.render('riders',{
+      getDrivers: getDrivers,
+      riders_url:`${ process.env.local_url_ejs}`,
+
+    });
+  } catch (err) {
+    console.log('----err----',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
 
 const getAllDrivers = async (req, res) => {
   try {
@@ -157,7 +199,6 @@ const getAllDrivers = async (req, res) => {
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
-
 const getAllRiders = async (req, res) => {
   try {
     let getRiders= await libs.getAllData(db.users,{})
@@ -169,7 +210,6 @@ const getAllRiders = async (req, res) => {
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
-
 const actionOnDriver = async (req, res) => {
   try {
     let query= req.body.driver_id;
@@ -183,5 +223,5 @@ const actionOnDriver = async (req, res) => {
 
 
 
-module.exports= {addAdmin,login,changePassword,logout,getAllUsers,getAllDrivers,getAllRiders,actionOnDriver,editProfile}
+module.exports= {addAdmin,login,changePassword,logout,renderIndex,getAllDrivers,getAllRiders,actionOnDriver,editProfile,renderRider}
 
