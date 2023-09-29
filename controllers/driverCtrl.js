@@ -50,10 +50,10 @@ const driverSignup = async (req, res) => {
       let token = await commonFunc.generateAccessToken(saveData, token_info, process.env.driver_secretKey);
       console.log('-----token-------',token);
 
-      if(req.files.license){token.license= `${process.env.driver_image_baseUrl}/${req.files.license[0].filename}`}
-      if(req.files.id_card){token.id_card= `${process.env.driver_image_baseUrl}/${req.files.id_card[0].filename}`}
-      if(req.files.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}/${req.files.passport_photo[0].filename}`}
-      if(req.files.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}/${req.files.vechile_insurance[0].filename}`}
+      if(req.files.license){token.license= `${process.env.driver_image_baseUrl}${req.files.license[0].filename}`}
+      if(req.files.id_card){token.id_card= `${process.env.driver_image_baseUrl}${req.files.id_card[0].filename}`}
+      if(req.files.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${req.files.passport_photo[0].filename}`}
+      if(req.files.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${req.files.vechile_insurance[0].filename}`}
 
       return SUCCESS.DEFAULT(res,"signUp successfully", token)
   } catch (err) {
@@ -95,11 +95,11 @@ const login = async(req,res) => {
         let token = await commonFunc.generateAccessToken(getData, token_info, process.env.driver_secretKey);
 
 
-        if(token.profile_image){token.profile_image= `${process.env.driver_image_baseUrl}/${token.profile_image}`}
-        if(token.license){token.license= `${process.env.driver_image_baseUrl}/${token.license}`}
-        if(token.id_card){token.id_card= `${process.env.driver_image_baseUrl}/${token.id_card}`}
-        if(token.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}/${token.passport_photo}`}
-        if(token.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}/${token.vechile_insurance}`}
+        if(token.profile_image){token.profile_image= `${process.env.driver_image_baseUrl}${token.profile_image}`}
+        if(token.license){token.license= `${process.env.driver_image_baseUrl}${token.license}`}
+        if(token.id_card){token.id_card= `${process.env.driver_image_baseUrl}${token.id_card}`}
+        if(token.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${token.passport_photo}`}
+        if(token.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${token.vechile_insurance}`}
 
 
         return SUCCESS.DEFAULT(res,"login successfully", token)
@@ -134,48 +134,44 @@ const driverProfile = async (req, res) => {
 };
 
 const editDriverProfile = async (req, res,next) => {
-    try {
-      const userData = req.creds;
-      const {username,gender,model,license_plate,year,profile_image} = req.body;
-      let update = {};
-  
-      if (username) {update.username = username }
-      if (gender) {update.gender = gender }
-      if (model) {update.model = model }
-      if (license_plate) {update.license_plate = license_plate }
-      if (year) {update.year = year }
-    //   if (profile_image) {update.profile_image = profile_image }
-  
-      if(req.files){
-        for(let key in req.files){
-          fs.unlink(`${process.env.driver_image_baseUrl}/${userData[key]}`,(err)=>{if(err)return})
-          update[key] = req.files[key][0].filename
-        }
-      } 
-      console.log('---------req.files----------',req.files);
-      const editProfile = await libs.updateData(userData, update);
+  try {
+    const userData = req.creds;
+    const {username,gender,model,license_plate,year,profile_image} = req.body;
+    let update = {};
 
-      if(editProfile.license && !req.files.license){editProfile.license= `${process.env.driver_image_baseUrl}/${editProfile.license}`}
+    if (username) {update.username = username }
+    if (gender) {update.gender = gender }
+    if (model) {update.model = model }
+    if (license_plate) {update.license_plate = license_plate }
+    if (year) {update.year = year }
+  //   if (profile_image) {update.profile_image = profile_image }
 
-      if(editProfile.id_card && !req.files.id_card){editProfile.id_card= `${process.env.driver_image_baseUrl}/${editProfile.id_card}`}
-
-      if(editProfile.passport_photo && !req.files.passport_photo){editProfile.passport_photo= `${process.env.driver_image_baseUrl}/${editProfile.passport_photo}`}
-
-      if(editProfile.vechile_insurance && !req.files.vechile_insurance){editProfile.vechile_insurance= `${process.env.driver_image_baseUrl}/${req.files.vechile_insurance}`}
-
-      if(req.files){
-        for(let key in req.files){
-          editProfile[key] = `${process.env.driver_image_baseUrl}/${req.files[key][0].filename}`
-        }
+    if(req.files){
+      for(let key in req.files){
+        fs.unlink(`${process.env.driver_image_baseUrl}${userData[key]}`,(err)=>{if(err)return})
+        update[key] = req.files[key][0].filename
       }
+    } 
+    console.log('---------req.files----------',req.files);
+    const editProfile = await libs.updateData(userData, update);
 
-      return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
-    } catch (err) {
-        if(req.files){
-          Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
-        }
-      ERROR.INTERNAL_SERVER_ERROR(res, err);
+    if(editProfile.profile_image && !req.files.profile_image){editProfile.profile_image= `${process.env.driver_image_baseUrl}${editProfile.profile_image}`}
+    if(editProfile.license && !req.files.license){editProfile.license= `${process.env.driver_image_baseUrl}${editProfile.license}`}
+    if(editProfile.id_card && !req.files.id_card){editProfile.id_card= `${process.env.driver_image_baseUrl}${editProfile.id_card}`}
+    if(editProfile.passport_photo && !req.files.passport_photo){editProfile.passport_photo= `${process.env.driver_image_baseUrl}${editProfile.passport_photo}`}
+    if(editProfile.vechile_insurance && !req.files.vechile_insurance){editProfile.vechile_insurance= `${process.env.driver_image_baseUrl}${req.files.vechile_insurance}`}
+
+    if(req.files){
+      for(let key in req.files){editProfile[key] = `${process.env.driver_image_baseUrl}${req.files[key][0].filename}`}
     }
+
+    return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
+  } catch (err) {
+    if(req.files){
+      Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
+    }
+    ERROR.INTERNAL_SERVER_ERROR(res, err);
+  }
 };
 
 
@@ -240,10 +236,15 @@ const cancelRide = async (req, res) => {
 
 const endRide = async (req, res) => {
   try {
-
-    res.status(200).json({code:200,message:"Your ride has been sent successfully"});
+    let {booking_id }= req.body;
+    let updateEndRide = await libs.updateData(db.bookings,{booking_status:"completed"},{where:{ id:booking_id }});
+    console.log('--------updateEndRide-------',updateEndRide);
+    if(updateEndRide[0] == 0){
+      res.status(200).json({code:404,message:"boooking not found"});
+    }
+    res.status(200).json({code:200,message:"Ride Completed"});
   } catch (err) {
-    console.log('-----err-------',err);
+    console.log('-----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
@@ -400,7 +401,7 @@ const getMyRides = async (req, res) => {
         for(let i=0;i<getRides.length; i++){
           let getRating = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
           let jsonData = getRides[i].toJSON();
-          if(jsonData.user.image){jsonData.user.image= `${process.env.user_image_baseUrl}/${jsonData.user.image}`}
+          if(jsonData.user.image){jsonData.user.image= `${process.env.user_image_baseUrl}${jsonData.user.image}`}
 
           if(getRating){ jsonData.star = getRating.star }
 
@@ -453,7 +454,7 @@ const getTotalRatings = async (req, res) => {
     });
 
     const allRatings = getNotify.map(item => {
-      if(item.user.image){item.user.image=`${process.env.user_image_baseUrl}/${item.user.image}`}
+      if(item.user.image){item.user.image=`${process.env.user_image_baseUrl}${item.user.image}`}
       return item;
     });
 

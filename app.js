@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', Router.userRoutes, Router.driverRoutes,Router.adminRoutes);
 // app.use('/driver', driverRouter.driverRoutes);
+// app.use('/admin', Router.adminRoutes);
 
 // error handler
 app.use(function(err, req, res, next) {

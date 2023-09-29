@@ -17,11 +17,10 @@ router.put('/admin/editProfile',adminCtrl.editProfile);
 router.get('/admin/renderIndex', adminCtrl.renderIndex);
 
 router.get('/admin/renderRider', adminCtrl.renderRider);
+router.get('/admin/renderDriver', adminCtrl.renderDriver);
 
 
 
-router.get('/admin/getAllDrivers',adminCtrl.getAllDrivers);
-router.get('/admin/getAllRiders',verify_token(CONFIG.SCOPE.admins), adminCtrl.getAllRiders);
 router.post('/admin/actionOnDriver',verify_token(CONFIG.SCOPE.admins), adminCtrl.actionOnDriver);
 
 

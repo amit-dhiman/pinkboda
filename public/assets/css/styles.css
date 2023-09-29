@@ -234,6 +234,7 @@ tr.tabl_size td {
     font-size: 15px;
     font-weight: 500;
     color: #000;
+    white-space: nowrap;
     padding: 12px 7px;
 }
 
@@ -308,18 +309,21 @@ tr.tabel_size td {
 /* driver */
 img.passport_img {
     width: 40px;
+    height: 40px;
     border-radius: 17px;
     object-fit: cover;
 }
 
 img.idcard_img {
     width: 40px;
+    height: 40px;
     border-radius: 17px;
     object-fit: cover;
 }
 
 img.license_img {
     width: 40px;
+    height: 40px;
     border-radius: 17px;
     object-fit: cover;
 }

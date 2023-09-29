@@ -72,7 +72,7 @@ const numberLogin = async (req, res) => {
       
       let token= await commonFunc.generateAccessToken(getData, token_info, process.env.user_secretKey);
       if(token.image){
-        token.image = `${process.env.user_image_baseUrl}/${token.image}`
+        token.image = `${process.env.user_image_baseUrl}${token.image}`
       }
 
       return SUCCESS.DEFAULT(res, "logged in", token);
@@ -109,7 +109,6 @@ const userProfile = async (req, res) => {
   }
 };
 
-
 const editUserProfile = async (req, res,next) => {
   try {
     const userData = req.creds;
@@ -141,11 +140,11 @@ const editUserProfile = async (req, res,next) => {
       }
       update.image= req.file.filename
     };
-    console.log('-----update------',update);
     
     const editProfile = await libs.updateData(userData, update);
+  
     if(editProfile.image){
-      editProfile.image = `${process.env.user_image_baseUrl}/${editProfile.image}`
+      editProfile.image = `${process.env.user_image_baseUrl}${editProfile.image}`
     }
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
@@ -184,7 +183,8 @@ const calcRideAmount = async (req, res) => {
     data.amount =10
 
     let saveData= await libs.createData(db.search_history,data);
-    res.status(500).json({code:200,message:"calcRide Amount api",data:saveData});    
+    saveData.amount = `$${saveData.amount}`
+    res.status(200).json({code:200,message:"calcRide Amount api",data:saveData});    
   } catch (err) {
     res.status(500).json({code:500,message:err.message});
   }

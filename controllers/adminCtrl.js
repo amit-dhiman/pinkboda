@@ -68,7 +68,7 @@ const editProfile = async (req, res,next) => {
     // if (device_token) { update.device_token = device_token }
     // if(req.file){
     //   if(userData.image){
-    //     fs.unlink(`${process.env.user_image_baseUrl}/${userData.image}`,(err)=>{if(err)return})
+    //     fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`,(err)=>{if(err)return})
     //   }
     //   update.image= req.file.filename
     // };
@@ -76,7 +76,7 @@ const editProfile = async (req, res,next) => {
     
     // const editProfile = await libs.updateData(userData, update);
     // if(editProfile.image){
-    //   editProfile.image = `${process.env.user_image_baseUrl}/${editProfile.image}`
+    //   editProfile.image = `${process.env.user_image_baseUrl}${editProfile.image}`
     // }
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
@@ -155,7 +155,6 @@ const renderIndex = async (req, res) => {
 
     // res.status(200).json({code:200,message:"ALL Drivers and Riders",
     res.render('index',{
-      allUsers_url:`${ process.env.local_url_ejs}`,
       getRiders: riders,
       getDrivers: drivers,
       totalUsers:[...drivers,...riders],
@@ -173,12 +172,12 @@ const renderRider = async (req, res) => {
     // let query= {where:{},limit:10,offset:skp};
     let query= {};
 
-    let getDrivers = await libs.getAllData(db.drivers,query,skp);
+    let getRiders = await libs.getAllData(db.users,query,skp);
     
-    // res.status(200).json({code:200,message:"getDrivers",
+    // res.status(200).json({code:200,message:"getRiders",
     res.render('riders',{
-      getDrivers: getDrivers,
-      riders_url:`${ process.env.local_url_ejs}`,
+      getRiders: getRiders,
+      userImageUrl: process.env.user_image_baseUrl
 
     });
   } catch (err) {
@@ -187,29 +186,23 @@ const renderRider = async (req, res) => {
   }
 };
 
-
-
-const getAllDrivers = async (req, res) => {
+const renderDriver = async (req, res) => {
   try {
     let getDrivers= await libs.getAllData(db.drivers,{});
-    res.render('index',{getDrivers:getDrivers})
-    // res.status(200).json({code:200,message:"Get all drivers",data:getDrivers,totalDriver:getDrivers.length});
-  } catch (err) {
-    console.log('-----err------',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
-  }
-};
-const getAllRiders = async (req, res) => {
-  try {
-    let getRiders= await libs.getAllData(db.users,{})
-    res.render('index',{getRiders:getRiders})
+    // res.status(200).json({code:200,message:"Get all drivers",
+    res.render('drivers',{
+      getDrivers:getDrivers,
+      driverImageUrl: process.env.driver_imageUrl_ejs
+    });
 
-    // res.status(200).json({code:200,message:"Get all users",data:getUsers});
   } catch (err) {
     console.log('-----err------',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
+
+
+
 const actionOnDriver = async (req, res) => {
   try {
     let query= req.body.driver_id;
@@ -223,5 +216,5 @@ const actionOnDriver = async (req, res) => {
 
 
 
-module.exports= {addAdmin,login,changePassword,logout,renderIndex,getAllDrivers,getAllRiders,actionOnDriver,editProfile,renderRider}
+module.exports= {addAdmin,login,changePassword,logout,renderIndex,actionOnDriver,editProfile,renderRider,renderDriver}
 

@@ -130,8 +130,8 @@ transport.sendMail(options, function(err, info){
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const userPath= path.join(`${__dirname}`,'../public/uploads/users');
-    cb(null, userPath)
+    // const userPath= path.join(`${__dirname}`,'../',process.env.user_image_baseUrl);   // '../public/uploads/users/'
+    cb(null, process.env.user_image_baseUrl)
   },
   filename: function (req, file, cb) {
     const uniqueSuffix =`${Date.now()}_${Math.round(Math.random()*1000)}.png`;
@@ -144,8 +144,8 @@ const upload = multer({ storage: storage });
 
 const driverstorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const driverPath= path.join(`${__dirname}`,'../public/uploads/drivers');
-    cb(null, driverPath)
+    // const driverPath= path.join(`${__dirname}`,'../public/uploads/drivers/');
+    cb(null, process.env.driver_image_baseUrl)
   },
   filename: function (req, file, cb) {
     const uniqueSuffix =`${Date.now()}_${Math.round(Math.random()*1000)}.png`;
