@@ -178,13 +178,12 @@
                             <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + driver.id_card %>" /></th>
                             <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.license %>"/></th>
                             <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>"/></th>
-                            <!-- <td>add insurance image here</td>    add insurance image here -->
                             <td><%= driver.year %></td>
-                            <td>N/A</td>
-                            <td>$2030</td>
-                            <td>23 Jun, 2023</td>
+                            <td>N/A</td>      <!-- have to add complaints here -->
+                            <td>$2030</td>    <!-- have to total earning here -->
+                            <td><%= formattedDate %></td>
                             <td><button class="btn btn-info data" type="button">Disable</button></td>
-                            <td>565646564</td>
+                            <td><%= driver.mobile_number %></td>
                           </tr>
                         <% } %>
                       </tbody>
