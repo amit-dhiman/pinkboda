@@ -6,7 +6,7 @@ const CONFIG = require('../config/scope');
 const ERROR= require('../config/responseMsgs').ERROR;
 const SUCCESS= require('../config/responseMsgs').SUCCESS;
 const Notify = require('../libs/notifications');
-
+const fs = require('fs');
 
 const addAdmin = async(req, res) => {
   console.log('-----/admin Routes------');
@@ -135,23 +135,22 @@ const renderIndex = async (req, res) => {
   try {
     let skp = req.body.skip || 0;
     // let query= {where:{},limit:10,offset:skp};
-    let query= {};
+    let query= {where:{is_admin_verified:"accepted"}};
     let getDrivers = await libs.getAllData(db.drivers,query,skp);
     
     let drivers = getDrivers.map(driver => {
       let modifiedDriver = { ...driver.toJSON() };
-      modifiedDriver.role = 'driver';
+      modifiedDriver.role = 'Driver';
       return modifiedDriver;
     });
 
-    let getRiders= await libs.getAllData(db.users,query,skp);
+    let getRiders= await libs.getAllData(db.users,{},skp);
 
     let riders = getRiders.map(rider => {
       let modifiedRider = { ...rider.toJSON() };
-      modifiedRider.role = 'rider';
+      modifiedRider.role = 'Rider';
       return modifiedRider;
     });
-
 
     // res.status(200).json({code:200,message:"ALL Drivers and Riders",
     res.render('index',{
@@ -188,11 +187,14 @@ const renderRider = async (req, res) => {
 
 const renderDriver = async (req, res) => {
   try {
-    let getDrivers= await libs.getAllData(db.drivers,{});
+    let getDrivers= await libs.getAllData(db.drivers,{where:{is_admin_verified:"accepted"}});
+    let getPendingRequests = await libs.getAllData(db.drivers,{where:{is_admin_verified:"pending"}});
+    
     // res.status(200).json({code:200,message:"Get all drivers",
     res.render('drivers',{
-      getDrivers:getDrivers,
-      driverImageUrl: process.env.driver_imageUrl_ejs
+      getDrivers : getDrivers,
+      pendingRequests : getPendingRequests,
+      driverImageUrl : process.env.driver_imageUrl_ejs
     });
 
   } catch (err) {
@@ -202,12 +204,20 @@ const renderDriver = async (req, res) => {
 };
 
 
-
 const actionOnDriver = async (req, res) => {
   try {
-    let query= req.body.driver_id;
-    let saveAction= await libs.findAndUpdate(db.drivers,query,{action:req.body.action});
-    res.status(200).json({code:200,message:saveAction.action});
+    const { driverId } = req.params;
+    let query = {where:{id:driverId}}
+    console.log('-------query--------',query);
+    const driver = await libs.getData(db.drivers,query);
+    if (!driver) {
+      return res.status(404).json({ error: 'Driver not found' });
+    }
+    driver.action = driver.action === 'Enable' ? 'Disable' : 'Enable';
+    await driver.save();
+    // console.log('-----------driver---------',driver);
+    res.status(200).send(driver.action);
+    // res.status(200).json({ message: 'Status toggled successfully', data:driver.action  });
   } catch (err) {
     console.log('---err---',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -215,6 +225,93 @@ const actionOnDriver = async (req, res) => {
 };
 
 
+const actionOnUser = async (req, res) => {
+  try {
+    const { riderId } = req.params;
+    let query = {where:{id:riderId}}
+    console.log('-------query--------',query);
+    const rider = await libs.getData(db.users,query);
+    if (!rider) {
+      return res.status(404).json({ error: 'Driver not found' });
+    }
+    rider.action = rider.action === 'Enable' ? 'Disable' : 'Enable';
+    await rider.save();
+    // res.status(200).send(rider.action);
+    res.status(200).json({ message: 'Status toggled successfully', data:rider.action  });
+  } catch (err) {
+    console.log('---err---',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
 
-module.exports= {addAdmin,login,changePassword,logout,renderIndex,actionOnDriver,editProfile,renderRider,renderDriver}
 
+const pendingRequests = async (req, res) => {
+  try {
+    const { pendingAction,driverId } = req.query;
+
+    let updateRequest=null;
+
+    if(pendingAction == 'accepted'){
+      // send mail to the driver, admin accepted your signup request
+
+      updateRequest = await libs.findAndUpdate(db.drivers,driverId, {is_admin_verified:pendingAction,driving_status:'Online'});
+    }else{
+      let getData= await libs.getData(db.drivers,{where:{id:driverId}});
+
+      let images=['profile_image','license','id_card','passport_photo','vechile_insurance'];
+
+      for(let key of images){
+        console.log('----------1--------',`${process.env.driver_image_baseUrl}${getData[key]}`);
+        fs.unlink(`${process.env.driver_image_baseUrl}${getData[key]}`,(err)=>{if(err){return err}})
+        updateRequest = await libs.destroyData(getData,{force:true});
+      }
+    }
+    
+    res.status(200).send(updateRequest);
+    // res.status(200).json({message:'Status toggled successfully', data:updateRequest});
+  } catch (err) {
+    console.log('---err---',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+const renderHelpSupport = async (req, res) => {
+  try {
+    // let getData= await libs.getAllData(db.supports,{
+    //   include: [
+    //     {
+    //       model: db.users,
+    //       attributes: ["username","image","mobile_number"]
+    //     },
+    //     {
+    //       model: db.drivers,
+    //       attributes: ["username","profile_image","mobile_number"]
+    //     },
+    //   ]
+    // });
+    
+    const usersData = await db.supports.findAll({
+      include: [{model: db.users, attributes: ["id","username", "image", "mobile_number"]}]
+    });
+    
+    const driversData = await db.supports.findAll({
+      include: [{model: db.drivers,attributes: ["id","username", "profile_image", "mobile_number"]}]
+    });
+  
+    // For example, combine usersData and driversData into a single array
+    const combinedData = usersData.concat(driversData);
+       
+    // res.status(200).json({message:'Status toggled successfully',
+    res.render('help&support',{
+     supportData: combinedData});
+  } catch (err) {
+    console.log('---------err--------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+
+
+
+
+module.exports= {addAdmin,login,changePassword,logout,renderIndex,actionOnDriver,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport, }

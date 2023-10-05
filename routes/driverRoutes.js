@@ -54,6 +54,7 @@ router.get('/driver/getTotalRatings',verify_token(CONFIG.SCOPE.drivers), driverC
 
 
 
+
 module.exports = router;
 
 

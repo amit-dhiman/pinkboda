@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 
     mobile_number: {type: DataTypes.STRING},
     country_code:{type: DataTypes.STRING},
-    driving_status:{ type: DataTypes.ENUM("Online","Offline"),defaultValue:"Online"},
+    driving_status:{ type: DataTypes.ENUM("Online","Offline"),defaultValue:"Offline"},
     
     profile_image: { type: DataTypes.STRING },
     license: { type: DataTypes.STRING },
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     license_plate : { type: DataTypes.STRING },
     year:{ type:DataTypes.INTEGER },
 
-    is_admin_verified:{type:DataTypes.ENUM("accepted","rejected","pending"),defaultValue:"accepted"},
+    is_admin_verified:{type:DataTypes.ENUM("accepted","rejected","pending"),defaultValue:"pending"},
 
     over_all_rating: { type: DataTypes.STRING },    // OverAll Rating
     socket_id: { type: DataTypes.STRING },    
@@ -45,9 +45,9 @@ module.exports = (sequelize, DataTypes) => {
           instance.created_at = +new Date(Date.now());
           instance.updated_at = +new Date(Date.now());
           },
-        },
-        beforeDestroy: (instance, options) => {
-          instance.deleted_at = +new Date(Date.now())
+          beforeDestroy: (instance, options) => {
+            instance.deleted_at = +new Date(Date.now())
+          },
         },
         timestamps: true,
     paranoid: true,

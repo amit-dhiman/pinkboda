@@ -91,6 +91,13 @@ db.myrides.belongsTo(db.drivers,{foreignKey:"driver_id"})
 db.myrides.belongsTo(db.bookings,{foreignKey:"booking_id"})
 
 
+// For user's, drivers, bookings & supports  relationship
+
+db.users.hasMany(db.supports, {foreignKey:"user_id"})                 // , as: "ratings"
+db.supports.belongsTo(db.users,{foreignKey:"user_id"})
+
+db.drivers.hasMany(db.supports, {foreignKey:"driver_id"})                 // , as: "ratings"
+db.supports.belongsTo(db.drivers,{foreignKey:"driver_id"})
 
 
 

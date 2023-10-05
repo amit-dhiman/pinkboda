@@ -10,7 +10,7 @@ const path = require('path');
 
 const generateAccessToken = async (saveData, token_info, secret_key) => {
   try {
-    console.log('-----------token_info-----------',token_info);
+    // console.log('-----------token_info-----------',token_info);
 
     let tokenPayload = {...token_info};
     if(tokenPayload.device_token){delete tokenPayload.device_token}

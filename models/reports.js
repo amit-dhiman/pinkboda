@@ -28,9 +28,9 @@ module.exports = (sequelize, DataTypes) => {
           instance.created_at = +new Date(Date.now());
           instance.updated_at = +new Date(Date.now());
           },
-        },
-        beforeDestroy: (instance, options) => {
-          instance.deleted_at = +new Date(Date.now())
+          beforeDestroy: (instance, options) => {
+            instance.deleted_at = +new Date(Date.now())
+          },
         },
         timestamps: true,
     paranoid: true,

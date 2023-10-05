@@ -270,10 +270,10 @@ const cancelRide = async (req, res) => {
         //  ---------send notification----------
         let data = {
           title:"Ride cancelation",
-          message:"your ride has been canceled"
+          message:"User has cancelled your ride"
         }
-
-        const sendNotify= await Notify.sendNotify(data,getDriverData.device_token)
+        
+        const sendNotify= await Notify.sendNotifyToDriver(data,getDriverData.device_token)
 
         return res.status(200).json({code:200,message:"your ride has been canceled"});
       }
@@ -360,9 +360,7 @@ const sendMessage = async (req, res) => {
       message: req.body.message,
       sender_type: "User"
     }
-    console.log('------data--------',data);
     let saveData = await libs.createData(db.chats,data);
-    console.log('----saveData---',saveData);
 
     res.status(200).json({code:200,message:"message saved",data: saveData});
   } catch (err) {
@@ -377,7 +375,6 @@ const getAllMessages = async (req, res) => {
     let query= { where: {booking_id:req.query.booking_id}}
 
     let getData = await libs.getAllData(db.chats,query);
-    console.log('----getData---',getData);
 
     res.status(200).json({code:200,message:"message saved",data: getData});
   } catch (err) {
@@ -420,9 +417,7 @@ const giveRating = async (req, res) => {
       star: req.body.star,
     }
     let saveRatings = await libs.createData(db.ratings, data);
-    console.log('----saveRatings----',saveRatings);
     
-
     let getRatings = await libs.getAllData(db.ratings, {where:{ driver_id: req.creds.id}});
  
     //  update OverAll rating in drivers models
@@ -462,7 +457,6 @@ const support = async (req, res) => {
       message: req.body.message,
     }
     let saveSupport = await libs.createData(db.supports, data);
-    console.log('----saveSupport----',saveSupport);
 
     res.status(200).json({code:200,message:"Your messages has been sent successfully"});
   } catch (err) {
@@ -590,9 +584,21 @@ const getOffers = async (req, res) => {
   }
 };
 
+// destination search history
+const previousHistory = async (req, res) => {
+  try {
+    let query={ limit : 5,order: [['created_at', 'DESC']] };
+
+    let get = await libs.getAllData(db.search_history, query);
+
+    res.status(200).json({code:200,message:"My previous search", data: get});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
 
 
 module.exports = {numberSignup, numberLogin, logout, userProfile, editUserProfile,deleteUserAccount,calcRideAmount,bookRide,cancelRide,findPreviousRide,//findNearbyDrivers ,
-sendMessage,getAllMessages, reportOnDriver, giveRating,support, getNotifications,clearNotifications,getMyRides,getSingleRide,getOffers
+sendMessage,getAllMessages, reportOnDriver, giveRating,support, getNotifications,clearNotifications,getMyRides,getSingleRide,getOffers,previousHistory
 };
 

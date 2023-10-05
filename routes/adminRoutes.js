@@ -21,7 +21,13 @@ router.get('/admin/renderDriver', adminCtrl.renderDriver);
 
 
 
-router.post('/admin/actionOnDriver',verify_token(CONFIG.SCOPE.admins), adminCtrl.actionOnDriver);
+router.get('/admin/actionOnDriver/:driverId', adminCtrl.actionOnDriver);
+router.get('/admin/actionOnUser/:riderId', adminCtrl.actionOnUser);
+
+router.get('/admin/pendingRequests', adminCtrl.pendingRequests);
+
+router.get('/admin/renderHelpSupport', adminCtrl.renderHelpSupport);
+
 
 
 

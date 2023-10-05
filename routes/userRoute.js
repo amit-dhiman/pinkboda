@@ -57,6 +57,7 @@ router.get('/user/getSingleRide',verify_token(CONFIG.SCOPE.users), userCtrl.getS
 
 router.get('/user/getOffers',verify_token(CONFIG.SCOPE.users), userCtrl.getOffers);
 
+router.get('/user/previousHistory',verify_token(CONFIG.SCOPE.users), userCtrl.previousHistory);
 
 
 

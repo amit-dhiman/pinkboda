@@ -11,55 +11,56 @@ const Notify = require('../libs/notifications');
 
 const driverSignup = async (req, res) => {
   try {
-      let {username,gender,country_code,mobile_number,model,license_plate,year,device_type, device_token} = req.body;
-      console.log('------req.files-------',req.files); 
-      const getData=await libs.getData(db.drivers,{where:{mobile_number: mobile_number}});
+    let {username,gender,country_code,mobile_number,model,license_plate,year,device_type, device_token} = req.body;
+    console.log('------req.files-------',req.files); 
+    const getData=await libs.getData(db.drivers,{where:{mobile_number: mobile_number}});
 
-      if (getData) {
-        console.log('----getData----', getData);
-        if (req.files) {
-          Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
-        }
-        return res.status(409).json({code:409,message:"mobile number already exist"});
+    if (getData) {
+      console.log('----getData----', getData);
+      if (req.files) {
+        Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
       }
+      return res.status(409).json({code:409,message:"mobile number already exist"});
+    }
 
-      let data = {
-        username: username,
-        gender: gender,
-        mobile_number: mobile_number,
-        country_code: country_code,
-        model: model,
-        license_plate: license_plate,
-        year: year,
-        is_admin_verified: "accepted"
-      };
+    let data = {
+      username: username,
+      gender: gender,
+      mobile_number: mobile_number,
+      country_code: country_code,
+      model: model,
+      license_plate: license_plate,
+      year: year,
+      is_admin_verified: "accepted"
+    };
 
-      if(req.files.license){data.license= req.files.license[0].filename}
-      if(req.files.id_card){data.id_card= req.files.id_card[0].filename}
-      if(req.files.passport_photo){data.passport_photo= req.files.passport_photo[0].filename}
-      if(req.files.vechile_insurance){data.vechile_insurance= req.files.vechile_insurance[0].filename}
+    if(req.files.license){data.license= req.files.license[0].filename}
+    if(req.files.id_card){data.id_card= req.files.id_card[0].filename}
+    if(req.files.passport_photo){data.passport_photo= req.files.passport_photo[0].filename}
+    if(req.files.vechile_insurance){data.vechile_insurance= req.files.vechile_insurance[0].filename}
 
-      if (device_type) { data.device_type = device_type }
-      if (device_token) { data.device_token = device_token }
+    if (device_type) { data.device_type = device_type }
+    if (device_token) { data.device_token = device_token }
 
-      console.log('-------data---------',data);
+    console.log('-------data---------',data);
 
-      let saveData = await libs.createData(db.drivers, data);
+    let saveData = await libs.createData(db.drivers, data);
+    console.log('---------saveData---------',saveData.toJSON());
 
-      let token_info = { id: saveData.id, mobile_number: saveData.mobile_number };
-      let token = await commonFunc.generateAccessToken(saveData, token_info, process.env.driver_secretKey);
-      console.log('-----token-------',token);
+    let token_info = { id: saveData.id, mobile_number: saveData.mobile_number };
+    let token = await commonFunc.generateAccessToken(saveData, token_info, process.env.driver_secretKey);
+    console.log('-----token-------',token.toJSON());
 
-      if(req.files.license){token.license= `${process.env.driver_image_baseUrl}${req.files.license[0].filename}`}
-      if(req.files.id_card){token.id_card= `${process.env.driver_image_baseUrl}${req.files.id_card[0].filename}`}
-      if(req.files.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${req.files.passport_photo[0].filename}`}
-      if(req.files.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${req.files.vechile_insurance[0].filename}`}
+    if(req.files.license){token.license= `${process.env.driver_image_baseUrl}${req.files.license[0].filename}`}
+    if(req.files.id_card){token.id_card= `${process.env.driver_image_baseUrl}${req.files.id_card[0].filename}`}
+    if(req.files.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${req.files.passport_photo[0].filename}`}
+    if(req.files.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${req.files.vechile_insurance[0].filename}`}
 
-      return SUCCESS.DEFAULT(res,"signUp successfully", token)
+    return SUCCESS.DEFAULT(res,"signUp successfully", token);
   } catch (err) {
       console.log('----err---',err);
       if (req.files) {
-          Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
+        Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
       }
       ERROR.ERROR_OCCURRED(res, err);
       // console.log('-----er------',err);
@@ -68,46 +69,46 @@ const driverSignup = async (req, res) => {
 };
 
 const login = async(req,res) => {
-    try {
-      const {country_code, mobile_number,device_type,device_token} = req.body;
-      if(!country_code || !mobile_number){
-          return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
-      }
-      console.log('---------country_code---------',country_code);
-      const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
-      console.log('-----2');
-      if(!getData){
-          return res.status(400).json({code:400,message:"mobile number does't exist"})
-      }
-      if(getData.is_admin_verified=="pending"){
-          return res.status(400).json({code:400,message:"your previous request is still pending"})
-      }
-      if(getData.is_admin_verified=="rejected"){
-          return res.status(400).json({code:400,message:"your previous request has been rejected"})
-      }
-
-      if(getData.is_admin_verified=="accepted"){
-        let token_info = { id: getData.id, mobile_number: getData.mobile_number };
-
-        if (device_type) { token_info.device_type = device_type }
-        if (device_token) { token_info.device_token = device_token }
-
-        let token = await commonFunc.generateAccessToken(getData, token_info, process.env.driver_secretKey);
-
-
-        if(token.profile_image){token.profile_image= `${process.env.driver_image_baseUrl}${token.profile_image}`}
-        if(token.license){token.license= `${process.env.driver_image_baseUrl}${token.license}`}
-        if(token.id_card){token.id_card= `${process.env.driver_image_baseUrl}${token.id_card}`}
-        if(token.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${token.passport_photo}`}
-        if(token.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${token.vechile_insurance}`}
-
-
-        return SUCCESS.DEFAULT(res,"login successfully", token)
-      }
-      res.status(400).json({code:400,message:"your previous request is null check db"})
-    } catch (err) {
-      ERROR.INTERNAL_SERVER_ERROR(res, err);
+  try {
+    const {country_code, mobile_number,device_type,device_token} = req.body;
+    if(!country_code || !mobile_number){
+        return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
     }
+    console.log('---------country_code---------',country_code);
+    const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
+    console.log('-----2');
+    if(!getData){
+        return res.status(400).json({code:400,message:"mobile number does't exist"})
+    }
+    if(getData.is_admin_verified=="pending"){
+        return res.status(400).json({code:400,message:"your previous request is still pending"})
+    }
+    if(getData.is_admin_verified=="rejected"){
+        return res.status(400).json({code:400,message:"your previous request has been rejected"})
+    }
+
+    if(getData.is_admin_verified=="accepted"){
+      let token_info = { id: getData.id, mobile_number: getData.mobile_number };
+
+      if (device_type) { token_info.device_type = device_type }
+      if (device_token) { token_info.device_token = device_token }
+
+      let token = await commonFunc.generateAccessToken(getData, token_info, process.env.driver_secretKey);
+
+
+      if(token.profile_image){token.profile_image= `${process.env.driver_image_baseUrl}${token.profile_image}`}
+      if(token.license){token.license= `${process.env.driver_image_baseUrl}${token.license}`}
+      if(token.id_card){token.id_card= `${process.env.driver_image_baseUrl}${token.id_card}`}
+      if(token.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${token.passport_photo}`}
+      if(token.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${token.vechile_insurance}`}
+
+
+      return SUCCESS.DEFAULT(res,"login successfully", token)
+    }
+    res.status(400).json({code:400,message:"your previous request is null check db"})
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res, err);
+  }
 }
 
 
@@ -329,7 +330,6 @@ const support = async (req, res) => {
         message: req.body.message,
       }
       let saveSupport = await libs.createData(db.supports, data);
-      console.log('----saveSupport----',saveSupport);
   
       res.status(200).json({code:200,message:"Your messages has been sent successfully"});
     } catch (err) {
@@ -450,7 +450,7 @@ const getTotalRatings = async (req, res) => {
       include:[{
         model: db.users,
         attributes: ["username","image"]
-    }]
+      }]
     });
 
     const allRatings = getNotify.map(item => {
@@ -501,5 +501,5 @@ const getTotalRatings = async (req, res) => {
 
 
 
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings}
 
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings,}
