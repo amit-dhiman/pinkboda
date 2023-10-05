@@ -362,6 +362,18 @@ const sendMessage = async (req, res) => {
     }
     let saveData = await libs.createData(db.chats,data);
 
+    let getData = await libs.getData(db.drivers, {
+      where: { id: data.receiver_id },
+      attributes: ["id","username", "device_token"],
+    });
+
+    let notify_data={
+      title: 'rider sends you a message',
+      message: data.message,
+    }
+
+    Notify.sendNotifyToDriver(notify_data,getData.device_token);
+
     res.status(200).json({code:200,message:"message saved",data: saveData});
   } catch (err) {
     console.log('------err------',err);

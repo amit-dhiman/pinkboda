@@ -237,15 +237,27 @@ const cancelRide = async (req, res) => {
 
 const endRide = async (req, res) => {
   try {
-    let {booking_id }= req.body;
+    let {booking_id,user_id }= req.body;
     let updateEndRide = await libs.updateData(db.bookings,{booking_status:"completed"},{where:{ id:booking_id }});
-    console.log('--------updateEndRide-------',updateEndRide);
+
     if(updateEndRide[0] == 0){
-      res.status(200).json({code:404,message:"boooking not found"});
+      return res.status(200).json({code:404,message:"boooking not found"});
     }
-    res.status(200).json({code:200,message:"Ride Completed"});
+
+    let notify_data={
+      title: 'Ride Completed',
+      message: 'Your ride has been completed',
+    }
+    let getData= await libs.getData(db.users,{
+      where:{id:user_id},
+      attributes:["id","username","device_token"]
+    })
+
+    Notify.sendNotifyToUser(notify_data,getData.device_token);
+
+    res.status(200).json({code:200,message:"Ride Completed",getData});
   } catch (err) {
-    console.log('-----err-----',err);
+    console.log('----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
@@ -263,9 +275,21 @@ const sendMessage = async (req, res) => {
     let saveData = await libs.createData(db.chats,data);
     console.log('----saveData---',saveData);
 
-    res.status(200).json({code:200,message:"message saved",data: saveData});
+    let getData = await libs.getData(db.users, {
+      where: { id: data.receiver_id },
+      attributes: ["id","username", "device_token"],
+    });
+
+    let notify_data={
+      title: 'driver sends you a message',
+      message: data.message,
+    }
+
+    Notify.sendNotifyToUser(notify_data,getData.device_token);
+
+    res.status(200).json({code:200,message:"message saved",data: getData});
   } catch (err) {
-    console.log('------err------',err);
+    console.log('-----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };

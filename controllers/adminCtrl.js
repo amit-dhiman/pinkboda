@@ -279,14 +279,8 @@ const renderHelpSupport = async (req, res) => {
   try {
     // let getData= await libs.getAllData(db.supports,{
     //   include: [
-    //     {
-    //       model: db.users,
-    //       attributes: ["username","image","mobile_number"]
-    //     },
-    //     {
-    //       model: db.drivers,
-    //       attributes: ["username","profile_image","mobile_number"]
-    //     },
+    //     {model: db.users,attributes: ["username","image","mobile_number"]},
+    //     {model: db.drivers,attributes: ["username","profile_image","mobile_number"]},
     //   ]
     // });
     
