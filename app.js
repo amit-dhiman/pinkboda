@@ -8,7 +8,7 @@ require('./models/index');
 const Router = require('./routes/index');
 let cors = require('cors');
 
-app.use(cors()); 
+app.use(cors());
 
 
 // view engine setup

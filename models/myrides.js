@@ -32,23 +32,22 @@ module.exports = (sequelize, DataTypes) => {
         },
         created_at:{type: DataTypes.BIGINT},
         updated_at:{type: DataTypes.BIGINT},
-        deleted_at: {type: DataTypes.BIGINT},
+        deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
         },{
         hooks: {
           beforeValidate: (instance, options) => {
           instance.created_at = +new Date(Date.now());
           instance.updated_at = +new Date(Date.now());
-          },
-        },
-        beforeDestroy: (instance, options) => {
-          instance.deleted_at = +new Date(Date.now())
+            },
+            beforeDestroy: (instance, options) => {
+                instance.deleted_at = +new Date(Date.now())
+            },
         },
         timestamps: true,
             paranoid: true,
             createdAt: 'created_at',
             updatedAt: "updated_at",
             deletedAt: 'deleted_at',
-            defaultScope:{where:{deleted_at: null}},
         })
 
     // Bookings.belongsTo(db.users,{foreignKey:'user_id',as:'user_id'});

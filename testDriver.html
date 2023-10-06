@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ride Request App</title>
+</head>
+<body>
+    <h1>Ride Request App</h1>
+    <label for="pickupLocation">Wating for ride:</label>
+    <input  id="pickupLocation1" placeholder="Enter lat">
+    <input  id="pickupLocation2" placeholder="Enter long">
+    <input  id="pickupLocation23" placeholder="Enter driver id">
+  
+
+    <button style="display: none;" id="AcceptRide">Accept Ride</button>
+
+    <button id="updatLoc">update loc</button>
+
+    <ul id="driversList">
+        <!-- Driver information will be displayed here -->
+    </ul>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+<script>
+    const socket = io("http://161.97.132.85:3036"); // Initialize Socket.io
+
+    // When the page loads, establish a connection to the server
+    let socketId="";
+    socket.on('connect', () => {
+        console.log('Connected to the server');
+        socketId=socket.id;
+        console.log(socketId)
+    });
+    // When the server emits a 'new_ride_request' event, add driver information to the list
+    socket.on('new_ride_request', (driver) => {
+        console.log('------driver-----',driver);
+
+        const driversList = document.getElementById('driversList');
+        const listItem = document.createElement('li');
+        listItem.textContent = `Driver ${driver.name} is available for the ride.`;
+        driversList.appendChild(listItem);
+        document.getElementById('AcceptRide').style.display='block';
+    });
+
+    socket.on('location_updated',(driver)=>{
+        alert("Saved");
+        console.log(driver);
+
+    })
+    
+
+    document.getElementById('updatLoc').addEventListener('click', () => {
+        const pickupLocation1 = document.getElementById('pickupLocation1').value;
+        const pickupLocation2 = document.getElementById('pickupLocation2').value;
+        const pickupLocation23 = document.getElementById('pickupLocation23').value;
+        console.log(console.log(socketId));
+    socket.emit('update_driver_loc',{"driverId":pickupLocation23,"latitude":pickupLocation1,"longitude":pickupLocation2,"socketId":socketId});
+
+    })
+
+    document.getElementById('AcceptRide').addEventListener('click', () => {
+        alert("Accept");
+
+        // const pickupLocation1 = document.getElementById('pickupLocation1').value;
+        // const pickupLocation2 = document.getElementById('pickupLocation2').value;
+        // const pickupLocation3 = document.getElementById('pickupLocation23').value;
+        socket.emit('accept_ride',{"driverId":1,"latitude":pickupLocation1,"longitude":pickupLocation2,"userId":1});
+    })
+
+    socket.on('disconnect', () => {
+        const disconnectedUserId = Object.keys(connectedUsers).find(
+        (userId) => connectedUsers[userId] === socket.id
+        );
+        if (disconnectedUserId) {
+        delete connectedUsers[disconnectedUserId];
+        console.log(`User with ID ${disconnectedUserId} disconnected`);
+        }
+    });
+
+  //   socket.on('disconnect', () => {
+  //   const disconnectedUserId = Object.keys(connectedUsers).find(
+  //   (userId) => connectedUsers[userId] === socket.id
+  //   );
+  //   if (disconnectedUserId) {
+  //   delete connectedUsers[disconnectedUserId];
+  //   console.log(`User with ID ${disconnectedUserId} disconnected`);
+  //   }
+  // });
+
+        // Handle the ride request button click
+        // document.getElementById('requestRide').addEventListener('click', () => {
+        //     const pickupLocation1 = document.getElementById('pickupLocation1').value;
+        //     const pickupLocation2 = document.getElementById('pickupLocation2').value;
+        //     const pickupLocation3 = document.getElementById('pickupLocation23').value;
+        //     if (pickupLocation1 && pickupLocation2) {
+        //         // Emit a 'new_ride_request' event to the server with the pickup location
+        //         socket.emit('new_ride_request_send', {"riderPickupLocation":{"latitude":pickupLocation1,"longitude":pickupLocation2,"userId":pickupLocation3}});
+        //     }
+        // });
+    </script>
+</body>
+</html>

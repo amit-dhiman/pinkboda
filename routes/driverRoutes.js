@@ -7,10 +7,10 @@ const {signupDriverValid,editdriverValid,reportValid,supportValid} = require('..
 const {verify_token,driver_upload} =require('../libs/commonFunc');
 
 /* GET home page. */
-router.get('/driver', function(req, res, next) {
-  console.log('-----driver-------');
-  res.render('index', { title: 'driver' });
-});
+// router.get('/driver', function(req, res, next) {
+//   console.log('-----driver-------');
+//   res.render('index', { title: 'driver' });
+// });
 
 
 router.post('/driver/Signup', signupDriverValid, driver_upload.fields([{name:'license',maxCount:1},{name:'id_card',maxCount:1},{name:'passport_photo',maxCount:1},{name:'vechile_insurance',maxCount:1}]), driverCtrl.driverSignup);
@@ -52,6 +52,7 @@ router.get('/driver/getSingleRide',verify_token(CONFIG.SCOPE.drivers), driverCtr
 
 router.get('/driver/getTotalRatings',verify_token(CONFIG.SCOPE.drivers), driverCtrl.getTotalRatings);
 
+router.get('/driver/find-previous-ride',verify_token(CONFIG.SCOPE.drivers),driverCtrl.findPreviousRide);
 
 
 

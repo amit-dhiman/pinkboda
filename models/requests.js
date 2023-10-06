@@ -8,11 +8,11 @@ module.exports = (sequelize, DataTypes) => {
 
     driver_id: {
       type: DataTypes.INTEGER,
-      references:{model:'drivers'},
+      references:{model:'drivers', key: 'id' },
     },
     request_id: {
-      type: DataTypes.BIGINT,
-      references:{model:'bookings'},
+      type: DataTypes.INTEGER,
+      references:{model:'bookings', key: 'id' },
     },
 
     created_at:{type: DataTypes.BIGINT},

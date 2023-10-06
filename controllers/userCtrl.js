@@ -136,7 +136,7 @@ const editUserProfile = async (req, res,next) => {
     if (device_token) { update.device_token = device_token }
     if(req.file){
       if(userData.image){
-        fs.unlink(`${process.env.user_image_baseUrl}/${userData.image}`,(err)=>{if(err)return})
+        fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`,(err)=>{if(err)return})
       }
       update.image= req.file.filename
     };
@@ -149,7 +149,8 @@ const editUserProfile = async (req, res,next) => {
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
   } catch (err) {
-    if(req.file){ fs.unlink(req.file.path, (err)=>{if (err) return})}
+    console.log('------err-----------',err);
+    if(req.file){ fs.unlin1k(req.file.path, (err)=>{if (err) return})}
     ERROR.ERROR_OCCURRED(res, err);
   }
 };
@@ -298,11 +299,12 @@ const findPreviousRide = async (req, res) => {
     //   include:[{model:db.bookings}],
     // })
 
-    let findRide = await db.bookings.findAll({
-      where:{user_id:req.creds.id,booking_status:"pending"},
-    })
-
-    res.status(200).json({code:200,message: "your ride has been canceled",data:findRide});
+    let findRide = await libs.getAllData(db.bookings, {where:{user_id:req.creds.id,booking_status:{[Op.or]:['accept','pending']}}});
+    if(!findRide.length){
+      return res.status(404).json({code:200,message: "Ride not found", data:findRide});
+    }
+    
+    res.status(200).json({code:200,message: "You have pending previous ride", data:findRide});
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
@@ -610,7 +612,33 @@ const previousHistory = async (req, res) => {
 };
 
 
+const findNearByDrivers = async (req, res) => {
+  try {
+    let {latitude,longitude} = req.query;
+      const distance = 15;
+
+      const haversine = `(
+        6371 * acos(cos(radians(${latitude}))* cos(radians(latitude))* cos(radians(longitude) - radians(${longitude}))+ sin(radians(${latitude})) * sin(radians(latitude)))
+      )`;
+      
+      let findDrivers = await db.drivers.findAll({
+        attributes: ['*', [db.sequelize.literal(haversine), 'distance']],
+        where: db.sequelize.where(db.sequelize.literal(haversine),'<=',distance),
+        raw: true,
+        order: db.sequelize.col('distance'),
+      });
+      // console.log('-------findDrivers-----',findDrivers);
+
+    res.status(200).json({code:200,message:"users offer",data: findDrivers});
+  } catch (err) {
+    console.log('-------err---------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
+ 
+
 module.exports = {numberSignup, numberLogin, logout, userProfile, editUserProfile,deleteUserAccount,calcRideAmount,bookRide,cancelRide,findPreviousRide,//findNearbyDrivers ,
-sendMessage,getAllMessages, reportOnDriver, giveRating,support, getNotifications,clearNotifications,getMyRides,getSingleRide,getOffers,previousHistory
+sendMessage,getAllMessages, reportOnDriver, giveRating,support, getNotifications,clearNotifications,getMyRides,getSingleRide,getOffers,previousHistory, findNearByDrivers
 };
 

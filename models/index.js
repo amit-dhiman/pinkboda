@@ -20,7 +20,7 @@ db.ratings = require('./ratings')(sequelize, DataTypes);
 db.supports = require('./support')(sequelize, DataTypes);
 db.myrides = require('./myrides')(sequelize, DataTypes);
 db.offers = require('./offers')(sequelize, DataTypes);
-
+db.requests = require('./requests')(sequelize, DataTypes);
 
 
 //  user driver bookings relationship

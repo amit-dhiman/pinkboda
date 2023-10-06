@@ -28,6 +28,7 @@ const findAndUpdate = async (model,query, updateData) => {
         const updatedUser= await user.update(updateData);
         return updatedUser;
     } catch (err) {
+        console.log('-------q err------------',err);
         throw err;
     }
 }

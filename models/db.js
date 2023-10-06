@@ -6,7 +6,7 @@ require('dotenv').config();
 const sequelize = new Sequelize(process.env.database,process.env.user_name,process.env.password,{
   host: process.env.host,
   dialect: process.env.dialect,
-  logging: true,
+  logging: false,
   // pool:{max:5,min:0,idle:10000}
 });
 

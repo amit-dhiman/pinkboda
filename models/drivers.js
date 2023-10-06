@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
 
     created_at:{type: DataTypes.BIGINT},
     updated_at:{type: DataTypes.BIGINT},
-    deleted_at: {type: DataTypes.BIGINT},
+    deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
     },{
         hooks: {
           beforeValidate: (instance, options) => {
@@ -54,7 +54,6 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: "created_at",
     updatedAt: "updated_at",
     deletedAt: "deleted_at",
-    defaultScope:{where:{deleted_at: null}},
   })
 
   // Drivers.beforeCreate((driver) => {

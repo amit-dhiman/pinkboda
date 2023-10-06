@@ -7,6 +7,7 @@ const ERROR= require('../config/responseMsgs').ERROR;
 const SUCCESS= require('../config/responseMsgs').SUCCESS;
 const fs = require('fs');
 const Notify = require('../libs/notifications');
+const { Op } = require('sequelize');
 
 
 const driverSignup = async (req, res) => {
@@ -72,19 +73,19 @@ const login = async(req,res) => {
   try {
     const {country_code, mobile_number,device_type,device_token} = req.body;
     if(!country_code || !mobile_number){
-        return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
+      return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
     }
     console.log('---------country_code---------',country_code);
     const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
     console.log('-----2');
     if(!getData){
-        return res.status(400).json({code:400,message:"mobile number does't exist"})
+      return res.status(400).json({code:400,message:"mobile number does't exist"})
     }
     if(getData.is_admin_verified=="pending"){
-        return res.status(400).json({code:400,message:"your previous request is still pending"})
+      return res.status(400).json({code:400,message:"your previous request is still pending"})
     }
     if(getData.is_admin_verified=="rejected"){
-        return res.status(400).json({code:400,message:"your previous request has been rejected"})
+      return res.status(400).json({code:400,message:"your previous request has been rejected"})
     }
 
     if(getData.is_admin_verified=="accepted"){
@@ -137,7 +138,7 @@ const driverProfile = async (req, res) => {
 const editDriverProfile = async (req, res,next) => {
   try {
     const userData = req.creds;
-    const {username,gender,model,license_plate,year,profile_image} = req.body;
+    const {username,gender,model,license_plate,year} = req.body;
     let update = {};
 
     if (username) {update.username = username }
@@ -168,6 +169,7 @@ const editDriverProfile = async (req, res,next) => {
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
   } catch (err) {
+    console.log('---------err----------',err);
     if(req.files){
       Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
     }
@@ -238,24 +240,43 @@ const cancelRide = async (req, res) => {
 const endRide = async (req, res) => {
   try {
     let {booking_id,user_id }= req.body;
-    let updateEndRide = await libs.updateData(db.bookings,{booking_status:"completed"},{where:{ id:booking_id }});
+    // let updateEndRide = await libs.updateData(db.bookings,{booking_status:"completed"},{where:{ id:booking_id }});
+    let updateEndRide = await libs.findAndUpdate(db.bookings,booking_id,{booking_status:"completed"});
 
-    if(updateEndRide[0] == 0){
-      return res.status(200).json({code:404,message:"boooking not found"});
+    if(updateEndRide){
+      let data = {
+        "pickup_long": updateEndRide.pickup_long,
+        "pickup_lat": updateEndRide.pickup_lat,
+        "drop_long": updateEndRide.drop_long,
+        "drop_lat": updateEndRide.drop_lat,
+        "pickup_address": updateEndRide.pickup_address,
+        "drop_address": updateEndRide.drop_address,
+        "vechile_type":updateEndRide.vechile_type,
+        "amount": updateEndRide.amount,
+        "ride_status": "Completed",
+        "driver_id": req.creds.id,
+        "user_id": user_id,
+        "booking_id":updateEndRide.id,
+      }
+      // bookings me se data find kr k rides wali mw save krva do manually api se hi
+      let save = await libs.createData(db.myrides,data);
+      console.log('------save------',save.toJSON());
+
+      let notify_data={
+        title: 'Ride Completed',
+        message: 'Your ride has been completed',
+      }
+      let getData= await libs.getData(db.users,{
+        where:{id:user_id},
+        attributes:["id","username","device_token"]
+      })
+  
+      Notify.sendNotifyToUser(notify_data,getData.device_token);
+  
+      return res.status(200).json({code:200,message:"Ride Completed"});
     }
-
-    let notify_data={
-      title: 'Ride Completed',
-      message: 'Your ride has been completed',
-    }
-    let getData= await libs.getData(db.users,{
-      where:{id:user_id},
-      attributes:["id","username","device_token"]
-    })
-
-    Notify.sendNotifyToUser(notify_data,getData.device_token);
-
-    res.status(200).json({code:200,message:"Ride Completed",getData});
+    return res.status(200).json({code:404,message:"boooking not found"});
+    
   } catch (err) {
     console.log('----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -287,7 +308,7 @@ const sendMessage = async (req, res) => {
 
     Notify.sendNotifyToUser(notify_data,getData.device_token);
 
-    res.status(200).json({code:200,message:"message saved",data: getData});
+    res.status(200).json({code:200,message:"message saved",data: saveData});
   } catch (err) {
     console.log('-----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -523,7 +544,21 @@ const getTotalRatings = async (req, res) => {
   }
 };
 
+const findPreviousRide = async (req, res) => {
+  try {
+    
+    let findRide = await libs.getAllData(db.bookings,{where:{driver_id: req.creds.id,booking_status:{[Op.or]:['accept','pending']}}});
+
+    if(!findRide.length){
+      return res.status(404).json({code:200,message: "Ride not found", data:findRide});
+    }
+
+    res.status(200).json({code:200,message:"You have pending previous ride",data:findRide});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
 
 
 
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings,}
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings,findPreviousRide}

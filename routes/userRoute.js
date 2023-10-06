@@ -11,7 +11,7 @@ const {verify_token,upload} =require('../libs/commonFunc');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   console.log('-----userRoute------');
-  res.render('index', { title: 'Express' });
+  res.render('socketTest', { title: 'Express' });
 });
 
 
@@ -35,8 +35,6 @@ router.post('/user/cancel-ride',verify_token(CONFIG.SCOPE.users),userCtrl.cancel
 
 router.get('/user/find-previous-ride',verify_token(CONFIG.SCOPE.users),userCtrl.findPreviousRide);
 
-// router.get('/user/findNearbyDrivers',verify_token(CONFIG.SCOPE.users),userCtrl.findNearbyDrivers);
-
 router.post('/user/sendMessage',verify_token(CONFIG.SCOPE.users),sendMsgValid, userCtrl.sendMessage);
 
 router.get('/user/getAllMessages',verify_token(CONFIG.SCOPE.users), userCtrl.getAllMessages);
@@ -59,6 +57,7 @@ router.get('/user/getOffers',verify_token(CONFIG.SCOPE.users), userCtrl.getOffer
 
 router.get('/user/previousHistory',verify_token(CONFIG.SCOPE.users), userCtrl.previousHistory);
 
+router.get('/user/findNearByDrivers',verify_token(CONFIG.SCOPE.users), userCtrl.findNearByDrivers);
 
 
 
