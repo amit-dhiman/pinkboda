@@ -12,7 +12,7 @@ router.get('/addAdmin', adminCtrl.addAdmin);
 router.post('/admin/login', adminCtrl.login);
 router.post('/admin/changePassword', adminCtrl.changePassword);
 // ,upload.single('image')
-router.put('/admin/editProfile',adminCtrl.editProfile);
+router.put('/admin/editProfile',upload.single('image'),adminCtrl.editProfile);
 
 router.get('/admin/renderIndex', adminCtrl.renderIndex);
 

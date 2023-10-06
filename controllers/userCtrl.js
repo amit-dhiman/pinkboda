@@ -299,7 +299,10 @@ const findPreviousRide = async (req, res) => {
     //   include:[{model:db.bookings}],
     // })
 
-    let findRide = await libs.getAllData(db.bookings, {where:{user_id:req.creds.id,booking_status:{[Op.or]:['accept','pending']}}});
+    let findRide = await libs.getAllData(db.bookings, {
+      where:{user_id:req.creds.id,booking_status:{[Op.or]:['accept']}},       // 'pending'
+      include:db.drivers
+    });
     if(!findRide.length){
       return res.status(404).json({code:200,message: "Ride not found", data:findRide});
     }

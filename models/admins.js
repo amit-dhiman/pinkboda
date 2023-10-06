@@ -33,10 +33,8 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: "updated_at",
     deletedAt: 'deleted_at',
   })
-
-
+  
   // Admin.hasMany(db, { foreignKey: 'user_id' });
   // Admin.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });
-  
   return Admin;
 }

@@ -162,7 +162,7 @@
                           <% for(let rider of getRiders) { %>
                             <% const formattedDate = new Date(rider.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                             <tr class="tabel_size">
-                              <th scope="row"><img class="profile_img" src="/uploads/users/<%= rider.image%>" /></th>
+                              <th scope="row"><img class="profile_img" src="<%=userImageUrl + rider.image%>" /></th>
                               <td><%=rider.username %></td>
                               <td><%=rider.gender %></td>
                               <td><%=rider.total_rides %></td>
@@ -197,7 +197,7 @@
       //   left.classList.toggle("active");
       //   bodyClass.classList.toggle("bodyOverflow");
       // };
-
+      // 
       
 function updateButton(button, riderId) {
   fetch(`/admin/actionOnUser/${riderId}`)
@@ -206,12 +206,13 @@ function updateButton(button, riderId) {
         throw new Error('Network response was not ok');
       }
       // console.log('----------response-----------',response);
-      return response.text();
+      return response.json();
     })
     .then(newButtonText => {
       // console.log('---------newButtonText---------',newButtonText);
+      // console.log('---------.data---------',newButtonText.data);
       // console.log('---------button---------',button);
-      button.textContent = newButtonText;
+      button.textContent = newButtonText.data;
     })
     .catch(error => {
       console.error('Error occurred while updating the button:', error);

@@ -150,11 +150,17 @@ const editDriverProfile = async (req, res,next) => {
 
     if(req.files){
       for(let key in req.files){
-        fs.unlink(`${process.env.driver_image_baseUrl}${userData[key]}`,(err)=>{if(err)return})
+        fs.unlink(`${process.env.driver_image_baseUrl}${userData[key]}`,(err)=>{
+          if(err){
+          console.log('-------key---------',key);
+          console.log('-------err---------',err);
+          return
+        }})
         update[key] = req.files[key][0].filename
       }
     } 
-    console.log('---------req.files----------',req.files);
+    console.log('---------update----------',update);
+    console.log('---------req.files----------',req.files);    
     const editProfile = await libs.updateData(userData, update);
 
     if(editProfile.profile_image && !req.files.profile_image){editProfile.profile_image= `${process.env.driver_image_baseUrl}${editProfile.profile_image}`}
@@ -164,7 +170,9 @@ const editDriverProfile = async (req, res,next) => {
     if(editProfile.vechile_insurance && !req.files.vechile_insurance){editProfile.vechile_insurance= `${process.env.driver_image_baseUrl}${req.files.vechile_insurance}`}
 
     if(req.files){
-      for(let key in req.files){editProfile[key] = `${process.env.driver_image_baseUrl}${req.files[key][0].filename}`}
+      for(let key in req.files){
+        console.log('-------------------',`${process.env.driver_image_baseUrl}${req.files[key][0].filename}`);
+        editProfile[key] = `${process.env.driver_image_baseUrl}${req.files[key][0].filename}`}
     }
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
@@ -179,13 +187,13 @@ const editDriverProfile = async (req, res,next) => {
 
 
 const deleteDriverAccount = async (req, res) => {
-    try {
-      let del =await libs.destroyData(db.drivers,{where:{id:req.creds.id}});   //It will store date in deleted_at's fields
-      res.status(200).json({code:204,message:"Account deleted",data:del});    
-  
-    } catch (err) {
-      ERROR.ERROR_OCCURRED(res, err);
-    }
+  try {
+    let del =await libs.destroyData(db.drivers,{where:{id:req.creds.id}});   //It will store date in deleted_at's fields
+    res.status(200).json({code:204,message:"Account deleted",data:del});    
+
+  } catch (err) {
+    ERROR.ERROR_OCCURRED(res, err);
+  }
 };
 
 // ----location update eveytime-----
@@ -547,7 +555,10 @@ const getTotalRatings = async (req, res) => {
 const findPreviousRide = async (req, res) => {
   try {
     
-    let findRide = await libs.getAllData(db.bookings,{where:{driver_id: req.creds.id,booking_status:{[Op.or]:['accept','pending']}}});
+    let findRide = await libs.getAllData(db.bookings,{
+      where:{driver_id: req.creds.id,booking_status:{[Op.or]:['accept',]}},     // 'pending'
+      include:db.users
+    });
 
     if(!findRide.length){
       return res.status(404).json({code:200,message: "Ride not found", data:findRide});

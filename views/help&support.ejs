@@ -152,7 +152,7 @@
                           <% for(let obj of supportData){%>
                             <tr class="tabel_size">
                             <% const formattedDate = new Date(obj.created_at).toLocaleDateString('en-US', { day: 'numeric',month: 'short', year: 'numeric' }); %>
-                              <th scope="row"><img class="profile_img" src="/images/img.png" /></th>
+                              <th scope="row"><img class="profile_img" src="<%= (obj.user_id) ? userImageUrl + obj.user.image : driverImageUrl + obj.driver.profile_image %>"/></th>
                               <td><%= (obj.user_id) ? obj.user.username : obj.driver.username %><span class="helpsupport"><%= (obj.user_id)? '(User)':'(Driver)'%></span></td>
                               <td><%= formattedDate %></td>
                               <td class="helpsupport"><%= obj.message %></td>

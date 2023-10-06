@@ -7,6 +7,7 @@ const ERROR= require('../config/responseMsgs').ERROR;
 const SUCCESS= require('../config/responseMsgs').SUCCESS;
 const Notify = require('../libs/notifications');
 const fs = require('fs');
+const {Op} = require('sequelize');
 
 const addAdmin = async(req, res) => {
   console.log('-----/admin Routes------');
@@ -53,33 +54,37 @@ const login = async(req, res) => {
 
 const editProfile = async (req, res,next) => {
   try {
-    const adminData = req.creds;
-    console.log('---------adminData----------',adminData);
-    const {device_type,device_token,gender,username} = req.body;
+    let getData= await libs.getData(db.admins,{});
+
+    const {gender,username,device_token,device_type} = req.body;
     console.log('=====body=======',req.body);
     console.log('======---file---======',req.file);
-    // let update = {};
+    let update = {};
 
     // // await commonFunc.upload(req,res,next);
 
-    // if (username) { update.username = username }
-    // if (gender) { update.gender = gender }
-    // if (device_type) { update.device_type = device_type }
-    // if (device_token) { update.device_token = device_token }
-    // if(req.file){
-    //   if(userData.image){
-    //     fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`,(err)=>{if(err)return})
-    //   }
-    //   update.image= req.file.filename
-    // };
-    // console.log('-----update------',update);
-    
-    // const editProfile = await libs.updateData(userData, update);
-    // if(editProfile.image){
-    //   editProfile.image = `${process.env.user_image_baseUrl}${editProfile.image}`
-    // }
+    if (username) { update.username = username }
+    if (gender) { update.gender = gender }
+    if (device_type) { update.device_type = device_type }
+    if (device_token) { update.device_token = device_token }
 
-    return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
+    if(req.file){
+      if(getData.image){
+        fs.unlink(`${process.env.admin_image_baseUrl}${getData.image}`,(err)=>{if(err)return})
+      }
+      update.image= req.file.filename
+    };
+    console.log('-----update------',update);
+    
+    const editProfile = await libs.updateData(getData, update);
+    if(editProfile.image){
+      editProfile.image = `${process.env.user_image_baseUrl}${editProfile.image}`
+    }
+    res.status(200).json({
+    // res.render('profile' , {
+      editProfile,
+    });
+
   } catch (err) {
     if(req.file){ fs.unlink(req.file.path, (err)=>{if (err) return})}
     ERROR.ERROR_OCCURRED(res, err);
@@ -176,8 +181,7 @@ const renderRider = async (req, res) => {
     // res.status(200).json({code:200,message:"getRiders",
     res.render('riders',{
       getRiders: getRiders,
-      userImageUrl: process.env.user_image_baseUrl
-
+      userImageUrl: process.env.user_imageUrl_ejs
     });
   } catch (err) {
     console.log('----err----',err);
@@ -277,27 +281,25 @@ const pendingRequests = async (req, res) => {
 
 const renderHelpSupport = async (req, res) => {
   try {
-    // let getData= await libs.getAllData(db.supports,{
-    //   include: [
-    //     {model: db.users,attributes: ["username","image","mobile_number"]},
-    //     {model: db.drivers,attributes: ["username","profile_image","mobile_number"]},
-    //   ]
-    // });
-    
-    const usersData = await db.supports.findAll({
-      include: [{model: db.users, attributes: ["id","username", "image", "mobile_number"]}]
+    const usersData = await libs.getAllData(db.supports,{
+      where: {user_id: {[Op.gt]: 0}},
+      include: [{model: db.users,attributes:["id","username","image","mobile_number"]}]
     });
     
-    const driversData = await db.supports.findAll({
-      include: [{model: db.drivers,attributes: ["id","username", "profile_image", "mobile_number"]}]
+    const driversData = await libs.getAllData(db.supports,{
+      where: {driver_id: {[Op.gt]: 0}},
+      include: [{model: db.drivers,attributes:["id","username","profile_image","mobile_number"]}]
     });
-  
+    
     // For example, combine usersData and driversData into a single array
     const combinedData = usersData.concat(driversData);
        
     // res.status(200).json({message:'Status toggled successfully',
     res.render('help&support',{
-     supportData: combinedData});
+     supportData: combinedData,
+     driverImageUrl : process.env.driver_imageUrl_ejs,
+     userImageUrl: process.env.user_imageUrl_ejs
+    });
   } catch (err) {
     console.log('---------err--------',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
