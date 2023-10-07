@@ -266,9 +266,9 @@ const endRide = async (req, res) => {
         "user_id": user_id,
         "booking_id":updateEndRide.id,
       }
-      // bookings me se data find kr k rides wali mw save krva do manually api se hi
+      
       let save = await libs.createData(db.myrides,data);
-      console.log('------save------',save.toJSON());
+      // console.log('------save------',save.toJSON());
 
       let notify_data={
         title: 'Ride Completed',
@@ -555,14 +555,15 @@ const getTotalRatings = async (req, res) => {
 const findPreviousRide = async (req, res) => {
   try {
     
-    let findRide = await libs.getAllData(db.bookings,{
-      where:{driver_id: req.creds.id,booking_status:{[Op.or]:['accept',]}},     // 'pending'
+    let findRide = await libs.getData(db.bookings,{
+      where:{driver_id: req.creds.id, booking_status: 'accept'}, // {[Op.or]:['accept']},'pending'
       include:db.users
     });
 
-    if(!findRide.length){
-      return res.status(404).json({code:200,message: "Ride not found", data:findRide});
+    if(!findRide){
+      return res.status(404).json({code:404,message: "Ride not found"});
     }
+    findRide.user.image = `${process.env.user_image_baseUrl}${findRide.user.image}`
 
     res.status(200).json({code:200,message:"You have pending previous ride",data:findRide});
   } catch (err) {

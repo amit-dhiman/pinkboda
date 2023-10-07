@@ -101,27 +101,6 @@ db.supports.belongsTo(db.drivers,{foreignKey:"driver_id"})
 
 
 
-(async () => {
-    try {
-      const existingAdmins = await db.admins.findAll();
-  
-      if (existingAdmins.length === 0) {
-        // If the Admin table is empty, populate it with static email data
-        await db.admins.create({ email: 'admin@example.com' });
-        console.log('Admin data populated successfully.');
-      } else {
-        console.log('Admin data already exists.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      await sequelize.close();
-    }
-  })();
-  
-
-
-
-
 
 module.exports = db;
+

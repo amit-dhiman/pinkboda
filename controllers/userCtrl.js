@@ -8,7 +8,8 @@ require('dotenv').config();
 const CONFIG = require('../config/scope');
 const fs = require('fs');
 const Notify = require('../libs/notifications');
-const { Op } = require('sequelize')
+const { Op } = require('sequelize');
+
 
 const numberSignup = async (req, res) => {
   try {
@@ -114,8 +115,8 @@ const editUserProfile = async (req, res,next) => {
     const userData = req.creds;
     console.log('---------userData----------',userData);
     const {device_type,device_token,gender,username} = req.body;
-    // console.log('============',req.body);
-    console.log('======---file---======',req.file);
+    console.log('======body======',req.body);
+    console.log('-------------req.file------------',req.file);
     let update = {};
 
     // if (username) { 
@@ -136,7 +137,12 @@ const editUserProfile = async (req, res,next) => {
     if (device_token) { update.device_token = device_token }
     if(req.file){
       if(userData.image){
-        fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`,(err)=>{if(err)return})
+        console.log('---------fs unlink-----------',`${process.env.user_image_baseUrl}${userData.image}`);
+        fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`,(err)=>{
+          if(err)
+          console.log('------fs err--------',err);
+          return
+        })
       }
       update.image= req.file.filename
     };
@@ -149,8 +155,8 @@ const editUserProfile = async (req, res,next) => {
 
     return SUCCESS.DEFAULT(res,"profile updated successfully", editProfile);
   } catch (err) {
-    console.log('------err-----------',err);
-    if(req.file){ fs.unlin1k(req.file.path, (err)=>{if (err) return})}
+    console.log('------err------',err);
+    if(req.file){ fs.unlink(req.file.path, (err)=>{if (err) return})}
     ERROR.ERROR_OCCURRED(res, err);
   }
 };
@@ -299,13 +305,14 @@ const findPreviousRide = async (req, res) => {
     //   include:[{model:db.bookings}],
     // })
 
-    let findRide = await libs.getAllData(db.bookings, {
+    let findRide = await libs.getData(db.bookings, {
       where:{user_id:req.creds.id,booking_status:{[Op.or]:['accept']}},       // 'pending'
       include:db.drivers
     });
-    if(!findRide.length){
-      return res.status(404).json({code:200,message: "Ride not found", data:findRide});
+    if(!findRide){
+      return res.status(404).json({code:404,message: "Ride not found"});
     }
+    findRide.driver.profile_image = `${process.env.driver_image_baseUrl}${findRide.driver.profile_image}`
     
     res.status(200).json({code:200,message: "You have pending previous ride", data:findRide});
   } catch (err) {

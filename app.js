@@ -4,7 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 require('./models/db');
-require('./models/index');
+const db = require('./models/index');
 const Router = require('./routes/index');
 let cors = require('cors');
 
@@ -37,7 +37,23 @@ app.use(function(err, req, res, next) {
   // res.render('error');
 });
 
+ 
 
+// (async () => {
+//   try {
+//     const existingAdmins = await db.admins.findAll();
+
+//     if (existingAdmins.length === 0) {
+//       // If the Admin table is empty, populate it with static email data
+//       await db.admins.create({ email: 'admin@example.com' });
+//       console.log('Admin data populated successfully.');
+//     } else {
+//       console.log('Admin data already exists.');
+//     }
+//   } catch (error) {
+//     console.error('Error:', error);
+//   } 
+// })();
 
 
 

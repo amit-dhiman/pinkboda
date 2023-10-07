@@ -131,6 +131,7 @@ transport.sendMail(options, function(err, info){
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // const userPath= path.join(`${__dirname}`,'../',process.env.user_image_baseUrl);   // '../public/uploads/users/'
+    console.log('---------u path----------',process.env.user_image_baseUrl)
     cb(null, process.env.user_image_baseUrl)
   },
   filename: function (req, file, cb) {
@@ -145,6 +146,7 @@ const upload = multer({ storage: storage });
 const driverstorage = multer.diskStorage({
   destination: function (req, file, cb) {
     // const driverPath= path.join(`${__dirname}`,'../public/uploads/drivers/');
+    console.log('-------d path----',process.env.driver_image_baseUrl)
     cb(null, process.env.driver_image_baseUrl)
   },
   filename: function (req, file, cb) {
