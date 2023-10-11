@@ -6,18 +6,18 @@ module.exports = (sequelize, DataTypes) => {
 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     username:{ type: DataTypes.STRING },
-    gender:{ type: DataTypes.ENUM("Male","Female","Others"),default:"Male" },
+    gender:{ type: DataTypes.ENUM("Male","Female","Others"),defaultValue:"Male" },
 
     mobile_number: {type: DataTypes.STRING},
     country_code:{type: DataTypes.STRING},
     image: { type: DataTypes.STRING },
 
     total_rides:{ type: DataTypes.INTEGER },   //may be it will be updated by end ride time
-    action: { type: DataTypes.ENUM("Enable","Disable")},
+    action: { type: DataTypes.ENUM("Enable","Disable"),defaultValue:'Enable'},
     socket_id: { type: DataTypes.STRING },
 
     access_token: { type: DataTypes.STRING },
-    device_type:{ type:DataTypes.ENUM("Android","Apple"),default:"Android"},
+    device_type:{ type:DataTypes.ENUM("Android","Apple"),defaultValue:"Android"},
     device_token: { type: DataTypes.STRING },
     created_at:{type: DataTypes.BIGINT},
     updated_at:{type: DataTypes.BIGINT},

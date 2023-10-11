@@ -7,7 +7,7 @@ const ERROR= require('../config/responseMsgs').ERROR;
 const SUCCESS= require('../config/responseMsgs').SUCCESS;
 const fs = require('fs');
 const Notify = require('../libs/notifications');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 
 
 const driverSignup = async (req, res) => {
@@ -96,13 +96,11 @@ const login = async(req,res) => {
 
       let token = await commonFunc.generateAccessToken(getData, token_info, process.env.driver_secretKey);
 
-
       if(token.profile_image){token.profile_image= `${process.env.driver_image_baseUrl}${token.profile_image}`}
       if(token.license){token.license= `${process.env.driver_image_baseUrl}${token.license}`}
       if(token.id_card){token.id_card= `${process.env.driver_image_baseUrl}${token.id_card}`}
       if(token.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${token.passport_photo}`}
       if(token.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${token.vechile_insurance}`}
-
 
       return SUCCESS.DEFAULT(res,"login successfully", token)
     }
@@ -216,11 +214,11 @@ const cancelRide = async (req, res) => {
       id: req.body.booking_id,
       // booking_status:"pending"
     }
-    let updateMsg= await libs.updateData(db.bookings,{cancel_reason: req.body.cancel_reason, cancelled_by:"Driver"});
-    let deleteData = await libs.destroyData(db.bookings,{where:query});
-    
-    if(deleteData){
-      let getUserData= await libs.getData(db.users,{id:req.body.user_id});
+    let updateMsg= await libs.updateData(db.bookings,{cancel_reason: req.body.cancel_reason, cancelled_by:"Driver",booking_status:"cancel"},{where:query});
+
+    if(updateMsg[0] !=0){
+      console.log('-----------------------');
+      let getUserData= await libs.getData(db.users,{where:{id:req.body.user_id}});
 
       //  ---------send notification----------
       let notifyData = {
@@ -403,7 +401,7 @@ const getNotifications = async (req, res) => {
   //   let save = await libs.createData(db.notifications, data);
   //   console.log('-----save------',save.toJSON());
 
-    let getNotify = await libs.getAllData(db.notifications, {where:{driver_id: req.creds.id}});
+    let getNotify = await libs.getAllData(db.notifications, {where:{driver_id: req.creds.id},order:[['created_at','DESC']]});
 
     res.status(200).json({code:200,message:"get All Notifications",data: getNotify});
   } catch (err) {
@@ -447,6 +445,7 @@ const getMyRides = async (req, res) => {
           model: db.users,
           attributes: ['username','image'],
         }],
+        order:[['created_at','DESC']]
       });
         
       let arr = []

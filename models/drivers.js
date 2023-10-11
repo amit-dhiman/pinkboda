@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     socket_id: { type: DataTypes.STRING },    
          
     total_rides: { type: DataTypes.INTEGER },
-    action: { type: DataTypes.ENUM("Enable","Disable"),defaultValue:"Enable"},
+    action: { type: DataTypes.ENUM("Enable","Disable"),defaultValue:"Disable"},
 
     access_token: { type: DataTypes.STRING },
     device_type:{type:DataTypes.ENUM("Android","Apple"),defaultValue:"Android"},

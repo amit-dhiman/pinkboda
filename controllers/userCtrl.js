@@ -113,10 +113,7 @@ const userProfile = async (req, res) => {
 const editUserProfile = async (req, res,next) => {
   try {
     const userData = req.creds;
-    console.log('---------userData----------',userData);
     const {device_type,device_token,gender,username} = req.body;
-    console.log('======body======',req.body);
-    console.log('-------------req.file------------',req.file);
     let update = {};
 
     // if (username) { 
@@ -137,12 +134,7 @@ const editUserProfile = async (req, res,next) => {
     if (device_token) { update.device_token = device_token }
     if(req.file){
       if(userData.image){
-        console.log('---------fs unlink-----------',`${process.env.user_image_baseUrl}${userData.image}`);
-        fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`,(err)=>{
-          if(err)
-          console.log('------fs err--------',err);
-          return
-        })
+        fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`,(err)=>{if(err)return})
       }
       update.image= req.file.filename
     };
@@ -187,7 +179,7 @@ const calcRideAmount = async (req, res) => {
       driver_gender: req.body.driver_gender,
       user_id: req.creds.id
     }
-    data.amount =10
+    data.amount = 10
 
     let saveData= await libs.createData(db.search_history,data);
     saveData.amount = `$${saveData.amount}`
@@ -267,12 +259,12 @@ const cancelRide = async (req, res) => {
       id: req.body.booking_id,
       // booking_status:"pending"
     }
-    let updateMsg= await libs.updateData(db.bookings,{cancel_reason:req.body.cancel_reason, cancelled_by:"User"});
+    let updateMsg= await libs.updateData(db.bookings,{cancel_reason:req.body.cancel_reason, cancelled_by:"User"},{where:query});
     if(req.body.driver_id){
       let deleteData = await libs.destroyData(db.bookings,{where:query});
       
       if(deleteData){
-        let getDriverData= await libs.getData(db.drivers,{id:req.body.driver_id});
+        let getDriverData= await libs.getData(db.drivers,{where:{id:req.body.driver_id}});
 
         //  ---------send notification----------
         let data = {
@@ -501,7 +493,7 @@ const getNotifications = async (req, res) => {
     // let save = await libs.createData(db.notifications, data);
     // console.log('-----save------',save.toJSON());
 
-    let getNotify = await libs.getAllData(db.notifications, {where:{user_id: req.creds.id}});
+    let getNotify = await libs.getAllData(db.notifications, {where:{user_id: req.creds.id},order:[['created_at','DESC']]});
 
     res.status(200).json({code:200,message:"get All Notifications",data: getNotify});
   } catch (err) {
@@ -546,6 +538,7 @@ const getMyRides = async (req, res) => {
         model: db.drivers,
         attributes: ['username','profile_image'],
       }],
+      order:[['created_at','DESC']]
     });
 
     let arr = []
@@ -564,7 +557,7 @@ const getMyRides = async (req, res) => {
   }
 };
 
- 
+
 const getSingleRide = async (req, res) => {
   try {
     let booking_id = req.query.booking_id;

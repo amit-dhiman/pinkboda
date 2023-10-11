@@ -16,8 +16,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -39,21 +39,21 @@ app.use(function(err, req, res, next) {
 
  
 
-// (async () => {
-//   try {
-//     const existingAdmins = await db.admins.findAll();
+(async () => {
+  try {
+    const existingAdmins = await db.admins.findAll();
 
-//     if (existingAdmins.length === 0) {
-//       // If the Admin table is empty, populate it with static email data
-//       await db.admins.create({ email: 'admin@example.com' });
-//       console.log('Admin data populated successfully.');
-//     } else {
-//       console.log('Admin data already exists.');
-//     }
-//   } catch (error) {
-//     console.error('Error:', error);
-//   } 
-// })();
+    if (existingAdmins.length === 0) {
+      // If the Admin table is empty, populate it with static email data
+      await db.admins.create({ email: 'admin@example.com' });
+      console.log('Admin data populated successfully.');
+    } else {
+      // console.log('Admin data already exists.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  } 
+})();
 
 
 

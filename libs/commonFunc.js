@@ -131,8 +131,8 @@ transport.sendMail(options, function(err, info){
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // const userPath= path.join(`${__dirname}`,'../',process.env.user_image_baseUrl);   // '../public/uploads/users/'
-    console.log('---------u path----------',process.env.user_image_baseUrl)
-    cb(null, process.env.user_image_baseUrl)
+    // console.log('---------u path----------',process.env.user_image_baseUrl)
+    cb(null, './public/uploads/users/')
   },
   filename: function (req, file, cb) {
     const uniqueSuffix =`${Date.now()}_${Math.round(Math.random()*1000)}.png`;
@@ -146,8 +146,8 @@ const upload = multer({ storage: storage });
 const driverstorage = multer.diskStorage({
   destination: function (req, file, cb) {
     // const driverPath= path.join(`${__dirname}`,'../public/uploads/drivers/');
-    console.log('-------d path----',process.env.driver_image_baseUrl)
-    cb(null, process.env.driver_image_baseUrl)
+    // console.log('-------d path----',process.env.driver_image_baseUrl)
+    cb(null,  './public/uploads/drivers/')
   },
   filename: function (req, file, cb) {
     const uniqueSuffix =`${Date.now()}_${Math.round(Math.random()*1000)}.png`;
@@ -158,11 +158,24 @@ const driverstorage = multer.diskStorage({
 const driver_upload = multer({ storage: driverstorage })
 
 
+const adminstorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // const adminPath= path.join(`${__dirname}`,'../public/uploads/admins/');
+    cb(null, './public/uploads/admin/')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix =`${Date.now()}_${Math.round(Math.random()*1000)}.png`;
+    cb(null, file.fieldname + '-' + uniqueSuffix)
+  }
+})
+
+const admin_upload = multer({ storage: adminstorage })
+
 
 
 
 
 module.exports= { 
   generateAccessToken,verify_token, securePassword,
-  compPassword,sendMail,upload, driver_upload
+  compPassword,sendMail,upload, driver_upload, admin_upload
 }

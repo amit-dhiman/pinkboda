@@ -5,10 +5,10 @@ module.exports = (sequelize, DataTypes) => {
 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 
-    pickup_long: { type: DataTypes.FLOAT(10, 6)},
-    pickup_lat: { type: DataTypes.FLOAT(10, 6)},
-    drop_long: { type: DataTypes.FLOAT(10, 6)},
-    drop_lat: { type: DataTypes.FLOAT(10, 6)},
+    pickup_long: { type: DataTypes.DECIMAL(10, 6)},
+    pickup_lat: { type: DataTypes.DECIMAL(10, 6)},
+    drop_long: { type: DataTypes.DECIMAL(10, 6)},
+    drop_lat: { type: DataTypes.DECIMAL(10, 6)},
 
     pickup_address: { type: DataTypes.STRING },
     drop_address: { type: DataTypes.STRING },
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: null
     },
-    amount: { type: DataTypes.DECIMAL(10, 2),defaultValue:1},
+    amount: { type: DataTypes.DECIMAL(6, 2),defaultValue:1},
     ride_type:{type: DataTypes.ENUM("Ride","Delivery")},
     driver_gender:{type: DataTypes.ENUM("Male","Female","Both")},
 

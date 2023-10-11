@@ -158,7 +158,12 @@
                               <td class="helpsupport"><%= obj.message %></td>
                               <td><%= obj.email %></td>
                               <td><%= (obj.user_id) ? obj.user.mobile_number : obj.driver.mobile_number %></td>
-                              <td><button class="btn btn-info data" type="button">Resolved</button></td>                   
+                              <td>
+                                <button class="btn btn-info data" type="button" <% if (obj.issue_status === 'Unselected') { %>
+                                    onclick="resolveButton(this, '<%= obj.id %>')" <% } %> >
+                                  <%= obj.issue_status %>
+                                </button>
+                              </td>              
                             </tr>
                           <% } %>
                         </tbody>
@@ -171,22 +176,44 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      function menuToggle() {
-        const toggleMenu = document.querySelector(".menu");
-        toggleMenu.classList.toggle("active");
-      }
-    </script>
-    <script>
-      const toggle = document.getElementById("toggle");
-      const left = document.getElementById("left");
-      const bodyClass = document.querySelector("body");
-      toggle.onclick = function () {
-        toggle.classList.toggle("active");
-        left.classList.toggle("active");
-        bodyClass.classList.toggle("bodyOverflow");
-      };
-    </script>
-  </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function menuToggle() {
+    const toggleMenu = document.querySelector(".menu");
+    toggleMenu.classList.toggle("active");
+  }
+</script>
+<script>
+  const toggle = document.getElementById("toggle");
+  const left = document.getElementById("left");
+  const bodyClass = document.querySelector("body");
+  toggle.onclick = function () {
+    toggle.classList.toggle("active");
+    left.classList.toggle("active");
+    bodyClass.classList.toggle("bodyOverflow");
+  };
+
+  function resolveButton(button, issueId) {
+    fetch(`/admin/resolvedIssue/${issueId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        // console.log('----------response-----------',response);
+        return response.json();
+      })
+      .then(newButtonText => {
+        // console.log('---------newButtonText---------',newButtonText);
+        // console.log('---------.data---------',newButtonText.data);
+        // console.log('---------button---------',button);
+        button.textContent = newButtonText.data;
+      })
+      .catch(error => {
+        console.error('Error occurred while updating the button:', error);
+      })
+  }
+
+
+</script>
+</body>
 </html>

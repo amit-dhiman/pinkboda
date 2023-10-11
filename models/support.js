@@ -6,12 +6,14 @@ module.exports = (sequelize, DataTypes) => {
 
     email: { type: DataTypes.STRING },
     user_id:{ type: DataTypes.INTEGER, references:{model:'users',key:'id'}},
-    driver_id:{ type: DataTypes.INTEGER, references:{model:'drivers',key:'id'}},
+    driver_id:{type:DataTypes.INTEGER, references:{model:'drivers',key:'id'}},
+
+    issue_status:{type:DataTypes.ENUM("Resolved","Unselected"),defaultValue:"Unselected"},
    
-    message: { type: DataTypes.STRING, defaultValue:1},
-    created_at:{type: DataTypes.BIGINT},
-    updated_at:{type: DataTypes.BIGINT},
-    deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
+    message: { type:DataTypes.STRING,defaultValue:1},
+    created_at:{type:DataTypes.BIGINT},
+    updated_at:{type:DataTypes.BIGINT},
+    deleted_at: {type:DataTypes.BIGINT,defaultValue:null},
     },{
         hooks: {
           beforeValidate: (instance, options) => {

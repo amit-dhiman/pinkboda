@@ -5,16 +5,16 @@ module.exports = (sequelize, DataTypes) => {
 
         id: {type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
 
-        pickup_long: { type: DataTypes.FLOAT(10, 6)},
-        pickup_lat: { type: DataTypes.FLOAT(10, 6)},
-        drop_long: { type: DataTypes.FLOAT(10, 6)},
-        drop_lat: { type: DataTypes.FLOAT(10, 6)},
+        pickup_long: { type: DataTypes.DECIMAL(10, 6)},
+        pickup_lat: { type: DataTypes.DECIMAL(10, 6)},
+        drop_long: { type: DataTypes.DECIMAL(10, 6)},
+        drop_lat: { type: DataTypes.DECIMAL(10, 6)},
 
         pickup_address: { type: DataTypes.STRING },
         drop_address: { type: DataTypes.STRING },
 
         vechile_type: { type: DataTypes.STRING},
-        amount: { type: DataTypes.INTEGER },
+        amount: { type: DataTypes.DECIMAL(6,2) },
 
         ride_status: { type: DataTypes.ENUM("Completed","Cancelled")},
 

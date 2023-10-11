@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     <!-- custom css -->
-    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="/assets/css/styles.css" />
   </head>
 
   <body>
@@ -126,47 +126,69 @@
               <div class="riders_tab">
                 <h2 class="riders_tab1">Profile</h2>
                 <!-- <div class="tab-content table-responsive"> -->
-                    <div class="profile_section"></div>
-                    <div class="row">
-                        <div class="hauzmart-admin">
-                        <div class="col-md-3">
-                            <img src="/images/profile-pic.png" class="profile-pic">
-                            <img src="/images/camera.png" class="camera-pic">
-                            
-
-                        </div>
-                        <div class="col-md-5">
-                            <!-- <div class="profile_txt">
-                                <h1>Fraoou Lkosa</h1>
-                                <p>fraooulkosa@gmail.com</p>
-                            </div> -->
-                        </div>
-                        <div class="col-md-4 d-flex justify-content-center gap-3">
-                            <button class="btn btn-primary cancel">Cancel</button>
-                            <button class="btn btn-primary save">Save</button>
-                        </div>
+                <form  method="post" action="/admin/editProfile" enctype="multipart/form-data" >
+                  <div class="profile_section"></div>
+                  <div class="row">
+                    <div class="hauzmart-admin">
+                      <div class="col-md-3">
+                        <img src="/uploads/admin/<%=data.profile_image %>" class="profile-pic">
+                        <input type="file" name="profile_image" id="imageInput" style="display: none;">
+                        <img src="/images/camera.png" id="imageTrigger" class="camera-pic" >
+                      </div>
+                      <div class="col-md-5">
+                          <!-- <div class="profile_txt">
+                            <h1>Fraoou Lkosa</h1>
+                            <p>fraooulkosa@gmail.com</p>
+                          </div> -->
+                      </div>
+                      <div class="col-md-4 d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary cancel" id="cancelButton">Cancel</button>
+                        <button class="btn btn-primary save" id="saveButton">Save</button>
+                      </div>
                     </div>
-                    </div>
-                    <div class="input-icons">
-                        <label for="name" class="label_txt mt-3">Full Name</label>
-                        <img class="name" src="/images/name.png"> <input type="text" name="project_name" class="form-control new_project" placeholder="Fraoou Lkosa" aria-label="">
-                        <label for="name" class="label_txt mt-3">Email</label>
-                        <img class="mail" src="/images/mail.png"><input type="email" name="project_name" class="form-control new_project" placeholder="fraooulkosa@gmail.com" aria-label="">
                   </div>
+                  <div class="input-icons">
+                    <label for="name" class="label_txt mt-3">Full Name</label>
+                    <img class="name" src="/images/name.png"> <input type="text" name="admin_name" class="form-control new_project" placeholder="<%=data.full_name%>" aria-label="">
+                    <label for="name" class="label_txt mt-3">Email</label>
+                    <img class="mail" src="/images/mail.png"><input type="email" name="admin_email" class="form-control new_project" placeholder="<%=data.email%>" aria-label="">
+                  </div>
+                </form>
 
               <!-- </div> -->
-            </div>
+              </div>
           </div>
         </div>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      function menuToggle() {
-        const toggleMenu = document.querySelector(".menu");
-        toggleMenu.classList.toggle("active");
-      }
-    </script>
-  </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function menuToggle() {
+    const toggleMenu = document.querySelector(".menu");
+    toggleMenu.classList.toggle("active");
+  }
+
+  const imageTrigger= document.getElementById("imageTrigger");
+  const imageInput= document.getElementById("imageInput");
+
+  imageTrigger.addEventListener("click",()=>{
+    imageInput.click();
+  });
+
+  const saveButton = document.getElementById("saveButton");
+  const cancelButton = document.getElementById("cancelButton");
+  const form = document.querySelector("form");
+
+  saveButton.addEventListener("click", function () {
+    form.submit();
+  });
+
+  cancelButton.addEventListener("click", function (e) {
+    e.preventDefault(); 
+    form.reset(); 
+  });
+
+</script>
+</body>
 </html>

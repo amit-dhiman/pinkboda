@@ -2,15 +2,14 @@ const FCM = require('fcm-push');
 require('dotenv').config();
 
 const sendNotifyToUser = async (data,deviceToken) => {
-
     let fcm = new FCM(process.env.user_serverKey);
+    console.log('------------deviceToken-----------',deviceToken);
     if(!deviceToken){
       // mine f23's  pinkboda
       deviceToken = "cdWfcVZSSVKAS9Ks-HkDRR:APA91bFkmIIByTf4Cy7D8qIxJaPo_qJKv_Kc_n5hENGIvX32vcsSsrlv-ai7xtWWlBLBO6S58oSoNXGvGE7SOeZ6OIhl_PqJ6AVPbgcwJpwNEiNjm9Vw-rfPo0w8HPu8yXb-L6RHlSrn"
     }
-    console.log('--------process.env.user_serverKey--------',process.env.user_serverKey);
-    console.log('--------deviceToken--------',deviceToken);
-    console.log('--------data--------',data);
+    // console.log('--------process.env.user_serverKey--------',process.env.user_serverKey);
+    // console.log('--------data--------',data);
 
     let message = {
         to : deviceToken,
@@ -32,7 +31,7 @@ const sendNotifyToUser = async (data,deviceToken) => {
     // if(data.imageUrl){
     //     message.notification.imageUrl= data.imageUrl
     // }
-    console.log("---------push_data---------",message)
+    // console.log("---------push_data---------",message)
 
     fcm.send(message, function (err, result) {
         if(err) {console.log("-----fcm err-----",err)}

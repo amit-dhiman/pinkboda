@@ -164,7 +164,7 @@
                        <% for(let driver of getDrivers) { %>
                           <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                           <tr class="tabl_size">
-                            <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/uploads/drivers/<%=driver.profile_image %>" /></th>
+                            <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%=driverImageUrl + driver.profile_image %>" /></th>
                             <td><%=driver.gender %></td>
                             <td><%=driver.total_rides %></td>
                             <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + driver.passport_photo %>"/></th>
