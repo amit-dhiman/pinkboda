@@ -139,7 +139,6 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix)
   }
 })
-
 const upload = multer({ storage: storage });
 
 
@@ -154,7 +153,6 @@ const driverstorage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix)
   }
 })
-
 const driver_upload = multer({ storage: driverstorage })
 
 
@@ -168,14 +166,26 @@ const adminstorage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix)
   }
 })
-
 const admin_upload = multer({ storage: adminstorage })
 
+
+const admin_auth = async (req, res, next)=>{
+  console.log('------------req.session-------------',req.session);
+  // console.log('------------admin-------------',req.session.admin);
+  // console.log('------------role-------------',req.session.role);
+  if(req.session && req.session.role =='admin'){
+    const verify = await libs.getData(Models.admins,{where:{ id: req.session.admin.id}});
+    if(verify){
+      return next();
+    };
+  }else{
+    return res.redirect('/admin/login');
+  }
+};
 
 
 
 
 module.exports= { 
-  generateAccessToken,verify_token, securePassword,
-  compPassword,sendMail,upload, driver_upload, admin_upload
+  generateAccessToken,verify_token, securePassword,compPassword,sendMail,upload, driver_upload, admin_upload,admin_auth
 }

@@ -19,39 +19,48 @@ const addAdmin = async(req, res) => {
   res.render('index', { title: findAdmin.email });
 }
 
+const getloginPage = async (req, res) => {
+  try {
+    res.render('login');
+  } catch (err) {
+    console.log('----err----',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
+};
+
 const login = async(req, res) => {
   try {
-    const {email,password,device_type,device_token} = req.body;
+    console.log('-------body--------',req.body);
+
+    const {email,password} = req.body;
     
-    if (!email || !password) return res.status(400).json({code:400,message:"email, password is Required"});
+    if (!email || !password) return res.status(400).json({code:400,message:"email, password is required"});
 
     const getData = await libs.getData(db.admins,{where:{email:email}});
     if (getData) {
       let checkPswrd = await commonFunc.compPassword(password, getData.password)
       if(!checkPswrd){
         if(getData.password != password){
-          res.status(400).json({code:400,message:"password not match"})
+          // return res.status(400).json({code:400,message:"Incorrect Password"})
+          return res.redirect('/admin/login');
         }
       }
 
-      let token_info = { id: getData.id, email: getData.email };
-      if (device_type) { token_info.device_type = device_type }
-      if (device_token) { token_info.device_token = device_token }
-      
-      let token= await commonFunc.generateAccessToken(getData, token_info, process.env.admin_secretKey);
-      if(token.image){
-      token.image = `${process.env.admin_image_baseUrl}/${token.image}`
-      }
+      req.session.admin = getData.toJSON();
+      req.session.role = "admin";
 
-      return SUCCESS.DEFAULT(res, "logged in", token);
+      return res.redirect('/admin/renderIndex')
     } 
     else {
-      res.status(400).json({code:400,message:"email not found"})
-      }
+      // res.status(400).json({code:400,message:"email not found"})
+      return res.redirect('/admin/login');
+    }
   } catch (err) {
-    ERROR.ERROR_OCCURRED(res, err);
+    console.log('-----log err-----',err);
+    ERROR.INTERNAL_SERVER_ERROR(res, err);
   }
 };
+
 
 const renderProfile = async (req, res) => {
   try {
@@ -65,6 +74,7 @@ const renderProfile = async (req, res) => {
   }
 };
 
+
 const getEditProfilePage = async (req, res) => {
   try {
     let getData= await libs.getData(db.admins,{});
@@ -77,7 +87,6 @@ const getEditProfilePage = async (req, res) => {
     res.status(500).json({code:500,message:"password not match"})
   }
 };
-
 
 const editProfile = async (req, res,next) => {
   try {
@@ -116,6 +125,7 @@ const editProfile = async (req, res,next) => {
   }
 };
 
+
 const getChangePasswordPage = async (req, res) => {
   try {
     
@@ -127,7 +137,6 @@ const getChangePasswordPage = async (req, res) => {
   }
 };
 
-//  -------------- changePassword is Not Working Please cehck it first from ejs(not getting data rom ejs) --------------------
 
 const changePassword = async (req, res) => {
   try {
@@ -180,12 +189,12 @@ const logout = async (req, res) => {
         res.status(5).json({code:500,message:"password not match"})
     }
 };
-
+ 
 
 // render full index.ejs
 const renderIndex = async (req, res) => {
   try {
-
+    
     // Change this to session and then remove getAdmin.
 
     let getAdmin = await libs.getData(db.admins,{});
@@ -201,6 +210,7 @@ const renderIndex = async (req, res) => {
       modifiedDriver.profile_image= `${process.env.driver_imageUrl_ejs}${modifiedDriver.profile_image}`
       return modifiedDriver;
     });
+
 
     let getRiders= await libs.getAllData(db.users,{},skp);
 
@@ -218,9 +228,8 @@ const renderIndex = async (req, res) => {
       getDrivers: drivers,
       getAdmin: getAdmin,
       totalUsers:[...drivers,...riders],
-
-      userImageUrl: process.env.user_imageUrl_ejs,
-      driverImageUrl : process.env.driver_imageUrl_ejs
+      // userImageUrl: process.env.user_imageUrl_ejs,
+      // driverImageUrl : process.env.driver_imageUrl_ejs
     });
 
   } catch (err) {
@@ -468,4 +477,4 @@ const sendMassPush = async (req, res) => {
 
 
 
-module.exports= {addAdmin,login,getChangePasswordPage,changePassword,logout,renderIndex,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,renderProfile,resolvedIssue, massPushPage, sendMassPush}
+module.exports= {addAdmin,getloginPage,login,getChangePasswordPage,changePassword,logout,renderIndex,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,renderProfile,resolvedIssue, massPushPage, sendMassPush}

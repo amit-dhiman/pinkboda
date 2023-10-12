@@ -4,23 +4,29 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 require('./models/db');
-const db = require('./models/index');
+const Admin = require('./models/index').admins;
 const Router = require('./routes/index');
-let cors = require('cors');
-
-app.use(cors());
-
+const cors = require('cors');
+let session = require('express-session')
+require('dotenv').config();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+  cookie: {},           //   maxAge: 24 * 60 * 1 * 60 * 1000 
+  secret: process.env.admin_secretKey,
+  resave: false,
+  saveUninitialized: true
+}))
 
 app.use('/', Router.userRoutes, Router.driverRoutes,Router.adminRoutes);
 // app.use('/driver', driverRouter.driverRoutes);
@@ -41,11 +47,11 @@ app.use(function(err, req, res, next) {
 
 (async () => {
   try {
-    const existingAdmins = await db.admins.findAll();
+    const existingAdmins = await Admin.findAll();
 
     if (existingAdmins.length === 0) {
       // If the Admin table is empty, populate it with static email data
-      await db.admins.create({ email: 'admin@example.com',password:'admin' });
+      await Admin.create({ email: 'admin@pinkboda.com',password:'admin' });
       console.log('Admin data populated successfully.');
     } else {
       // console.log('Admin data already exists.');
