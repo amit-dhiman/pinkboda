@@ -9,6 +9,7 @@ const Notify = require('../libs/notifications');
 const fs = require('fs');
 const {Op} = require('sequelize');
 
+
 const addAdmin = async(req, res) => {
   console.log('-----/admin Routes------');
   let findAdmin = await db.admins.findOne({where:{email:"admin@pinkboda.com"}});
@@ -148,14 +149,14 @@ const changePassword = async (req, res) => {
     const passwordMatches = await commonFunc.compPassword(oldPassword,getData.password);
     if(!passwordMatches){
       if(getData.password != oldPassword){
-        res.status(400).json({code:400,message:"password not match"})
+        return res.status(400).json({code:400,message:"password not match"})
       }
     }
     let newhashPassword = await commonFunc.securePassword(newPassword);
 
     let upatedData= await libs.updateData(getData, {password:newhashPassword});
 
-    res.status(200).json({code:200, 
+    return res.status(200).json({code:200, 
       data: upatedData,
 
     });

@@ -4,6 +4,7 @@ const adminCtrl = require('../controllers/adminCtrl');
 const CONFIG = require('../config/scope')
 // require('./users')(router);
 const {verify_token,upload,admin_upload} =require('../libs/commonFunc');
+const {signupDriverValid,editdriverValid,reportValid,supportValid,adminChangePswrValid} = require('../config/joiValidations');
 
 
 
@@ -12,7 +13,7 @@ router.get('/addAdmin', adminCtrl.addAdmin);
 router.post('/admin/login', adminCtrl.login);
 
 router.get('/admin/getChangePasswordPage', adminCtrl.getChangePasswordPage);
-router.post('/admin/changePassword', adminCtrl.changePassword);
+router.post('/admin/changePassword', adminChangePswrValid, adminCtrl.changePassword);
 
 
 router.get('/admin/renderProfile', adminCtrl.renderProfile);

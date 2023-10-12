@@ -217,5 +217,27 @@ const editdriverValid= async (req,res,next)=>{
 }
 
 
-module.exports= {signupUserValid,loginUserValid,editUserValid,bookRideValid,calcAmountValid,signupDriverValid,editdriverValid,sendMsgValid,reportValid,ratingValid,supportValid, };
+// ----------------Admin--------------------
+
+const adminChangePswrValid= async (req,res,next)=>{
+    let validation = joi.object({
+        oldPassword: joi.string().required(),
+        newPassword: joi.string().required(),
+        confirmPassword: joi.string().required(),
+    })
+
+    let {error}= validation.validate(req.body);
+    if(error){
+        console.log('-----joi err---',error);
+        return ERROR.JOI_ERROR(res,error.details[0].message);
+    }
+    next();
+}
+
+
+
+
+
+
+module.exports= {signupUserValid,loginUserValid,editUserValid,bookRideValid,calcAmountValid,signupDriverValid,editdriverValid,sendMsgValid,reportValid,ratingValid,supportValid,adminChangePswrValid };
 

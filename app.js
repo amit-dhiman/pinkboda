@@ -45,7 +45,7 @@ app.use(function(err, req, res, next) {
 
     if (existingAdmins.length === 0) {
       // If the Admin table is empty, populate it with static email data
-      await db.admins.create({ email: 'admin@example.com' });
+      await db.admins.create({ email: 'admin@example.com',password:'admin' });
       console.log('Admin data populated successfully.');
     } else {
       // console.log('Admin data already exists.');

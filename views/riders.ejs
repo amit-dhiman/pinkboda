@@ -77,14 +77,14 @@
         <div class="col-md-8 col-12">
           <div class="search-bar">
             <img src="/images/search.png" />
-            <input type="search" id="form1" class="form-control search" placeholder="Search" />
+            <input type="search" id="searchInput" class="form-control search" placeholder="Search" />
           </div>
         </div>
+        <!-----------------------Notification section is here------------>
         <div class="col-md-1 col-5">
           <div class="col-md-2 col-2">
             <div class="action">
               <img class="notification-img" src="/images/notifications.png" width="20px" onclick="menuToggle();" />
-              <!-----------------------Notification section is here------------>
               <div class="menu">
                 <h2>Notifications</h2>
                 <div class="row g-3">
@@ -133,12 +133,16 @@
                 </div>
                 <div class="locker_img d-flex justify-content-center align-items-center">
                   <img src="/images/logout.png" />
-                  <a href="" class="dropdown-item" style="color: #ff0000" ;>Logout</a>
+                  <a href="" class="dropdown-item" style="color: #ff0000";>Logout</a>
                 </div>
               </div>
             </li>
           </ul>
         </div>
+
+        
+        <!----------------- rider section is here -------------->
+
         <div class="right-sidebar1">
           <div class="riders_tab">
             <h2>Riders</h2>
@@ -187,7 +191,6 @@
     </div>
   </div>
 </div>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- jQuery -->
 <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
@@ -217,10 +220,12 @@
 document.addEventListener("DOMContentLoaded", function() {
   // Find the table element by its ID
   const table = document.getElementById("example");
-
+  const tableRows = document.querySelectorAll('.tabel_size');
+  const searchInput= document.getElementById("searchInput");
+  
   if (table) {
     // Initialize the DataTable
-    const dataTable = new DataTable(table, {
+    let dataTable = new DataTable(table, {
       columnDefs: [{orderable: false, targets: 5}],
       language: {
         paginate: {
@@ -237,28 +242,46 @@ document.addEventListener("DOMContentLoaded", function() {
           '</select> results'
       }
     });
-  }
-});
 
-function updateButton(button, riderId) {
-  fetch(`/admin/actionOnUser/${riderId}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      // console.log('----------response-----------',response);
-      return response.json();
-    })
-    .then(newButtonText => {
-      // console.log('---------newButtonText---------',newButtonText);
-      // console.log('---------.data---------',newButtonText.data);
-      // console.log('---------button---------',button);
-      button.textContent = newButtonText.data;
-    })
-    .catch(error => {
-      console.error('Error occurred while updating the button:', error);
-    })
-}
+    let originalData = Array.from(tableRows); 
+    searchInput.addEventListener('input', function () {
+      const searchValue = searchInput.value.toLowerCase();
+
+      let matchingRows = originalData.filter(row => {
+        const fullNameCell = row.querySelector('td:nth-child(2)');
+        return fullNameCell.textContent.toLowerCase().includes(searchValue);
+      });
+
+      dataTable.clear();
+      dataTable.rows.add(matchingRows);
+      dataTable.draw();
+    });
+  }
+  });
+
+  function updateButton(button, riderId) {
+    fetch(`/admin/actionOnUser/${riderId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        // console.log('----------response-----------',response);
+        return response.json();
+      })
+      .then(newButtonText => {
+        // console.log('---------newButtonText---------',newButtonText);
+        // console.log('---------.data---------',newButtonText.data);
+        // console.log('---------button---------',button);
+        button.textContent = newButtonText.data;
+      })
+      .catch(error => {
+        console.error('Error occurred while updating the button:', error);
+      })
+  }
+
+ 
+
 </script>
 </body>
 </html>
+

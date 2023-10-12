@@ -69,7 +69,7 @@
             <div class="col-md-8">
               <div class="search-bar">
                 <img src="/images/search.png" />
-                <input type="search" id="form1" class="form-control search" placeholder="Search" />
+                <input type="search" id="searchInput" class="form-control search" placeholder="Search" />
               </div>
             </div>
             <div class="col-md-1">
@@ -146,6 +146,7 @@
                       <thead>
                         <tr class="tabl-size">
                           <th scope="col">Driver Profile</th>
+                          <th scope="col">Full Name</th>
                           <th scope="col">Gender</th>
                           <th scope="col"><a href="http://161.97.132.85/Designing/Houzmart_admin/Total_riders.ejs">Total Ride</a></th>
                           <th scope="col">Passport photo</th>
@@ -165,6 +166,7 @@
                           <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                           <tr class="tabl_size">
                             <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%=driverImageUrl + driver.profile_image %>" /></th>
+                            <td><%=driver.username %></td>
                             <td><%=driver.gender %></td>
                             <td><%=driver.total_rides %></td>
                             <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + driver.passport_photo %>"/></th>
@@ -187,6 +189,7 @@
                       <thead>
                         <tr class="tabl-size">
                           <th scope="col">Driver Profile</th>
+                          <th scope="col">Full Name</th>
                           <th scope="col">Gender</th>
                           <th scope="col">Insurance</th>
                           <th scope="col">Passport photo</th>
@@ -213,6 +216,7 @@
                           <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                           <tr class="tabl_size">
                             <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/uploads/drivers/<%=pending.profile_image %>" /></th>
+                            <%=driver.username %>
                             <td><%=pending.gender %></td>
                             <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>"/></th>
                             <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>"/></th>
@@ -286,6 +290,30 @@ function updatePendingReq(button, driverId,action) {
       console.error('Error occurred while updating the button:', error);
     })
 }
+
+  // search Full Name
+  const searchInput = document.getElementById('searchInput');
+  console.log('--------searchInput-----------',searchInput);
+  
+  const tableRows = document.querySelectorAll('.tabl_size');
+  console.log('--------tableRows-----------',tableRows);
+  
+  searchInput.addEventListener('input', function () {
+  const searchValue = searchInput.value.toLowerCase();
+  console.log('--------searchValue-----------',searchValue);
+
+  tableRows.forEach(row => {
+    const fullNameCell = row.querySelector('td:nth-child(2)');
+    console.log('--------fullNameCell-----------',fullNameCell);
+
+    if(fullNameCell.textContent.toLowerCase().includes(searchValue)) {
+      row.style.display = 'table-row';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  });
+
 </script>
 </body>
 </html>

@@ -8,10 +8,16 @@
   <!-- <link rel="shortcut icon" href="/images/" type="image/x-icon"> -->
 
   <!-- Bootstrap CSS v5.2.0-beta1 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+  <!-- Data Table CSS -->
+  <link rel='stylesheet' href='https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css'>
+  <!-- Font Awesome CSS -->
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css'>
+ 
   <!-- custom css -->
   <link rel="stylesheet" href="/assets/css/styles.css" />
 </head>
@@ -203,9 +209,9 @@
               </ul>
               <div class="tab-content table-responsive">
                 <div class="tab-pane fade show active" id="user">
-                  <table class="table">
+                  <table id="example" class="table">
                     <thead>
-                      <tr class="tabl-size">
+                      <tr class="tabl-size user-example">
                         <th scope="col"></th>
                         <th scope="col">User Name</th>
                         <th scope="col">Contact</th>
@@ -222,7 +228,7 @@
                         <td><img class="three-dot" src="/images/dots.png" /></td>
                       </tr>
                       <% for(let i =0; i < totalUsers.length; i++) { %>
-                        <tr class="tabl_size">
+                        <tr class="tabl_size user-example">
                           <th scope="row"><img class="profile_img" src="<%=totalUsers[i].image ? totalUsers[i].image:totalUsers[i].profile_image%>"/></th>
                           <td><%= totalUsers[i].username %></td>
                           <td><%= totalUsers[i].mobile_number %></td>
@@ -234,9 +240,9 @@
                   </table>  
                 </div>
                 <div class="tab-pane fade" id="riders">
-                  <table class="table">  
+                  <table id="example1" class="table">  
                     <thead>
-                      <tr class="tabl-size">
+                      <tr class="tabl-size  all-example1">
                         <th scope="col"></th>
                         <th scope="col">User Name</th>
                         <th scope="col">Contact</th>
@@ -253,7 +259,7 @@
                         <td><img class="three-dot" src="/images/dots.png" /></td>
                       </tr>
                       <% for(let i =0; i < getRiders.length; i++) { %>
-                        <tr class="tabl_size">
+                        <tr class="tabl_size all-example1">
                           <th scope="row"><img class="profile_img" src="<%= getRiders[i].image%>"/></th>
                           <td><%= getRiders[i].username %></td>
                           <td><%= getRiders[i].mobile_number %></td>
@@ -265,7 +271,7 @@
                   </table>
                 </div>
                 <div class="tab-pane fade" id="drivers">
-                  <table class="table">
+                  <table id="example2" class="table">
                     <thead>
                       <tr class="tabl-size">
                         <th scope="col"></th>
@@ -302,15 +308,22 @@
       </div>
     </div>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jQuery -->
+  <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+  <!-- Data Table JS -->
+  <script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
+  <script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
+  <script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+
+  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js"></script> -->
+
 <script>
   function menuToggle() {
     const toggleMenu = document.querySelector(".menu");
     toggleMenu.classList.toggle("active");
   }
-</script>
-<script>
+  
   const toggle = document.getElementById("toggle");
   const left = document.getElementById("left");
   const bodyClass = document.querySelector("body");
@@ -319,22 +332,66 @@
     left.classList.toggle("active");
     bodyClass.classList.toggle("bodyOverflow");
   };
+</script>
 
-  // search Full Name
-  const searchInput = document.getElementById('searchInput');
-  const tableRows = document.querySelectorAll('.tabl_size');
-  
-  searchInput.addEventListener('input', function () {
-  const searchValue = searchInput.value.toLowerCase();
+<script type="text/javascript">
 
-  tableRows.forEach(row => {
-    const fullNameCell = row.querySelector('td:nth-child(2)'); 
+// Get the search input
+const searchInput = document.getElementById("searchInput");
 
-    if(fullNameCell.textContent.toLowerCase().includes(searchValue)) {
-      row.style.display = 'table-row';
-    } else {
-      row.style.display = 'none';
+// Define an object to store original data for each table
+const originalData = {};
+// Define an object to store DataTable instances
+const dataTableInstances = {};
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Initialize all DataTables
+  const tableIds = ["example", "example1", "example2"];
+
+  tableIds.forEach(tableId => {
+    const table = document.getElementById(tableId);
+    if (table) {
+      const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
+      originalData[tableId] = Array.from(tableRows);
+
+      dataTableInstances[tableId] = new DataTable(table, {
+        columnDefs: [{ orderable: false, targets: 4 }],
+        language: {
+          paginate: {
+            previous: '<span class="fa fa-chevron-left"></span>',
+            next: '<span class="fa fa-chevron-right"></span>'
+          },
+          lengthMenu: 'Display <select class="form-control input-sm">' +
+            '<option value="10">10</option>' +
+            '<option value="20">20</option>' +
+            '<option value="30">30</option>' +
+            '<option value="40">40</option>' +
+            '<option value="50">50</option>' +
+            '<option value="-1">All</option>' +
+            '</select> results'
+        }
+      });
     }
+  });
+
+  // Add an input event listener to the shared search input
+  searchInput.addEventListener('input', function () {
+    const searchValue = searchInput.value.toLowerCase();
+    
+    // Iterate through each table
+    tableIds.forEach(tableId => {
+      const matchingRows = originalData[tableId].filter(row => {
+        const fullNameCell = row.querySelector('td:nth-child(2)');
+        return fullNameCell.textContent.toLowerCase().includes(searchValue);
+      });
+
+      // Clear and update the specific DataTable for this table
+      if (dataTableInstances[tableId]) {
+        dataTableInstances[tableId].clear();
+        dataTableInstances[tableId].rows.add(matchingRows);
+        dataTableInstances[tableId].draw();
+      }
+    });
   });
 });
 

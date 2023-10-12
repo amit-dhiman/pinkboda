@@ -9,78 +9,81 @@
 </head>
 <body>
 
+  <div class="row">
     <nav class="navbar">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#"></a>
-          <button class="navbar-toggler" id="toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" id="toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
-      </nav>
-      <div class="col-md-8 col-12">
-        <div class="search-bar">
-          <img src="/images/search.png" />
-          <input type="search" id="searchInput" class="form-control search" placeholder="Search" />
+        </button>
       </div>
+    </nav>
+    <div class="col-md-8 col-12">
+      <div class="search-bar">
+        <img src="/images/search.png" />
+        <input type="search" id="searchInput" class="form-control search" placeholder="Search" />
       </div>
-      <div class="col-md-1 col-5">
-        <div class="col-md-2 col-2">
-          <div class="action">
-            <img class="notification-img" src="/images/notifications.png" width="20px" onclick="menuToggle();" />
-            <div class="menu">
-              <h2>Notifications</h2>
-              <div class="row g-3">
-                <div class="col-md-2 col-2">
-                  <img class="img-notification" src="/images/notification1.png" />
-                </div>
-                <div class="col-md-9 col-10">
-                  <h3 class="mess-txt"><span class="notification-txt">Elend Grod</span> sent you message</h3>
-                  <p class="date-time">10/02/22 2:31 AM</p>
-                </div>
-                <div class="col-md-2 col-2">
-                  <img class="img-notification" src="/images/notification2.png" />
-                </div>
-                <div class="col-md-9 col-10">
-                  <h3 class="mess-txt"><span class="notification-txt">Jiyo lead</span> sent you message</h3>
-                  <p class="date-time">10/02/22 2:31 AM</p>
-                </div>
-                <div class="col-md-2 col-2">
-                  <img class="img-notification" src="/images/notification3.png" />
-                </div>
-                <div class="col-md-9 col-10">
-                  <h3 class="mess-txt"><span class="notification-txt">Kixklo</span> sent you message</h3>
-                  <p class="date-time">10/02/22 2:31 AM</p>
-                </div>
-                <div class="col-md-2 col-2">
-                  <img class="img-notification" src="/images/notification4.png" />
-                </div>
-                <div class="col-md-9 col-10">
-                  <h3 class="mess-txt"><span class="notification-txt">Leika Bask</span> sent you message</h3>
-                  <p class="date-time">10/02/22 2:31 AM</p>
-                </div>
+    </div>
+    <!-----------------------Notification section is here------------>
+    <div class="col-md-1 col-5">
+      <div class="col-md-2 col-2">
+        <div class="action">
+          <img class="notification-img" src="/images/notifications.png" width="20px" onclick="menuToggle();" />
+          <div class="menu">
+            <h2>Notifications</h2>
+            <div class="row g-3">
+              <div class="col-md-2 col-2">
+                <img class="img-notification" src="/images/notification1.png" />
+              </div>
+              <div class="col-md-9 col-10">
+                <h3 class="mess-txt"><span class="notification-txt">Elend Grod</span> sent you message</h3>
+                <p class="date-time">10/02/22 2:31 AM</p>
+              </div>
+              <div class="col-md-2 col-2">
+                <img class="img-notification" src="/images/notification2.png" />
+              </div>
+              <div class="col-md-9 col-10">
+                <h3 class="mess-txt"><span class="notification-txt">Jiyo lead</span> sent you message</h3>
+                <p class="date-time">10/02/22 2:31 AM</p>
+              </div>
+              <div class="col-md-2 col-2">
+                <img class="img-notification" src="/images/notification3.png" />
+              </div>
+              <div class="col-md-9 col-10">
+                <h3 class="mess-txt"><span class="notification-txt">Kixklo</span> sent you message</h3>
+                <p class="date-time">10/02/22 2:31 AM</p>
+              </div>
+              <div class="col-md-2 col-2">
+                <img class="img-notification" src="/images/notification4.png" />
+              </div>
+              <div class="col-md-9 col-10">
+                <h3 class="mess-txt"><span class="notification-txt">Leika Bask</span> sent you message</h3>
+                <p class="date-time">10/02/22 2:31 AM</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-md-3 col-7 d-flex justify-content-center align-items-center">
-        <img class="img-profile" src="/images/img.png" />
-        <ul class="nav navbar-nav ms-auto" style="width: 67%">
-          <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Markous</a>
-            <div class="dropdown-menu dropdown-menu-end">
-              <div class="locker_img d-flex justify-content-center align-items-center">
-                <img src="/images/lock.png" />
-                <a href="/admin/getChangePasswordPage" class="dropdown-item">Change Password</a>
-              </div>
-              <div class="locker_img d-flex justify-content-center align-items-center">
-                <img src="/images/logout.png" />
-                <a href="" class="dropdown-item" style="color:#ff0000";>Logout</a>
-              </div>
+    </div>
+    <div class="col-md-3 col-7 d-flex justify-content-center align-items-center">
+      <img class="img-profile" src="/images/img.png" />
+      <ul class="nav navbar-nav ms-auto" style="width: 67%">
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Markous</a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <div class="locker_img d-flex justify-content-center align-items-center">
+              <img src="/images/lock.png" />
+              <a href="http://161.97.132.85/Designing/Houzmart_admin/change_password.ejs" class="dropdown-item">Change Password</a>
             </div>
-          </li>
-        </ul>
-      </div>
+            <div class="locker_img d-flex justify-content-center align-items-center">
+              <img src="/images/logout.png" />
+              <a href="" class="dropdown-item" style="color: #ff0000";>Logout</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
     
 </body>
 </html>
