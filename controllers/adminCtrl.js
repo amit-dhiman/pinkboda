@@ -64,11 +64,12 @@ const login = async(req, res) => {
 
 const renderProfile = async (req, res) => {
   try {
-    let getAdminData = await libs.getData(db.admins,{});
-    // let getAdminData = req.session.admin;
+    // let getAdminData = await libs.getData(db.admins,{});
+    let getAdminData = req.session.admin;
+    // getAdminData.profile_image = `${process.env.admin_imageUrl_ejs}${getAdminData.profile_image}`;
     res.render('profile',{
     // res.status(200).json({ message: 'Status toggled successfully', 
-    data: getAdminData});
+    getAdmin: getAdminData});
   } catch (err) {
     console.log('---err---',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -81,7 +82,7 @@ const getEditProfilePage = async (req, res) => {
     let getData= await libs.getData(db.admins,{});
     // res.status(200).json({
     res.render('edit-profile' , {
-      data: getData,
+      getAdmin: getData,
     });
   
   } catch (err) {
@@ -112,14 +113,14 @@ const editProfile = async (req, res,next) => {
     const editProfile = await libs.updateData(getData,update);
     // const editProfile = await libs.findAndUpdate(db.admins, req.session.admin.id, update);
     if(editProfile.profile_image){
-      editProfile.profile_image = `${process.env.admin_image_baseUrl}${editProfile.profile_image}`
+      req.session.admin.profile_image = editProfile.profile_image
+      // editProfile.profile_image = `${process.env.admin_imageUrl_ejs}${editProfile.profile_image}`;
     }
-    console.log('-----editProfile--------',editProfile);
     // res.status(200).json({
-    res.status(200).redirect('/admin/renderProfile')
-    // res.render('profile',{
-    //   data: editProfile
-    // })
+    // res.status(200).redirect('/admin/renderProfile')
+    res.render('profile',{
+      getAdmin: editProfile
+    })
   } catch (err) {
     console.log('-----err-----',err);
     if(req.file){ fs.unlink(req.file.path, (err)=>{if (err) return})}
@@ -131,10 +132,10 @@ const editProfile = async (req, res,next) => {
 const getChangePasswordPage = async (req, res) => {
   try {
     
-    res.render('change_password')
+    res.render('change_password',{getAdmin:req.session.admin})
 
   } catch (err) {
-      console.log('-------er-----',err);
+    console.log('-------er-----',err);
     return res.status(500).json({code:500,message:err.message,error:err})
   }
 };

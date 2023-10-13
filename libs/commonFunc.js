@@ -170,7 +170,7 @@ const admin_upload = multer({ storage: adminstorage })
 
 
 const admin_auth = async (req, res, next)=>{
-  console.log('------------req.session-------------',req.session);
+  // console.log('------------req.session-------------',req.session);
   // console.log('------------admin-------------',req.session.admin);
   // console.log('------------role-------------',req.session.role);
   if(req.session && req.session.role =='admin'){
