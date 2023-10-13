@@ -113,7 +113,7 @@
               </div>
             </div>
             <div class="col-md-3 d-flex justify-content-center align-items-center">
-              <img class="img-profile" src="/images/img.png" />
+              <img class="img-profile" src="/uploads/admin/<%= getAdmin.profile_image %>" />
               <ul class="nav navbar-nav ms-auto" style="width: 67%">
                 <li class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Markous</a>
@@ -124,7 +124,7 @@
                     </div>
                     <div class="locker_img d-flex justify-content-center align-items-center">
                       <img src="/images/logout.png" />
-                      <a href="" class="dropdown-item" style="color: #ff0000" ;>Logout</a>
+                      <a href="/admin/logout" class="dropdown-item" style="color: #ff0000" ;>Logout</a>
                     </div>
                   </div>
                 </li>
@@ -162,7 +162,23 @@
                         </tr>
                       </thead>
                       <tbody>
-                       <% for(let driver of getDrivers) { %>
+                        <tr class="tabl_size">
+                          <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/images/img.png" /></th>
+                          <td>Waloi</td>
+                          <td>Male</td>
+                          <td>2</td>
+                          <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="/images/pasport.png" /></th>
+                          <th scope="row"><img class="idcard_img" src="/images/idcard.png" /></th>
+                          <th scope="row"><img class="license_img" src="/images/license.png" /></th>
+                          <td>2023</td>
+                          <td>425 AIY</td>
+                          <td>N/A</td>
+                          <td>$2030</td>
+                          <td>23 Jun, 2023</td>
+                          <td><button class="btn btn-info data" type="button">Disable</button></td>
+                          <td>565646564</td>
+                        </tr>
+                        <% for(let driver of getDrivers) { %>
                           <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                           <tr class="tabl_size">
                             <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%=driverImageUrl + driver.profile_image %>" /></th>
@@ -203,6 +219,7 @@
                       <tbody>
                         <tr class="tabl_size">
                           <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/images/img.png" /></th>
+                          <td>Waloi</td>
                           <td>Male</td>
                           <th scope="row"><img class="insurance_img" src="/images/insurance.png" /></th>
                           <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="/images/pasport.png" /></th>
@@ -215,8 +232,8 @@
                         <% for(let pending of pendingRequests) { %>
                           <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                           <tr class="tabl_size">
-                            <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/uploads/drivers/<%=pending.profile_image %>" /></th>
-                            <%=driver.username %>
+                            <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/uploads/drivers/<%=pending.profile_image %>"/></th>
+                            <td><%=pending.username %></td>
                             <td><%=pending.gender %></td>
                             <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>"/></th>
                             <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>"/></th>
@@ -285,34 +302,67 @@ function updatePendingReq(button, driverId,action) {
     })
     .then(() => {
       button.parentNode.parentNode.remove();
-    })
-    .catch(error => {
+    }).catch(error => {
       console.error('Error occurred while updating the button:', error);
     })
 }
 
-  // search Full Name
-  const searchInput = document.getElementById('searchInput');
-  console.log('--------searchInput-----------',searchInput);
-  
-  const tableRows = document.querySelectorAll('.tabl_size');
-  console.log('--------tableRows-----------',tableRows);
-  
-  searchInput.addEventListener('input', function () {
-  const searchValue = searchInput.value.toLowerCase();
-  console.log('--------searchValue-----------',searchValue);
+const searchInput = document.getElementById("searchInput");
 
-  tableRows.forEach(row => {
-    const fullNameCell = row.querySelector('td:nth-child(2)');
-    console.log('--------fullNameCell-----------',fullNameCell);
+const originalData = {};
+const dataTableInstances = {};
 
-    if(fullNameCell.textContent.toLowerCase().includes(searchValue)) {
-      row.style.display = 'table-row';
-    } else {
-      row.style.display = 'none';
+document.addEventListener("DOMContentLoaded", function() {
+  // Initialize all DataTables
+  const tableIds = ["example", "example1", "example2"];
+
+  tableIds.forEach(tableId => {
+    const table = document.getElementById(tableId);
+    if (table) {
+      const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
+      originalData[tableId] = Array.from(tableRows);
+
+      dataTableInstances[tableId] = new DataTable(table, {
+        columnDefs: [{ orderable: false, targets: 4 }],
+        language: {
+          paginate: {
+            previous: '<span class="fa fa-chevron-left"></span>',
+            next: '<span class="fa fa-chevron-right"></span>'
+          },
+          lengthMenu: 'Display <select class="form-control input-sm">' +
+            '<option value="10">10</option>' +
+            '<option value="20">20</option>' +
+            '<option value="30">30</option>' +
+            '<option value="40">40</option>' +
+            '<option value="50">50</option>' +
+            '<option value="-1">All</option>' +
+            '</select> results'
+        }
+      });
     }
   });
+
+  // Add an input event listener to the shared search input
+  searchInput.addEventListener('input', function () {
+    const searchValue = searchInput.value.toLowerCase();
+    
+    // Iterate through each table
+    tableIds.forEach(tableId => {
+      const matchingRows = originalData[tableId].filter(row => {
+        const fullNameCell = row.querySelector('td:nth-child(2)');
+        return fullNameCell.textContent.toLowerCase().includes(searchValue);
+      });
+
+      // Clear and update the specific DataTable for this table
+      if (dataTableInstances[tableId]) {
+        dataTableInstances[tableId].clear();
+        dataTableInstances[tableId].rows.add(matchingRows);
+        dataTableInstances[tableId].draw();
+      }
+    });
   });
+});
+
 
 </script>
 </body>

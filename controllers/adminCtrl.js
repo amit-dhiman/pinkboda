@@ -65,6 +65,7 @@ const login = async(req, res) => {
 const renderProfile = async (req, res) => {
   try {
     let getAdminData = await libs.getData(db.admins,{});
+    // let getAdminData = req.session.admin;
     res.render('profile',{
     // res.status(200).json({ message: 'Status toggled successfully', 
     data: getAdminData});
@@ -91,15 +92,15 @@ const getEditProfilePage = async (req, res) => {
 const editProfile = async (req, res,next) => {
   try {
     let getData= await libs.getData(db.admins,{});
+    // let getData = req.session.admin;
 
-    const {admin_name, admin_email, device_token} = req.body;
+    const {admin_name, admin_email} = req.body;
     let update = {};
 
     // // await commonFunc.upload(req,res,next);
 
     if (admin_name) { update.full_name = admin_name }
     if (admin_email) { update.email = admin_email }
-    if (device_token) { update.device_token = device_token }
 
     if(req.file){
       if(getData.profile_image){
@@ -108,11 +109,12 @@ const editProfile = async (req, res,next) => {
       update.profile_image= req.file.filename
     };
     
-    const editProfile = await libs.updateData(getData, update);
+    const editProfile = await libs.updateData(getData,update);
+    // const editProfile = await libs.findAndUpdate(db.admins, req.session.admin.id, update);
     if(editProfile.profile_image){
       editProfile.profile_image = `${process.env.admin_image_baseUrl}${editProfile.profile_image}`
     }
-    console.log('-----editProfile---------',editProfile);
+    console.log('-----editProfile--------',editProfile);
     // res.status(200).json({
     res.status(200).redirect('/admin/renderProfile')
     // res.render('profile',{
@@ -176,28 +178,52 @@ const changePassword = async (req, res) => {
 };
 
 
-const logout = async (req, res) => {
-    try {
-      //  add session here
-        const logoutUser = await libs.updateData(req.creds,{access_token:null});
-        if(!logoutUser){
-          res.status(400).json({code:400,message:"no user ound with this token"})
-        }
-
-        return SUCCESS.DEFAULT(res,logoutUser);
-    } catch (err) {
-        res.status(5).json({code:500,message:"password not match"})
-    }
+const getForgotPswrdPage = async (req, res) => {
+  // try {
+  //   res.render('forgot_password');
+  // } catch (err) {
+  //   console.log('-------er-----',err);
+  //   return res.status(500).json({code:500,message:err.message,error:err})
+  // }
 };
- 
+
+const forgotPassword = async (req, res) => {
+//   try {
+//     let 
+    
+//     res.render('forgot_password');
+//   } catch (err) {
+//     console.log('-------er-----',err);
+//     return res.status(500).json({code:500,message:err.message,error:err})
+//   }
+};
+
+const logout = async (req, res) => {
+  try {
+    if (req.session.admin) {
+      // Destroy the session to log the user out
+      req.session.destroy((err) => {
+        if (err) {
+          res.redirect('/admin/renderProfile');
+        } else {
+          // res.json({ message: 'Logout successful' });
+          return res.render('login');
+        }
+      });
+    } else {
+      res.status(401).json({ message: 'Not logged in' });
+    }
+
+  } catch (err) {
+    res.status(500).json({code:500,message:"password not match"})
+  }
+};
+
 
 // render full index.ejs
 const renderIndex = async (req, res) => {
   try {
-    
-    // Change this to session and then remove getAdmin.
-
-    let getAdmin = await libs.getData(db.admins,{});
+    // let getAdmin = await libs.getData(db.admins,{where:{id:req.session.admin.id}});
 
     let skp = req.body.skip || 0;
     // let query= {where:{},limit:10,offset:skp};
@@ -210,7 +236,6 @@ const renderIndex = async (req, res) => {
       modifiedDriver.profile_image= `${process.env.driver_imageUrl_ejs}${modifiedDriver.profile_image}`
       return modifiedDriver;
     });
-
 
     let getRiders= await libs.getAllData(db.users,{},skp);
 
@@ -226,7 +251,7 @@ const renderIndex = async (req, res) => {
 
       getRiders: riders,
       getDrivers: drivers,
-      getAdmin: getAdmin,
+      getAdmin: req.session.admin,
       totalUsers:[...drivers,...riders],
       // userImageUrl: process.env.user_imageUrl_ejs,
       // driverImageUrl : process.env.driver_imageUrl_ejs
@@ -245,11 +270,13 @@ const renderRider = async (req, res) => {
     let query= {};
 
     let getRiders = await libs.getAllData(db.users,query,skp);
+    // let getAdmin = await libs.getData(db.admins,{where:{id:req.session.admin.id}});
     
     // res.status(200).json({code:200,message:"getRiders",
     res.render('riders',{
       getRiders: getRiders,
-      userImageUrl: process.env.user_imageUrl_ejs
+      userImageUrl: process.env.user_imageUrl_ejs,
+      getAdmin: req.session.admin
     });
   } catch (err) {
     console.log('----err----',err);
@@ -261,12 +288,14 @@ const renderDriver = async (req, res) => {
   try {
     let getDrivers= await libs.getAllData(db.drivers,{where:{is_admin_verified:"accepted"}});
     let getPendingRequests = await libs.getAllData(db.drivers,{where:{is_admin_verified:"pending"}});
+    // let getAdmin = await libs.getData(db.admins,{where:{id:req.session.admin.id}});
     
     // res.status(200).json({code:200,message:"Get all drivers",
     res.render('drivers',{
       getDrivers : getDrivers,
       pendingRequests : getPendingRequests,
-      driverImageUrl : process.env.driver_imageUrl_ejs
+      driverImageUrl : process.env.driver_imageUrl_ejs,
+      getAdmin: req.session.admin
     });
 
   } catch (err) {
@@ -366,7 +395,8 @@ const renderHelpSupport = async (req, res) => {
     res.render('help&support',{
      supportData: combinedData,
      driverImageUrl : process.env.driver_imageUrl_ejs,
-     userImageUrl: process.env.user_imageUrl_ejs
+     userImageUrl: process.env.user_imageUrl_ejs,
+     getAdmin: req.session.admin
     });
   } catch (err) {
     console.log('---------err--------',err);
@@ -397,8 +427,7 @@ const resolvedIssue = async (req, res) => {
 
 const massPushPage = async (req, res) => {
   try {
-    res.render('mass_push');
-    
+    res.render('mass_push', { getAdmin:req.session.admin});
   } catch (err) {
     console.log('----err----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -477,4 +506,4 @@ const sendMassPush = async (req, res) => {
 
 
 
-module.exports= {addAdmin,getloginPage,login,getChangePasswordPage,changePassword,logout,renderIndex,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,renderProfile,resolvedIssue, massPushPage, sendMassPush}
+module.exports= {addAdmin,getloginPage,login,getChangePasswordPage,changePassword,getForgotPswrdPage,forgotPassword,logout,renderIndex,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,renderProfile,resolvedIssue, massPushPage, sendMassPush}

@@ -9,11 +9,14 @@ const {signupUserValid,editUserValid,bookRideValid,sendMsgValid,reportValid,rati
 const {verify_token,upload} =require('../libs/commonFunc');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/test', function(req, res, next) {
   console.log('-----userRoute------');
-  res.render('socketTest', { title: 'Express' });
+  res.render('socketTest', { title: 'test' });
 });
-
+router.get('/testDriver', function(req, res, next) {
+  console.log('-----userRoute------');
+  res.render('testDriver', { title: ' Socket testDriver' });
+});
 
 router.post('/user/numberSignup', signupUserValid, userCtrl.numberSignup )
 

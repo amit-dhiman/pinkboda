@@ -18,8 +18,13 @@ router.get('/sessionData', (req,res)=>{
 router.get('/admin/login', adminCtrl.getloginPage);
 router.post('/admin/login', adminCtrl.login);
 
+router.get('/admin/logout',admin_auth, adminCtrl.logout);
+
 router.get('/admin/getChangePasswordPage',admin_auth, adminCtrl.getChangePasswordPage);
 router.post('/admin/changePassword', adminChangePswrValid, admin_auth, adminCtrl.changePassword);
+
+// router.get('/admin/forgotPassword', adminCtrl.getForgotPswrdPage);
+// router.post('/admin/forgotPassword', adminCtrl.forgotPassword);
 
 
 router.get('/admin/renderProfile', admin_auth, adminCtrl.renderProfile);
@@ -31,7 +36,6 @@ router.get('/admin/renderIndex', admin_auth, adminCtrl.renderIndex);
 
 router.get('/admin/renderRider', admin_auth, adminCtrl.renderRider);
 router.get('/admin/renderDriver', admin_auth, adminCtrl.renderDriver);
-
 
 
 router.get('/admin/actionOnDriver/:driverId', admin_auth, adminCtrl.actionOnDriver);

@@ -31,7 +31,7 @@
         // When the server emits a 'new_ride_request' event, add driver information to the list
         socket.on('ride_request_accept', (driver) => {
             alert("Accepted Ride");
-            console.log(driver);
+            // console.log(driver);
             const driversList = document.getElementById('driversList');
             const listItem = document.createElement('li');
             listItem.textContent = `Request accepted by ${driver.name}`;
