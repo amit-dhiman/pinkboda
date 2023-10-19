@@ -7,13 +7,14 @@ const ERROR= require('../config/responseMsgs').ERROR;
 const SUCCESS= require('../config/responseMsgs').SUCCESS;
 const fs = require('fs');
 const Notify = require('../libs/notifications');
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 
 
 const driverSignup = async (req, res) => {
   try {
     let {username,gender,country_code,mobile_number,model,license_plate,year,device_type, device_token} = req.body;
-    console.log('------req.files-------',req.files); 
+    // console.log('--------req.body----------',req.body); 
+    console.log('--------req.files----------',req.files); 
     const getData=await libs.getData(db.drivers,{where:{mobile_number: mobile_number}});
 
     if (getData) {
@@ -43,20 +44,15 @@ const driverSignup = async (req, res) => {
     if (device_type) { data.device_type = device_type }
     if (device_token) { data.device_token = device_token }
 
-    console.log('-------data---------',data);
-
     let saveData = await libs.createData(db.drivers, data);
-    console.log('---------saveData---------',saveData.toJSON());
 
     let token_info = { id: saveData.id, mobile_number: saveData.mobile_number };
     let token = await commonFunc.generateAccessToken(saveData, token_info, process.env.driver_secretKey);
-    console.log('-----token-------',token.toJSON());
 
     if(req.files.license){token.license= `${process.env.driver_image_baseUrl}${req.files.license[0].filename}`}
     if(req.files.id_card){token.id_card= `${process.env.driver_image_baseUrl}${req.files.id_card[0].filename}`}
     if(req.files.passport_photo){token.passport_photo= `${process.env.driver_image_baseUrl}${req.files.passport_photo[0].filename}`}
     if(req.files.vechile_insurance){token.vechile_insurance= `${process.env.driver_image_baseUrl}${req.files.vechile_insurance[0].filename}`}
-
     return SUCCESS.DEFAULT(res,"signUp successfully", token);
   } catch (err) {
       console.log('----err---',err);
@@ -194,17 +190,15 @@ const deleteDriverAccount = async (req, res) => {
   }
 };
 
-// ----location update eveytime-----
-const updateDriversLocation = async (req, res) => {
-    try {
-      let updateLocation =await libs.updateData(req.creds,{lat:req.body.lat,long:req.body.long});
-
-      res.status(200).json({code:204,message:"drivers location update successfully",data:updateLocation});    
-  
-    } catch (err) {
-      ERROR.ERROR_OCCURRED(res, err);
-    }
-};
+//  ----location update eveytime-----
+// const updateDriversLocation = async (req, res) => {
+//     try {
+//       let updateLocation =await libs.updateData(req.creds,{lat:req.body.lat,long:req.body.long});
+//       res.status(200).json({code:204,message:"drivers location update successfully",data:updateLocation});    
+//     } catch (err) {
+//       ERROR.ERROR_OCCURRED(res, err);
+//     }
+// };
 
 
 const cancelRide = async (req, res) => {
@@ -351,7 +345,6 @@ const pendingListing = async (req, res) => {
 
 const reportOnUser = async (req, res) => {
   try {
-    console.log('------req.body---------',req.body);
     let data= {
       driver_id: req.creds.id,
       user_id: req.body.user_id,
@@ -359,15 +352,20 @@ const reportOnUser = async (req, res) => {
       report_message: req.body.report_message,
       reported_by:"Driver"
     }
-    let saveReport = await libs.createData(db.reports, data);
-    console.log('----saveReport---',saveReport);
 
+    let getData = await libs.getData(db.reports,{where:{driver_id: data.driver_id, booking_id: data.booking_id,reported_by:"Driver"}});
+
+    if(getData){
+      res.status(409).json({code:409,message:"You have already reported on this booking and user"});
+    }else{
+      await libs.createData(db.reports, data);
+      res.status(200).json({code:200,message:"Reported successfully"});
+    }
     // let saveReport = await libs.getData(db.bookings,{
     //   where:{id:1},
     //   include:{model: db.reports }
     // })
 
-    res.status(200).json({code:200,message:"Reported successfully"});
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
@@ -499,6 +497,7 @@ const getTotalRatings = async (req, res) => {
   try {
     let getNotify = await libs.getAllData(db.ratings, {
       where:{ driver_id: req.creds.id},
+      order: [['created_at', 'DESC']],
       include:[{
         model: db.users,
         attributes: ["username","image"]
@@ -524,38 +523,39 @@ const getTotalRatings = async (req, res) => {
     const starPercentages = calculateStarPercentages(allRatings);
 
     let obj = {
-      star_5: starPercentages[4] || 0,
-      star_4: starPercentages[3] || 0,
-      star_3: starPercentages[2] || 0,
-      star_2: starPercentages[1] || 0,
-      star_1: starPercentages[0] || 0,
+      star_5: starPercentages[4] ? starPercentages[4].toFixed(1) : 0,
+      star_4: starPercentages[3] ? starPercentages[3].toFixed(1) : 0,
+      star_3: starPercentages[2] ? starPercentages[2].toFixed(1) : 0,
+      star_2: starPercentages[1] ? starPercentages[1].toFixed(1) : 0,
+      star_1: starPercentages[0] ? starPercentages[0].toFixed(1) : 0,
     };
 
-    let totalStars = 0;
-    for (const item of allRatings) {
-      totalStars += item.star;
-    }
-
-    const averageRating = totalStars / allRatings.length;
-    console.log("Average Star Rating:", averageRating);
+    // let totalStars = 0;
+    // for (const item of allRatings) {
+    //   totalStars += item.star;
+    // }
+    // const averageRating = totalStars / allRatings.length;
+    // console.log("Average Star Rating:", averageRating);
 
     res.status(200).json({code:200,message:"get All Ratings",
-    "overAllRating": averageRating, 
-    "totalReviews":allRatings.length,
+    // "overAllRating": averageRating ? averageRating.toFixed(1) : 0,      //  this rating is for 1,2,3,4,5 star
+    "overAllRating": req.creds.over_all_rating,
+    "totalReviews" : allRatings.length,
     "percentageData": obj,
     "data": allRatings
     });
   } catch (err) {
-    console.log('------err--------',err);
+    console.log('------err-------',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
+
 
 const findPreviousRide = async (req, res) => {
   try {
     
     let findRide = await libs.getData(db.bookings,{
-      where:{driver_id: req.creds.id, booking_status: 'accept'}, // {[Op.or]:['accept']},'pending'
+      where:{driver_id: req.creds.id, booking_status:{[Op.or]:['accept','started']}},
       include:db.users
     });
 
@@ -572,4 +572,4 @@ const findPreviousRide = async (req, res) => {
 
 
 
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,updateDriversLocation,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings,findPreviousRide}
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings,findPreviousRide}

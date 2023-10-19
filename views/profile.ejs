@@ -17,71 +17,74 @@
 </head>
 
 <body>
-  <div class="container-fluid">
-    <div class="row flex-nowrap">
+<div class="container-fluid">
+  <div class="row flex-nowrap">
 
-      <!-------------- Added Sidebar here --------------->
-      <%- include ('./partials/sidebar.ejs') %>
+    <!-------------- Added Sidebar here --------------->
+    <%- include ('./partials/sidebar.ejs') %>
 
       <div class="col-md-9 mt-4">
         <div class="row">
 
           <!-------------- Added Sidebar here --------------->
-          <%- include ('./partials/sidebar.ejs') %>
-        
-          <div class="right-sidebar1">
-            <div class="riders_tab">
-              <h2 class="riders_tab1">Profile</h2>
-              <!-- <div class="tab-content table-responsive"> -->
-              <div class="profile_section"></div>
-              <div class="row">
-                <div class="hauzmart-admin">
-                  <div class="col-md-3">
-                    <img name="image" type="file" src="/uploads/admin/<%= getAdmin.profile_image %>" class="profile-pic">
-                  </div>
-                  <div class="col-md-5">
-                    <div class="profile_txt">
-                      <h1><%=getAdmin.full_name %></h1>
-                      <p><%=getAdmin.email%></p>
+          <%- include ('./partials/navbar.ejs') %>
+
+            <div class="right-sidebar1">
+              <div class="riders_tab">
+                <h2 class="riders_tab1">Profile</h2>
+                <!-- <div class="tab-content table-responsive"> -->
+                <div class="profile_section"></div>
+                <div class="row">
+                  <div class="hauzmart-admin">
+                    <div class="col-md-3">
+                      <img name="image" type="file" src="/uploads/admin/<%= getAdmin.profile_image %>" class="profile-pic">
+                    </div>
+                    <div class="col-md-5">
+                      <div class="profile_txt">
+                        <h1><%= getAdmin.full_name %></h1>
+                        <p><%= getAdmin.email %></p>
+                      </div>
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-center">
+                      <a href="/admin/getEditProfilePage"><button class="btn btn-primary edit"><img
+                            src="/images/edit.png" class="edit_icon">Edit Profile</button></a>
                     </div>
                   </div>
-                  <div class="col-md-4 d-flex justify-content-center">
-                    <a href="/admin/getEditProfilePage"><button class="btn btn-primary edit"><img src="/images/edit.png" class="edit_icon">Edit Profile</button></a>
-                  </div>
                 </div>
+                <div class="input-icons">
+                  <label for="name" class="label_txt mt-3">Full Name</label>
+                  <img class="name" src="/images/name.png"><input type="text" name="project_name"
+                    class="form-control new_project" placeholder="<%=getAdmin.full_name%>" aria-label="">
+                  <label for="name" class="label_txt mt-3">Email</label>
+                  <img class="mail" src="/images/mail.png"><input type="email" name="project_name"
+                    class="form-control new_project" placeholder="<%=getAdmin.email%>" aria-label="">
+                </div>
+                <!-- </div> -->
               </div>
-              <div class="input-icons">
-                <label for="name" class="label_txt mt-3">Full Name</label>
-                <img class="name" src="/images/name.png"> <input type="text" name="project_name"
-                  class="form-control new_project" placeholder="<%=getAdmin.full_name%>" aria-label="">
-                <label for="name" class="label_txt mt-3">Email</label>
-                <img class="mail" src="/images/mail.png"><input type="email" name="project_name"
-                  class="form-control new_project" placeholder="<%=getAdmin.email%>" aria-label="">
-              </div>
-              <!-- </div> -->
             </div>
-          </div>
         </div>
       </div>
-    </div>
+  </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      function menuToggle() {
-        const toggleMenu = document.querySelector(".menu");
-        toggleMenu.classList.toggle("active");
-      }
-    </script>
-    <script>
-      const toggle = document.getElementById("toggle");
-      const left = document.getElementById("left");
-      const bodyClass = document.querySelector("body");
-      toggle.onclick = function () {
-        toggle.classList.toggle("active");
-        left.classList.toggle("active");
-        bodyClass.classList.toggle("bodyOverflow");
-      };
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function menuToggle() {
+    const toggleMenu = document.querySelector(".menu");
+    toggleMenu.classList.toggle("active");
+  }
+</script>
+<script>
+  const toggle = document.getElementById("toggle");
+  const left = document.getElementById("left");
+  const bodyClass = document.querySelector("body");
+  toggle.onclick = function () {
+    toggle.classList.toggle("active");
+    left.classList.toggle("active");
+    bodyClass.classList.toggle("bodyOverflow");
+  };
+
+  document.getElementById("searchbar").style.visibility = "hidden"
+</script>
 </body>
-
 </html>

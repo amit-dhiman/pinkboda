@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         pickup_address: { type: DataTypes.STRING },
         drop_address: { type: DataTypes.STRING },
 
-        vechile_type: { type: DataTypes.STRING},
+        vechile_type: { type: DataTypes.STRING},        //  bike
         amount: { type: DataTypes.DECIMAL(6,2) },
 
         ride_status: { type: DataTypes.ENUM("Completed","Cancelled")},

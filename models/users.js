@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
 
     mobile_number: {type: DataTypes.STRING},
     country_code:{type: DataTypes.STRING},
-    image: { type: DataTypes.STRING },
+    image: { type: DataTypes.STRING, defaultValue:null},
 
     total_rides:{ type: DataTypes.INTEGER },   //may be it will be updated by end ride time
     action: { type: DataTypes.ENUM("Enable","Disable"),defaultValue:'Enable'},

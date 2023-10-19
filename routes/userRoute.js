@@ -9,13 +9,13 @@ const {signupUserValid,editUserValid,bookRideValid,sendMsgValid,reportValid,rati
 const {verify_token,upload} =require('../libs/commonFunc');
 
 /* GET home page. */
-router.get('/test', function(req, res, next) {
+router.get('/socketTest', function(req, res, next) {
   console.log('-----userRoute------');
   res.render('socketTest', { title: 'test' });
 });
-router.get('/testDriver', function(req, res, next) {
-  console.log('-----userRoute------');
-  res.render('testDriver', { title: ' Socket testDriver' });
+router.get('/socketDriverTest', function(req, res, next) {
+  console.log('-----testDriver------');
+  res.render('socketDriverTest', { title: ' Socket testDriver' });
 });
 
 router.post('/user/numberSignup', signupUserValid, userCtrl.numberSignup )
@@ -32,7 +32,7 @@ router.get('/user/deleteAccount', verify_token(CONFIG.SCOPE.users),userCtrl.dele
 
 router.post('/user/calcRideAmount', calcAmountValid, verify_token(CONFIG.SCOPE.users), userCtrl.calcRideAmount);
 
-router.post('/user/book-ride', verify_token(CONFIG.SCOPE.users),bookRideValid,userCtrl.bookRide);
+// router.post('/user/book-ride', verify_token(CONFIG.SCOPE.users),bookRideValid,userCtrl.bookRide);
 
 router.post('/user/cancel-ride',verify_token(CONFIG.SCOPE.users),userCtrl.cancelRide);
 

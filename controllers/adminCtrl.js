@@ -228,13 +228,14 @@ const renderIndex = async (req, res) => {
 
     let skp = req.body.skip || 0;
     // let query= {where:{},limit:10,offset:skp};
-    let query= {where:{is_admin_verified:"accepted"}};
+    let query= {where:{is_admin_verified: "accepted"}};
+
     let getDrivers = await libs.getAllData(db.drivers,query,skp);
     
     let drivers = getDrivers.map(driver => {
       let modifiedDriver = { ...driver.toJSON()};
-      modifiedDriver.role = 'Driver';
-      modifiedDriver.profile_image= `${process.env.driver_imageUrl_ejs}${modifiedDriver.profile_image}`
+      // modifiedDriver.role = 'Driver';
+      // modifiedDriver.profile_image= `${process.env.driver_imageUrl_ejs}${modifiedDriver.profile_image}`
       return modifiedDriver;
     });
 
@@ -242,8 +243,8 @@ const renderIndex = async (req, res) => {
 
     let riders = getRiders.map(rider => {
       let modifiedRider = { ...rider.toJSON() };
-      modifiedRider.role = 'Rider';
-      modifiedRider.image= `${process.env.user_imageUrl_ejs}${modifiedRider.image}`
+      // modifiedRider.role = 'Rider';
+      // modifiedRider.image= `${process.env.user_imageUrl_ejs}${modifiedRider.image}`
       return modifiedRider;
     });
 
@@ -254,8 +255,8 @@ const renderIndex = async (req, res) => {
       getDrivers: drivers,
       getAdmin: req.session.admin,
       totalUsers:[...drivers,...riders],
-      // userImageUrl: process.env.user_imageUrl_ejs,
-      // driverImageUrl : process.env.driver_imageUrl_ejs
+      userImageUrl: process.env.user_imageUrl_ejs,
+      driverImageUrl : process.env.driver_imageUrl_ejs
     });
 
   } catch (err) {
@@ -264,6 +265,7 @@ const renderIndex = async (req, res) => {
   }
 };
 
+
 const renderRider = async (req, res) => {
   try {
     let skp = req.body.skip || 0;
@@ -271,6 +273,7 @@ const renderRider = async (req, res) => {
     let query= {};
 
     let getRiders = await libs.getAllData(db.users,query,skp);
+    console.log('------getRiders------',getRiders);
     // let getAdmin = await libs.getData(db.admins,{where:{id:req.session.admin.id}});
     
     // res.status(200).json({code:200,message:"getRiders",
@@ -392,7 +395,7 @@ const renderHelpSupport = async (req, res) => {
     // For example, combine usersData and driversData into a single array
     const combinedData = usersData.concat(driversData);
        
-    // res.status(200).json({message:'Status toggled successfully',
+    // res.status(200).json({message:'help support data',
     res.render('help&support',{
      supportData: combinedData,
      driverImageUrl : process.env.driver_imageUrl_ejs,
@@ -445,7 +448,7 @@ const sendMassPush = async (req, res) => {
 
     let data={
       title: title,
-      description: description
+      message: description
     }
 
     let driversData = [];
@@ -458,7 +461,7 @@ const sendMassPush = async (req, res) => {
       driversData.push({
         driver_id: key.id,
         title: title,
-        description: description
+        message: description
       })
       if(key.device_token){ driverDeviceTokens.push(key.device_token)}
     }

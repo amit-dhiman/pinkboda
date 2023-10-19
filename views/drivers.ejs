@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-  <html lang="en">
-    <head>
-      <title>Houzmart</title>
-      <!-- Required meta tags -->
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <!-- <link rel="shortcut icon" href="/images/" type="image/x-icon"> -->
+<head>
+  <title>Houzmart</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- <link rel="shortcut icon" href="/images/" type="image/x-icon"> -->
+
+  <!-- Bootstrap CSS v5.2.0-beta1 -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" /> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+  <!-- Data Table CSS -->
+  <link rel='stylesheet' href='https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css'>
+  <!-- Font Awesome CSS -->
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css'>
   
-      <!-- Bootstrap CSS v5.2.0-beta1 -->
-      <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" /> -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css" />
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-  
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
-      <!-- Data Table CSS -->
-      <link rel='stylesheet' href='https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css'>
-      <!-- Font Awesome CSS -->
-      <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css'>
-     
-      <!-- custom css -->
-      <link rel="stylesheet" href="/assets/css/styles.css" />
-    </head>
+  <!-- custom css -->
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
 
 <body>
 <div class="container-fluid">
@@ -89,14 +88,14 @@
                     <% for(let driver of getDrivers) { %>
                       <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%=driverImageUrl + driver.profile_image %>" /></th>
+                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt=""/></th>
                         <td><%=driver.username %></td>
                         <td><%=driver.gender %></td>
                         <td><%=driver.total_rides %></td>
-                        <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + driver.passport_photo %>"/></th>
-                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + driver.id_card %>" /></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.license %>"/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>"/></th>
+                        <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=(driverImageUrl + driver.passport_photo)%>" alt=""/></th>
+                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + driver.id_card %>" alt="" alt=""/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.license %>" alt="" alt=""/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>" alt="" alt=""/></th>
                         <td><%= driver.year %></td>
                         <td>N/A</td>      <!-- have to add complaints here -->
                         <td>$2030</td>    <!-- have to total earning here -->
@@ -140,12 +139,12 @@
                     <% for(let pending of pendingRequests) { %>
                       <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/uploads/drivers/<%=pending.profile_image %>"/></th>
+                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" /></th>
                         <td><%=pending.username %></td>
                         <td><%=pending.gender %></td>
                         <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>"/></th>
                         <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>"/></th>
-                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>" /></th>
+                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>"/></th>
                         <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.license %>"/></th>
                         <td><%= formattedDate %></td>
                         <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= pending.id %>')"><%= pending.action %></button></td> -->

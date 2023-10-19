@@ -13,31 +13,29 @@ module.exports = (sequelize, DataTypes) => {
     pickup_address: { type: DataTypes.STRING },
     drop_address: { type: DataTypes.STRING },
 
-    booking_status: { type: DataTypes.ENUM("pending","accept","reject","started","cancel","completed"), defaultValue:"pending"},
+    booking_status: { type: DataTypes.ENUM("pending","accept","reject","cancel","completed"),defaultValue: "pending"},
     cancel_reason:{type: DataTypes.STRING },
 
     cancelled_by:{ 
-      type: DataTypes.ENUM("Driver","User"),
+      type: DataTypes.ENUM("Driver","User",null),
       allowNull: true,
+      defaultValue: null
     },
-    
-    amount: { type: DataTypes.DECIMAL(6, 2)},
-    ride_type:{ type: DataTypes.ENUM("Ride","Delivery")},
-    vechile_type: { type: DataTypes.STRING },     // Statically Bike
-
+    amount: { type: DataTypes.DECIMAL(6, 2),defaultValue:1},
+    ride_type:{type: DataTypes.ENUM("Ride","Delivery")},
     driver_gender:{type: DataTypes.ENUM("Male","Female","Both")},
 
     user_id: {
       type: DataTypes.INTEGER,
-      references: { model: 'users', key: 'id' },defaultValue: null
+      references: { model: 'users', key: 'id' },
     },
     driver_id: {
       type: DataTypes.INTEGER,
-      references: { model: 'drivers', key: 'id' },defaultValue: null
+      references: { model: 'drivers', key: 'id' },
     },
-    created_at:{type: DataTypes.BIGINT,allowNull: true},
-    updated_at:{type: DataTypes.BIGINT,allowNull: true},
-    deleted_at: {type: DataTypes.BIGINT,allowNull: true},
+    created_at:{type: DataTypes.BIGINT},
+    updated_at:{type: DataTypes.BIGINT},
+    deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
   },{
     hooks: {
       beforeValidate: (instance, options) => {
@@ -55,6 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     deletedAt: 'deleted_at',
   })
 
+  // Bookings.belongsTo(db.users, { foreignKey: 'user_id', as: 'user_id'  });
+  // Bookings.belongsTo(db.drivers, { foreignKey: 'driver_id', as: 'driver_id' });
   return Bookings;
 }
 

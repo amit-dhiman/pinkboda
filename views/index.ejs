@@ -124,17 +124,17 @@
                         <td>Rider</td>
                         <td><img class="three-dot" src="/images/dots.png" /></td>
                       </tr>
-                      <% for(let i =0; i < totalUsers.length; i++) { %>
+                      <% for(let user of totalUsers) { %>
                         <tr class="tabl_size user-example">
-                          <th scope="row"><img class="profile_img" src="<%=totalUsers[i].image ? totalUsers[i].image:totalUsers[i].profile_image%>"/></th>
-                          <td><%= totalUsers[i].username %></td>
-                          <td><%= totalUsers[i].mobile_number %></td>
-                          <td><%= totalUsers[i].role %></td>
+                          <th scope="row"><img class="profile_img" src="<%=(user.image ? (userImageUrl + user.image) : (user.hasOwnProperty('image') ? '/images/staticRider.jpg' : (user.profile_image) ? (driverImageUrl + user.profile_image) : '/images/staticDriver.jpg')) %>" /></th>
+                          <td><%= user.username %></td>
+                          <td><%= user.mobile_number %></td>
+                          <td><%=(user.image || user.image == '' || user.image == null ? 'User' : 'Driver') %></td>
                           <td><img class="three-dot" src="/images/dots.png"/></td>
                         </tr>
                       <% } %>
                     </tbody>
-                  </table>  
+                  </table>
                 </div>
                 <div class="tab-pane fade" id="riders">
                   <table id="example1" class="table">  
@@ -157,7 +157,7 @@
                       </tr>
                       <% for(let i =0; i < getRiders.length; i++) { %>
                         <tr class="tabl_size all-example1">
-                          <th scope="row"><img class="profile_img" src="<%= getRiders[i].image%>"/></th>
+                          <th scope="row"><img class="profile_img" src="<%= getRiders[i].image || '/images/staticRider.jpg' %>"/></th>
                           <td><%= getRiders[i].username %></td>
                           <td><%= getRiders[i].mobile_number %></td>
                           <td><%= getRiders[i].role %></td>
@@ -188,7 +188,7 @@
                       </tr>
                       <% for(let i =0; i < getDrivers.length; i++) { %>
                         <tr class="tabl_size">
-                          <th scope="row"><img class="profile_img" src="<%=getDrivers[i].profile_image %>" /></th>
+                          <th scope="row"><img class="profile_img" src="<%= getDrivers[i].profile_image || '/images/staticDriver.jpg' %>"/></th>
                           <td><%= getDrivers[i].username %></td>
                           <td><%= getDrivers[i].mobile_number %></td>
                           <td><%= getDrivers[i].role %></td>

@@ -18,6 +18,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: { type: DataTypes.STRING },
     message: { type: DataTypes.STRING },
+
+    // created_at:{type: DataTypes.BIGINT, defaultValue: function(){
+    //   return +new Date(Date.now());
+    // }},
+    // updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
+    //   return +new Date(Date.now());
+    // }},
+
     created_at:{type: DataTypes.BIGINT},
     updated_at:{type: DataTypes.BIGINT},
     deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
@@ -37,10 +45,5 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: "updated_at",
     deletedAt: 'deleted_at',
   })
-  // Notifications.beforeCreate((notification) => {
-  //   notification.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
-  //   notification.updated_at = moment().unix(); // Set createdAt to current timestamp in seconds
-  // });
-
   return Notifications;
 }

@@ -173,7 +173,7 @@ const signupDriverValid= async (req,res,next)=>{
         username: joi.string().optional(),
         gender: joi.number().valid("Male","Female","Both").optional(),
         mobile_number: joi.string().optional(),
-        license: joi.object().optional(),   //Ihave to do required all these fields
+        license: joi.object().optional(),   //Ihave to do optional all these fields
         id_card: joi.object().optional(),
         passport_photo: joi.object().optional(),
         vechile_insurance: joi.object().optional(),
@@ -187,7 +187,7 @@ const signupDriverValid= async (req,res,next)=>{
 
     let {error}= validation.validate(req.body);
     if(error){
-        console.log('------joi err------',error);
+        console.log('-----joi er------',error);
         return ERROR.JOI_ERROR(res,error.details[0].message);   
     }
     next();

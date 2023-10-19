@@ -27,7 +27,7 @@ router.get('/driver/delete-account', verify_token(CONFIG.SCOPE.drivers),driverCt
 
 router.get('/driver/pendingListing', verify_token(CONFIG.SCOPE.drivers),driverCtrl.pendingListing);
 
-router.post('/driver/updateDriversLocation', verify_token(CONFIG.SCOPE.drivers),driverCtrl.updateDriversLocation);
+// router.post('/driver/updateDriversLocation', verify_token(CONFIG.SCOPE.drivers),driverCtrl.updateDriversLocation);
 
 // router.post('/driver/accept-ride', verify_token(CONFIG.SCOPE.drivers),findRideValid, driverCtrl.findRide);
 router.post('/driver/cancel-ride',verify_token(CONFIG.SCOPE.drivers),driverCtrl.cancelRide);

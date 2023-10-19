@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ride Request App</title>
+</head>
+<body>
+    <h1>Ride Request App</h1>
+    <label for="pickupLocation">Enter Pickup Location:</label>
+    <input type="text" id="pickupLocation1" placeholder="Enter lat">
+    <input type="text" id="pickupLocation2" placeholder="Enter long">
+    <input type="text" id="pickupLocation23" placeholder="Enter user">
+    <button id="requestRide">Request Ride</button>
+
+    <!-- <button id="AcceptRide">Accept Ride</button> -->
+
+    <ul id="driversList">
+        <!-- Driver information will be displayed here -->
+    </ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+    <script>
+        // const socket = io("http://161.97.132.85:3036"); // Initialize Socket.io
+        const socket = io("http://localhost:3036"); 
+
+        // When the page loads, establish a connection to the server
+        socket.on('connect', () => {
+            console.log('Connected to the server');
+        });
+
+        // When the server emits a 'new_ride_request' event, add driver information to the list
+        socket.on('ride_request_accept', (driver) => {
+            alert("Accepted Ride");
+            // console.log(driver);
+            const driversList = document.getElementById('driversList');
+            const listItem = document.createElement('li');
+            listItem.textContent = `Request accepted by ${driver.name}`;
+            driversList.appendChild(listItem);
+        });
+
+
+      // document.getElementById('AcceptRide').addEventListener('click', () => {
+
+      //   socket.emit('ride_request_accepted',{'dirver':'done'});
+
+      // })
+  
+
+        // Handle the ride request button click
+        document.getElementById('requestRide').addEventListener('click', () => {
+            const pickupLocation1 = document.getElementById('pickupLocation1').value;
+            const pickupLocation2 = document.getElementById('pickupLocation2').value;
+            const pickupLocation3 = document.getElementById('pickupLocation23').value;
+            if (pickupLocation1 && pickupLocation2) {
+                // Emit a 'new_ride_request' event to the server with the pickup location
+                socket.emit('new_ride_request_send', {"latitude":pickupLocation1,"longitude":pickupLocation2,"userId":pickupLocation3});
+            }
+        });
+</script>
+</body>
+</html>
