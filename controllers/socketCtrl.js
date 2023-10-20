@@ -86,7 +86,7 @@ function setupSocketEvents(socket, io) {
     updateDriverLocAfterConfirm(data, io);
   });
 
-   socket.on('cancel_ride_after_accept', (data) => {
+  socket.on('cancel_ride_after_accept', (data) => {
     //console.log('New message-----:', chatData);
     cancelRideAfterAccept(data, io);
   });
@@ -104,8 +104,8 @@ async function requestRide(riderPickupLocation, io) {
     let userLongitude = riderPickupLocation.pickupLongitude;
     let genderPreference = riderPickupLocation.genderPreference;
     let response = await models.findAll({
-      attributes: ['id','username','latitude','longitude','socket_id',
-      [sequelize.literal(`6371 * acos(
+      attributes: ['id', 'username', 'latitude', 'longitude', 'socket_id',
+        [sequelize.literal(`6371 * acos(
           cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
           sin(radians(${userLatitude})) * sin(radians(latitude)))`),
           'distance',
@@ -114,9 +114,9 @@ async function requestRide(riderPickupLocation, io) {
       where: {
         [sequelize.Op.and]: [sequelize.where(sequelize.literal(`6371 * acos(
             cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
-            sin(radians(${userLatitude})) * sin(radians(latitude)))`), '<=',10 ),     // 10 km radius
-          { driving_status: 'online' }, // Adding the status condition here
-          { gender: genderPreference } // Gender condition
+            sin(radians(${userLatitude})) * sin(radians(latitude)))`), '<=', 10),     // 10 km radius
+        { driving_status: 'online' }, // Adding the status condition here
+        { gender: genderPreference } // Gender condition
         ]
       },
       order: [[sequelize.col('distance'), 'ASC']],
@@ -212,13 +212,13 @@ async function acceptRideRequest(driver, io) {
       let models = db.drivers;
       let modelsRequest = db.requests;
 
-      dataRequest = { pickup_long: driver.pickupLongitude, pickup_lat: driver.pickupLatitude, drop_long: driver.destinationLongitude, drop_lat: driver.destinationLatitude, pickup_address: driver.pickupAddress, drop_address: driver.destinationAddress, booking_status: 'accept', amount: driver.price, ride_type: 'Ride', driver_gender: driver.genderPreference, user_id: driver.userId, driver_id: driver.driverId};
+      dataRequest = { pickup_long: driver.pickupLongitude, pickup_lat: driver.pickupLatitude, drop_long: driver.destinationLongitude, drop_lat: driver.destinationLatitude, pickup_address: driver.pickupAddress, drop_address: driver.destinationAddress, booking_status: 'accept', amount: driver.price, ride_type: 'Ride', driver_gender: driver.genderPreference, user_id: driver.userId, driver_id: driver.driverId };
 
       let savingResponse = await db.bookings.create(dataRequest);
       const lastBookingId = savingResponse.id;
       driver.bookingId = lastBookingId;
 
-      let responceRequest = await modelsRequest.findAll({where:{request_id: driver.rideTimestamp}});
+      let responceRequest = await modelsRequest.findAll({ where: { request_id: driver.rideTimestamp } });
 
       //console.log("All Request D===================",responceRequest);
       let responceUser = await db.users.findOne({ where: { id: driver.userId } });
@@ -227,7 +227,7 @@ async function acceptRideRequest(driver, io) {
         responceDriver = await models.findOne({ where: { id: driver2.driver_id } });
         if (responceDriver.id == driver.driverId) {
           driver.driverName = responceDriver.username;
-          driver.driverProfile =`${process.env.driver_image_baseUrl}${responceDriver.profile_image}`;
+          driver.driverProfile = `${process.env.driver_image_baseUrl}${responceDriver.profile_image}`;
           driver.driverRating = responceDriver.over_all_rating;
           driver.driverMobileNo = responceDriver.mobile_number;
           driver.vehicleModel = responceDriver.model;
@@ -240,15 +240,15 @@ async function acceptRideRequest(driver, io) {
       }
       io.to(responceUser.socket_id).emit('ride_request_confirm', driver);
 
-      let notify_data={
+      let notify_data = {
         title: "Ride Accepted",
-        message:`Driver(${responceDriver.username}) Acepted your ride`,
-        user_id: driver.userId, driver_id: driver.driverId 
+        message: `Driver(${responceDriver.username}) Acepted your ride`,
+        user_id: driver.userId, driver_id: driver.driverId
       }
-      Notify.sendNotifyToUser(notify_data,responceUser.device_token)
+      Notify.sendNotifyToUser(notify_data, responceUser.device_token)
 
-      let saveNotify= await libs.createData(db.notifications,notify_data)
-      console.log('-------saveNotify---------',saveNotify);
+      let saveNotify = await libs.createData(db.notifications, notify_data)
+      console.log('-------saveNotify---------', saveNotify);
       //query save data of acceped ride will be added here
       // Add push notifiction code here also save notification message in db
       //io.emit('ride_request_accept', driver);
@@ -365,7 +365,7 @@ async function driverEndRide(user, io) {
 
   let responceUser = await db.users.findOne({ where: { id: user.userId } });
   //console.log("===========================End ride user ",responceUser);
-  
+
   // let updateRideStatus = await libs.updateData(db.bookings, { booking_status: "completed" }, { where: { id: user.bookingId } });
   io.to(responceUser.socket_id).emit('show_rating_popup', user);
 }
@@ -408,24 +408,23 @@ async function updateDriverLocAfterConfirm(data, io) {
 
 
 
-
 async function cancelRideAfterAccept(data, io) {
   let responceUser;
-  if(data.type=="Driver"){
-    responceUser = await db.users.findOne({where:{id: data.userId}});
-  }else {
-     responceUser = await db.drivers.findOne({where:{id: data.userId}});
+  if (data.type == "Driver") {
+    responceUser = await db.users.findOne({ where: { id: data.userId } });
+  } else {
+    responceUser = await db.drivers.findOne({ where: { id: data.userId } });
   }
-  
+
   // console.log("===========================End ride user ",responceUser);
   // let models = db.bookings;
   // let [ct , response] = await models.update({ booking_status: 'cancel',cancelled_by:data.type}, {
   //   where: { id: data.bookingId }
   // });
 
-  let updateEndRide = await libs.findAndUpdate(db.bookings, data.bookingId,{ booking_status: 'cancel',cancelled_by:data.type});
-  
-  console.log('-------------cancelRideAfterAccept-bookings--------------',updateEndRide);
+  let updateEndRide = await libs.findAndUpdate(db.bookings, data.bookingId, { booking_status: 'cancel', cancelled_by: data.type });
+
+  // console.log('-------------cancelRideAfterAccept-bookings--------------', updateEndRide);
 
   let rideData = {
     "pickup_long": updateEndRide.pickup_long,
@@ -439,11 +438,41 @@ async function cancelRideAfterAccept(data, io) {
     "ride_status": "Cancelled",
     "driver_id": updateEndRide.driver_id,
     "user_id": updateEndRide.user_id,
-    "booking_id" : updateEndRide.id,
+    "booking_id": updateEndRide.id,
   }
-  
+
   let save = await libs.createData(db.myrides, rideData);
-  console.log('------------save-----------',save);
+  // console.log('------------save-----------', save);
+
+  if (data.type == "Driver") {
+
+    let notify_data = {
+      title: "Ride Cancelled",
+      message: `Driver Cancelled your ride`,
+    }
+
+    Notify.sendNotifyToUser(notify_data, responceUser.device_token)
+
+    notify_data.user_id = rideData.user_id;
+    notify_data.driver_id = rideData.driver_id;
+
+    let saveNotify = await libs.createData(db.notifications, notify_data)
+    // console.log('-------saveNotify---------', saveNotify);
+
+  } else {
+    let notify_data = {
+      title: "Ride Cancelled",
+      message: `User Cancelled your ride`,
+    }
+
+    Notify.sendNotifyToDriver(notify_data, responceUser.device_token)
+
+    notify_data.user_id = rideData.user_id;
+    notify_data.driver_id = rideData.driver_id;
+
+    let saveNotify = await libs.createData(db.notifications, notify_data)
+    // console.log('-------saveNotify---------', saveNotify);
+  }
 
   io.to(responceUser.socket_id).emit('ride_cancel_after_accept', data);
 }
@@ -453,8 +482,6 @@ async function cancelRideAfterAccept(data, io) {
 
 
 
-
-
 module.exports = {
-  requestRide,acceptRideRequest,setupSocketEvents,
+  requestRide, acceptRideRequest, setupSocketEvents,
 };

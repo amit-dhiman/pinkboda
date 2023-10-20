@@ -272,11 +272,33 @@ const endRide = async (req, res) => {
       })
   
       Notify.sendNotifyToUser(notify_data,getData.device_token);
+
+      notify_data.user_id= data.user_id
+      notify_data.driver_id= data.driver_id
+
+      let saveNotify= await libs.createData(db.notifications,notify_data);
+
+      // update rides in users & drivers
+      let incDriverRide= await libs.updateData(req.creds, {total_rides: db.sequelize.literal(`total_rides + ${1}`)});
+      // console.log('------------incDriverRide----------',incDriverRide);
+      
+      let incUserRide= await libs.findAndUpdate(db.users, user_id , {total_rides: db.sequelize.literal(`total_rides + ${1}`),
+      },{where: { id: user_id }});
+      // console.log('---------------incUserRide-------------------',incUserRide.toJSON());
+
+      if(incUserRide.total_rides == 20){
+        console.log('-----------Wow!!!----------');
+        
+        let notify_data={
+          title: 'Offer',
+          message: 'Wow you have completed your 20 Rides, now you will get 1 free ride',
+        }
+        Notify.sendNotifyToDriver(notify_data,req.creds.device_token);
+      }
   
       return res.status(200).json({code:200,message:"Ride Completed"});
     }
     return res.status(200).json({code:404,message:"boooking not found"});
-    
   } catch (err) {
     console.log('----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
