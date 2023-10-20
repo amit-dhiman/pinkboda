@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       references:{model:'drivers'},
     },
     request_id: {
-      type: DataTypes.INTEGER,
-      references:{model:'bookings'},
+      type: DataTypes.BIGINT,
+      // references:{model:'bookings'},
     },
     created_at:{type: DataTypes.BIGINT},
     updated_at:{type: DataTypes.BIGINT},

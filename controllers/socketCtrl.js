@@ -3,8 +3,9 @@ const libs = require('../libs/queries');
 const commonFunc = require('../libs/commonFunc');
 require('dotenv').config();
 const sequelize = require('sequelize');
-//const { Op, Sequelize } = require("sequelize")
+const Notify = require('../libs/notifications');
 
+//const { Op, Sequelize } = require("sequelize")
 
 // Create a map to store driver socket connections
 const driverSockets = new Map();
@@ -93,75 +94,44 @@ function setupSocketEvents(socket, io) {
   // Add other socket event handlers here, as needed
 }
 
-// let response = [
-//   {
-//     "id": 1,
-//     "username": "JohnDoe",
-//     "gender": "Male",
-//     "latitude": 34.0522,
-//     "longitude": -118.2437,
-//     "mobile_number": "7807039315",
-//     "country_code": "+1",
-//     "driving_status": "Online",
-//     "profile_image": "driver_profile.jpg",
-//     "license": "driver_license.pdf",
-//     "id_card": "driver_id_card.jpg",
-//     "passport_photo": "passport_photo.jpg",
-//     "vechile_insurance": "insurance_certificate.pdf",
-//     "model": "Toyota Camry",
-//     "license_plate": "ABC123",
-//     "year": 2022,
-//     "is_admin_verified": "accepted",
-//     "over_all_rating": 4.7,
-//     "socket_id": "abc123xyz",
-//     "total_rides": 100,
-//     "total_earning": 0,
-//     "action": "Enable",
-//     "access_token": "your_access_token",
-//     "device_type": "Android",
-//     "device_token": "device_token_here",
-//     "created_at": 1646216345000,
-//     "updated_at": 1646216350000,
-//     "deleted_at": null
-//   }  
-// ]
-
 
 async function requestRide(riderPickupLocation, io) {
-  console.log('----------riderPickupLocation------------',riderPickupLocation);
+  // console.log('----------riderPickupLocation------------',riderPickupLocation);
   let models = db.drivers;
   let modelsRequest = db.requests;
   try {
     let userLatitude = riderPickupLocation.pickupLatitude;
     let userLongitude = riderPickupLocation.pickupLongitude;
     let genderPreference = riderPickupLocation.genderPreference;
-    // let response = await models.findAll({
-    //   attributes: ['id','username','latitude','longitude','socket_id',
-    //   [sequelize.literal(`6371 * acos(
-    //       cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
-    //       sin(radians(${userLatitude})) * sin(radians(latitude)))`),
-    //       'distance',
-    //     ],
-    //   ],
-    //   where: {
-    //     [sequelize.Op.and]: [sequelize.where(sequelize.literal(`6371 * acos(
-    //         cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
-    //         sin(radians(${userLatitude})) * sin(radians(latitude)))`), '<=',10 ),     // 10 km radius
-    //       { driving_status: 'online' }, // Adding the status condition here
-    //       { gender: genderPreference } // Gender condition
-    //     ]
-    //   },
-    //   order: [[sequelize.col('distance'), 'ASC']],
-    //   limit: 10, // Limit the results to 10 drivers
-    // });
+    let response = await models.findAll({
+      attributes: ['id','username','latitude','longitude','socket_id',
+      [sequelize.literal(`6371 * acos(
+          cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
+          sin(radians(${userLatitude})) * sin(radians(latitude)))`),
+          'distance',
+        ],
+      ],
+      where: {
+        [sequelize.Op.and]: [sequelize.where(sequelize.literal(`6371 * acos(
+            cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
+            sin(radians(${userLatitude})) * sin(radians(latitude)))`), '<=',10 ),     // 10 km radius
+          { driving_status: 'online' }, // Adding the status condition here
+          { gender: genderPreference } // Gender condition
+        ]
+      },
+      order: [[sequelize.col('distance'), 'ASC']],
+      limit: 10, // Limit the results to 10 drivers
+    });
 
     for (const driver of response) {
-      console.log("Here is driver socket id ------------------------------",driver);
+      // console.log("-------Here is driver socket id --in for loop----------------------------",driver);
       if (driver && driver.socket_id) {
         // Send a ride request to the driver
         //console.log("Here we send request to driver====================");
         dataRequest = { request_id: riderPickupLocation.rideTimestamp, driver_id: driver.id };
-        await modelsRequest.create(dataRequest);
+        let saveRequest = await modelsRequest.create(dataRequest);
+        // console.log('----------saveRequest----------',saveRequest);
+
         io.to(driver.socket_id).emit('new_ride_request', riderPickupLocation);
         //io.emit('new_ride_request', riderPickupLocation);
         // Add push notifiction code here also save notification message in db
@@ -242,7 +212,8 @@ async function acceptRideRequest(driver, io) {
       let models = db.drivers;
       let modelsRequest = db.requests;
 
-      dataRequest = { pickup_long: driver.pickupLongitude, pickup_lat: driver.pickupLatitude, drop_long: driver.destinationLongitude, drop_lat: driver.destinationLatitude, pickup_address: driver.pickupAddress, drop_address: driver.destinationAddress, booking_status: 'accept', amount: driver.price, ride_type: 'Ride', driver_gender: driver.genderPreference, user_id: driver.userId, driver_id: driver.driverId, };
+      dataRequest = { pickup_long: driver.pickupLongitude, pickup_lat: driver.pickupLatitude, drop_long: driver.destinationLongitude, drop_lat: driver.destinationLatitude, pickup_address: driver.pickupAddress, drop_address: driver.destinationAddress, booking_status: 'accept', amount: driver.price, ride_type: 'Ride', driver_gender: driver.genderPreference, user_id: driver.userId, driver_id: driver.driverId};
+
       let savingResponse = await db.bookings.create(dataRequest);
       const lastBookingId = savingResponse.id;
       driver.bookingId = lastBookingId;
@@ -251,12 +222,12 @@ async function acceptRideRequest(driver, io) {
 
       //console.log("All Request D===================",responceRequest);
       let responceUser = await db.users.findOne({ where: { id: driver.userId } });
-
+      let responceDriver = null;
       for (const driver2 of responceRequest) {
-        let responceDriver = await models.findOne({ where: { id: driver2.driver_id } });
+        responceDriver = await models.findOne({ where: { id: driver2.driver_id } });
         if (responceDriver.id == driver.driverId) {
           driver.driverName = responceDriver.username;
-          driver.driverProfile = process.env.driver_image_baseUrl + '/' + responceDriver.profile_image;
+          driver.driverProfile =`${process.env.driver_image_baseUrl}${responceDriver.profile_image}`;
           driver.driverRating = responceDriver.over_all_rating;
           driver.driverMobileNo = responceDriver.mobile_number;
           driver.vehicleModel = responceDriver.model;
@@ -269,6 +240,15 @@ async function acceptRideRequest(driver, io) {
       }
       io.to(responceUser.socket_id).emit('ride_request_confirm', driver);
 
+      let notify_data={
+        title: "Ride Accepted",
+        message:`Driver(${responceDriver.username}) Acepted your ride`,
+        user_id: driver.userId, driver_id: driver.driverId 
+      }
+      Notify.sendNotifyToUser(notify_data,responceUser.device_token)
+
+      let saveNotify= await libs.createData(db.notifications,notify_data)
+      console.log('-------saveNotify---------',saveNotify);
       //query save data of acceped ride will be added here
       // Add push notifiction code here also save notification message in db
       //io.emit('ride_request_accept', driver);
@@ -317,9 +297,8 @@ async function updateLoc(driver, io) {
 
 
 async function updateDirStatus(driver, io) {
-
-  if (driver) {
-    try {
+  try {
+    if (driver) {
       let models = db.drivers;
       let response = await models.update({ driving_status: driver.status }, {
         where: { id: driver.driverId }
@@ -328,9 +307,9 @@ async function updateDirStatus(driver, io) {
       //io.emit('location_updated', sendResponse);
       // console.log('Ride request accepted:', driver);
       // console.log(`${driver} status updated successfully`);
-    } catch (error) {
-      throw error
     }
+  } catch (error) {
+    throw error
   }
 }
 
@@ -433,19 +412,39 @@ async function updateDriverLocAfterConfirm(data, io) {
 async function cancelRideAfterAccept(data, io) {
   let responceUser;
   if(data.type=="Driver"){
-    responceUser = await db.users.findOne({ where: { id: data.userId } });
+    responceUser = await db.users.findOne({where:{id: data.userId}});
   }else {
-     responceUser = await db.drivers.findOne({ where: { id: data.userId } });
+     responceUser = await db.drivers.findOne({where:{id: data.userId}});
   }
   
   // console.log("===========================End ride user ",responceUser);
-  let models = db.bookings;
-  let response = await models.update({ booking_status: 'cancel',cancelled_by:data.type}, {
-    where: { id: data.bookingId }
-  });
-  console.log('----------cancelRideAfterAccept res------------',response);
+  // let models = db.bookings;
+  // let [ct , response] = await models.update({ booking_status: 'cancel',cancelled_by:data.type}, {
+  //   where: { id: data.bookingId }
+  // });
 
-  await db.myrides.update({ride_status:"Cancelled"},{where:{ booking_id: data.bookingId }});     // updation myRides 
+  let updateEndRide = await libs.findAndUpdate(db.bookings, data.bookingId,{ booking_status: 'cancel',cancelled_by:data.type});
+  
+  console.log('-------------cancelRideAfterAccept-bookings--------------',updateEndRide);
+
+  let rideData = {
+    "pickup_long": updateEndRide.pickup_long,
+    "pickup_lat": updateEndRide.pickup_lat,
+    "drop_long": updateEndRide.drop_long,
+    "drop_lat": updateEndRide.drop_lat,
+    "pickup_address": updateEndRide.pickup_address,
+    "drop_address": updateEndRide.drop_address,
+    "vechile_type": "Bike",
+    "amount": updateEndRide.amount,
+    "ride_status": "Cancelled",
+    "driver_id": updateEndRide.driver_id,
+    "user_id": updateEndRide.user_id,
+    "booking_id" : updateEndRide.id,
+  }
+  
+  let save = await libs.createData(db.myrides, rideData);
+  console.log('------------save-----------',save);
+
   io.to(responceUser.socket_id).emit('ride_cancel_after_accept', data);
 }
 
@@ -457,7 +456,5 @@ async function cancelRideAfterAccept(data, io) {
 
 
 module.exports = {
-  requestRide,
-  acceptRideRequest,
-  setupSocketEvents,
+  requestRide,acceptRideRequest,setupSocketEvents,
 };

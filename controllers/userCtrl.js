@@ -168,20 +168,29 @@ const deleteUserAccount = async (req, res) => {
 
 const calcRideAmount = async (req, res) => {
   try {
-    const data={
-      pickup_long: req.body.pickup_long,
-      pickup_lat: req.body.pickup_lat,
-      drop_long: req.body.drop_long,
-      drop_lat: req.body.drop_lat,
-      pickup_address: req.body.pickup_address,
-      drop_address: req.body.drop_address,
+    const {pickup_long,pickup_lat,drop_long,drop_lat,pickup_address,drop_address,ride_type,driver_gender} = req.body;
+
+    let data={
+      pickup_long: pickup_long,
+      pickup_lat: pickup_lat,
+      drop_long: drop_long,
+      drop_lat: drop_lat,
+      pickup_address: pickup_address,
+      drop_address: drop_address,
       booking_status:"pending",
-      ride_type: req.body.ride_type,
-      driver_gender: req.body.driver_gender,
+      ride_type: ride_type,
+      driver_gender: driver_gender,
       user_id: req.creds.id,
     }
-    data.amount = 10
+
+    let distance = await commonFunc.findDistanceByRoad(data);
     
+    let base_price = 5;
+    let perKm_price = 1.5;
+    let km = parseFloat(distance.replace(/[, ]/g, ''));
+
+    data.amount = (base_price + (perKm_price * km));
+
     let getData = await libs.getData(db.search_history,{where:{drop_lat:data.drop_lat, drop_long: data.drop_long}});
     let getAddress = await libs.getData(db.search_history,{where:{drop_address : data.drop_address }});
     // console.log('--------getData---------',getData);
@@ -204,8 +213,7 @@ const calcRideAmount = async (req, res) => {
     }else{
       saveData = await libs.createData(db.search_history,data);
     }
-    console.log('--------------calcRideAmount-saveData-----------------',saveData);
-    res.status(200).json({code:200,message:"calcRide Amount api", data : saveData});    
+    res.status(200).json({code:200,message:"calcRide Amount api", data : data});  
   } catch (err) {
     res.status(500).json({code:500,message:err.message});
   }
