@@ -31,21 +31,23 @@ const getloginPage = async (req, res) => {
 const login = async(req, res) => {
   try {
     console.log('-------body--------',req.body);
-
     const {email,password} = req.body;
     
-    if (!email || !password) return res.status(400).json({code:400,message:"email, password is required"});
-
+    if (!email || !password) {
+      alert('Email not found')
+      // res.status(400).json({code:400,message:"email not found"})
+      return res.redirect('/admin/login');
+    }
     const getData = await libs.getData(db.admins,{where:{email:email}});
     if (getData) {
       let checkPswrd = await commonFunc.compPassword(password, getData.password)
       if(!checkPswrd){
         if(getData.password != password){
           // return res.status(400).json({code:400,message:"Incorrect Password"})
+          alert('Incorrect Password')
           return res.redirect('/admin/login');
         }
       }
-
       req.session.admin = getData.toJSON();
       req.session.role = "admin";
 
@@ -57,6 +59,7 @@ const login = async(req, res) => {
     }
   } catch (err) {
     console.log('-----log err-----',err);
+    return res.redirect('/admin/login')
     ERROR.INTERNAL_SERVER_ERROR(res, err);
   }
 };
@@ -72,6 +75,7 @@ const renderProfile = async (req, res) => {
     getAdmin: getAdminData});
   } catch (err) {
     console.log('---err---',err);
+    return res.redirect('/admin/login');
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
@@ -81,11 +85,10 @@ const getEditProfilePage = async (req, res) => {
   try {
     let getData= await libs.getData(db.admins,{});
     // res.status(200).json({
-    res.render('edit-profile' , {
-      getAdmin: getData,
-    });
+    res.render('edit-profile' ,{getAdmin: getData});
   
   } catch (err) {
+    return res.redirect('/admin/login');
     res.status(500).json({code:500,message:"password not match"})
   }
 };
@@ -97,8 +100,6 @@ const editProfile = async (req, res,next) => {
 
     const {admin_name, admin_email} = req.body;
     let update = {};
-
-    // // await commonFunc.upload(req,res,next);
 
     if (admin_name) { update.full_name = admin_name }
     if (admin_email) { update.email = admin_email }
@@ -124,6 +125,7 @@ const editProfile = async (req, res,next) => {
   } catch (err) {
     console.log('-----err-----',err);
     if(req.file){ fs.unlink(req.file.path, (err)=>{if (err) return})}
+    return res.redirect('/admin/login');
     ERROR.ERROR_OCCURRED(res, err);
   }
 };
@@ -136,7 +138,7 @@ const getChangePasswordPage = async (req, res) => {
 
   } catch (err) {
     console.log('-------er-----',err);
-    return res.status(500).json({code:500,message:err.message,error:err})
+    return res.redirect('/admin/login');
   }
 };
 
@@ -145,36 +147,29 @@ const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword, confirmPassword } = req.body;
     // const userId = req.creds.id;
-    
-    console.log('---------req.body--------',req.body);
-    console.log('---------newPassword-------',req.body.newPassword);
-    
-    if(newPassword != confirmPassword){return res.status(404).json({code:400, message:'old password and new password doesnt matched'});}
-    console.log('----------2----------',newPassword != confirmPassword);
+
+    if(newPassword != confirmPassword){
+      alert('old password and new password doesnt matched')
+      return res.redirect('/admin/getChangePasswordPage');
+    }
 
     const getData = await libs.getData(db.admins, {});
-
-    if (!getData) {
-      return res.status(404).json({code:400, message: 'Data not found' });
-    }
-    
+        
     const passwordMatches = await commonFunc.compPassword(oldPassword,getData.password);
     if(!passwordMatches){
       if(getData.password != oldPassword){
-        return res.status(400).json({code:400,message:"password not match"})
+        alert("password doesn't match")
+        return res.redirect('/admin/getChangePasswordPage');
       }
     }
     let newhashPassword = await commonFunc.securePassword(newPassword);
 
     let upatedData= await libs.updateData(getData, {password:newhashPassword});
 
-    return res.status(200).json({code:200, 
-      data: upatedData,
-
-    });
+    return res.redirect('/admin/getChangePasswordPage')
+    // return res.status(200).json({code:200,data: upatedData});
   } catch (err) {
-    console.log('-------er-----',err);
-    return res.status(500).json({code:500,message:err.message,error:err})
+    return res.redirect('/admin/login') 
   }
 };
 
@@ -208,15 +203,13 @@ const logout = async (req, res) => {
           res.redirect('/admin/renderProfile');
         } else {
           // res.json({ message: 'Logout successful' });
+          alert('Logout successful')
           return res.render('login');
         }
       });
-    } else {
-      res.status(401).json({ message: 'Not logged in' });
-    }
-
+    } else {return res.render('login')}
   } catch (err) {
-    res.status(500).json({code:500,message:"password not match"})
+    return res.render('login')
   }
 };
 
@@ -224,44 +217,27 @@ const logout = async (req, res) => {
 // render full index.ejs
 const renderIndex = async (req, res) => {
   try {
-    // let getAdmin = await libs.getData(db.admins,{where:{id:req.session.admin.id}});
-
     let skp = req.body.skip || 0;
     // let query= {where:{},limit:10,offset:skp};
     let query= {where:{is_admin_verified: "accepted"}};
 
     let getDrivers = await libs.getAllData(db.drivers,query,skp);
     
-    let drivers = getDrivers.map(driver => {
-      let modifiedDriver = { ...driver.toJSON()};
-      // modifiedDriver.role = 'Driver';
-      // modifiedDriver.profile_image= `${process.env.driver_imageUrl_ejs}${modifiedDriver.profile_image}`
-      return modifiedDriver;
-    });
-
     let getRiders= await libs.getAllData(db.users,{},skp);
-
-    let riders = getRiders.map(rider => {
-      let modifiedRider = { ...rider.toJSON() };
-      // modifiedRider.role = 'Rider';
-      // modifiedRider.image= `${process.env.user_imageUrl_ejs}${modifiedRider.image}`
-      return modifiedRider;
-    });
 
     // res.status(200).json({code:200,message:"ALL Drivers and Riders",
     res.render('index',{
-
-      getRiders: riders,
-      getDrivers: drivers,
+      getRiders: getRiders,
+      getDrivers: getDrivers,
       getAdmin: req.session.admin,
-      totalUsers:[...drivers,...riders],
+      totalUsers:[...getDrivers,...getRiders],
       userImageUrl: process.env.user_imageUrl_ejs,
       driverImageUrl : process.env.driver_imageUrl_ejs
     });
 
   } catch (err) {
     console.log('-----err-----',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    return res.render('login')
   }
 };
 
@@ -274,7 +250,6 @@ const renderRider = async (req, res) => {
 
     let getRiders = await libs.getAllData(db.users,query,skp);
     console.log('------getRiders------',getRiders);
-    // let getAdmin = await libs.getData(db.admins,{where:{id:req.session.admin.id}});
     
     // res.status(200).json({code:200,message:"getRiders",
     res.render('riders',{
@@ -284,7 +259,7 @@ const renderRider = async (req, res) => {
     });
   } catch (err) {
     console.log('----err----',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    return res.render('login')
   }
 };
 
@@ -292,7 +267,6 @@ const renderDriver = async (req, res) => {
   try {
     let getDrivers= await libs.getAllData(db.drivers,{where:{is_admin_verified:"accepted"}});
     let getPendingRequests = await libs.getAllData(db.drivers,{where:{is_admin_verified:"pending"}});
-    // let getAdmin = await libs.getData(db.admins,{where:{id:req.session.admin.id}});
     
     // res.status(200).json({code:200,message:"Get all drivers",
     res.render('drivers',{
@@ -304,7 +278,7 @@ const renderDriver = async (req, res) => {
 
   } catch (err) {
     console.log('-----err------',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    return res.render('login')
   }
 };
 
@@ -313,19 +287,17 @@ const actionOnDriver = async (req, res) => {
   try {
     const { driverId } = req.params;
     let query = {where:{id:driverId}}
-    console.log('-------query--------',query);
     const driver = await libs.getData(db.drivers,query);
-    if (!driver) {
-      return res.status(404).json({ error: 'Driver not found' });
+    if (driver) {
+      driver.action = driver.action === 'Enable' ? 'Disable' : 'Enable';
+      await driver.save();
+      return res.status(200).send(driver.action);
+      // res.status(200).json({ message: 'Status toggled successfully', data:driver.action});
     }
-    driver.action = driver.action === 'Enable' ? 'Disable' : 'Enable';
-    await driver.save();
-    // console.log('-----------driver---------',driver);
-    res.status(200).send(driver.action);
-    // res.status(200).json({ message: 'Status toggled successfully', data:driver.action  });
+    return alert('Driver not found');
   } catch (err) {
     console.log('---err---',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    return res.render('login')
   }
 };
 
@@ -334,18 +306,15 @@ const actionOnUser = async (req, res) => {
   try {
     const { riderId } = req.params;
     let query = {where:{id:riderId}}
-    console.log('-------query--------',query);
     const rider = await libs.getData(db.users,query);
-    if (!rider) {
-      return res.status(404).json({ error: 'Driver not found' });
+    if (rider) {
+      rider.action = rider.action === 'Enable' ? 'Disable' : 'Enable';
+      await rider.save();
+      res.status(200).json({ message: 'Status toggled successfully', data:rider.action  });
     }
-    rider.action = rider.action === 'Enable' ? 'Disable' : 'Enable';
-    await rider.save();
-    // res.status(200).send(rider.action);
-    res.status(200).json({ message: 'Status toggled successfully', data:rider.action  });
   } catch (err) {
     console.log('---err---',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    res.render('login')
   }
 };
 
@@ -366,7 +335,6 @@ const pendingRequests = async (req, res) => {
       let images=['profile_image','license','id_card','passport_photo','vechile_insurance'];
 
       for(let key of images){
-        console.log('----------1--------',`${process.env.driver_image_baseUrl}${getData[key]}`);
         fs.unlink(`${process.env.driver_image_baseUrl}${getData[key]}`,(err)=>{if(err){return err}})
         updateRequest = await libs.destroyData(getData,{force:true});
       }
@@ -375,8 +343,7 @@ const pendingRequests = async (req, res) => {
     res.status(200).send(updateRequest);
     // res.status(200).json({message:'Status toggled successfully', data:updateRequest});
   } catch (err) {
-    console.log('---err---',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    res.render('login')
   }
 };
 
@@ -403,8 +370,7 @@ const renderHelpSupport = async (req, res) => {
      getAdmin: req.session.admin
     });
   } catch (err) {
-    console.log('---------err--------',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    res.render('login')
   }
 };
 
@@ -414,9 +380,6 @@ const resolvedIssue = async (req, res) => {
     let query = {where:{id: issueId}}
 
     const getSupport = await libs.getData(db.supports,query);
-    if (!getSupport) {
-      return res.status(404).json({error: 'Issue not found'});
-    }
 
     if(getSupport.issue_status == 'Unselected'){
       getSupport.issue_status = 'Resolved'
@@ -425,7 +388,7 @@ const resolvedIssue = async (req, res) => {
     // console.log('-----------getSupport---------',getSupport);
     return res.status(200).json({ message:'Issue resolved successfully',data: getSupport.issue_status  })
   } catch (err) {
-    res.status(500).json({code:500,message:"Internal server Error"})
+    res.render('login')
   }
 }
 
@@ -434,7 +397,7 @@ const massPushPage = async (req, res) => {
     res.render('mass_push', { getAdmin:req.session.admin});
   } catch (err) {
     console.log('----err----',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    res.render('login')
   }
 };
 
@@ -474,35 +437,21 @@ const sendMassPush = async (req, res) => {
       })
       if(key.device_token){ userDeviceTokens.push(key.device_token)}
     }
-
-    // console.log('-----------driversData-----------',driversData);
-    // console.log('-------------usersData-----------',usersData);
-    // console.log('-----------driverDeviceTokens-----------',driverDeviceTokens);
-    // console.log('-----------userDeviceTokens-----------',userDeviceTokens);
-
     let saveDriverData = null;
     let saveRiderData = null;
-
-    if(role == 'Driver'){
-      Notify.sendNotifyToDriver(data,driverDeviceTokens);  
-      saveDriverData = await libs.createData(db.notifications, driversData);
-    }else if(role == "Rider"){
-      Notify.sendNotifyToUser(data, userDeviceTokens);
-      saveRiderData = await libs.createData(db.notifications, usersData);
-    }else{
-      Notify.sendNotifyToUser(data, userDeviceTokens)
-      Notify.sendNotifyToDriver(data,driverDeviceTokens)
-
-      saveRiderData = await libs.createData(db.notifications, usersData);
-      saveDriverData = await libs.createData(db.notifications, driversData);
+    
+    if (role === 'Driver' || role === 'Both') {
+      Notify.sendNotifyToDriver(data, driverDeviceTokens);
+      await libs.createData(db.notifications, driversData);
     }
-    // res.status(200).json({message:"notifications send",saveRiderData,saveDriverData})
-    // res.status(200).send({message:"notifications send"});
+    if (role === 'Rider' || role === 'Both') {
+      Notify.sendNotifyToUser(data, userDeviceTokens);
+      await libs.createData(db.notifications, usersData);
+    }
     res.redirect('/admin/massPushPage');
 
   } catch (err) {
-    console.log('-----err-----',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    res.render('login')
   }
 };
 

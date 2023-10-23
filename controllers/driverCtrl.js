@@ -210,27 +210,27 @@ const cancelRide = async (req, res) => {
     }
     let updateMsg= await libs.updateData(db.bookings,{cancel_reason: req.body.cancel_reason, cancelled_by:"Driver",booking_status:"cancel"},{where:query});
 
-    if(updateMsg[0] !=0){
-      console.log('-----------------------');
-      let getUserData= await libs.getData(db.users,{where:{id:req.body.user_id}});
+    // if(updateMsg[0] !=0){
+      // console.log('-----------------------');
+      // let getUserData= await libs.getData(db.users,{where:{id:req.body.user_id}});
 
       //  ---------send notification----------
-      let notifyData = {
-        title: "Ride cancelation",
-        message: "your ride has been canceled",
-        user_id: req.body.user_id,
-        driver_id: req.creds.id,
-        booking_id: req.body.booking_id
-      }
+      // let notifyData = {
+      //   title: "Ride cancelation",
+      //   message: "your ride has been cancelled",
+      //   user_id: req.body.user_id,
+      //   driver_id: req.creds.id,
+      //   booking_id: req.body.booking_id
+      // }
 
-      const sendNotify= await Notify.sendNotifyToUser(notifyData,getUserData.device_token);
-      console.log('-----sendNotify---------',sendNotify);
+      // const sendNotify= await Notify.sendNotifyToUser(notifyData,getUserData.device_token);
+      // console.log('-----sendNotify---------',sendNotify);
 
-      // notifyData
-      const saveNotify= await libs.createData(db.notifications,notifyData)
+      // // notifyData
+      // const saveNotify= await libs.createData(db.notifications,notifyData)
 
       return res.status(200).json({code:200,message:"your ride has been canceled"});
-    }
+    // }
     res.status(200).json({code:200,message:"cant cancelled the ride or maybe wrong boooking id"});
   } catch (err) {
     res.status(500).json({code:500,message:err.message});
@@ -272,11 +272,18 @@ const endRide = async (req, res) => {
       })
   
       Notify.sendNotifyToUser(notify_data,getData.device_token);
-
+      
       notify_data.user_id= data.user_id
-      notify_data.driver_id= data.driver_id
-
       let saveNotify= await libs.createData(db.notifications,notify_data);
+
+
+      let notify_data_Driver={
+        title: 'Ride Completed',
+        message: 'Your ride has been completed',
+      }
+      notify_data_Driver.driver_id= data.driver_id
+      let saveNotify_driver= await libs.createData(db.notifications,notify_data_Driver);
+
 
       // update rides in users & drivers
       let incDriverRide= await libs.updateData(req.creds, {total_rides: db.sequelize.literal(`total_rides + ${1}`)});
@@ -291,14 +298,14 @@ const endRide = async (req, res) => {
         
         let notify_data={
           title: 'Offer',
-          message: 'Wow you have completed your 20 Rides, now you will get 1 free ride',
+          message: 'Wow!!! you have completed your 20 Rides, now you will get 1 free ride',
         }
         Notify.sendNotifyToDriver(notify_data,req.creds.device_token);
       }
   
       return res.status(200).json({code:200,message:"Ride Completed"});
     }
-    return res.status(200).json({code:404,message:"boooking not found"});
+    return res.status(200).json({code:404,message:"booking not found"});
   } catch (err) {
     console.log('----err-----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
@@ -502,7 +509,7 @@ const getSingleRide = async (req, res) => {
     let edit_data = getOneNotify.toJSON();
 
     edit_data.user_username = getUserData.username;
-    edit_data.user_profile_image = getUserData.profile_image;
+    edit_data.user_profile_image = `${process.env.user_image_baseUrl}${getDriverData.image}`;
     edit_data.star= null;
 
     let getRating = await libs.getData(db.ratings, {where:{booking_id: booking_id}});

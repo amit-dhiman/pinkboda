@@ -4,18 +4,18 @@ module.exports = (sequelize, DataTypes) => {
 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     full_name:{ type: DataTypes.STRING },
-    mobile_number: {type: DataTypes.STRING},
-    country_code:{type: DataTypes.STRING},
-    profile_image: { type: DataTypes.STRING },
-    email: { type: DataTypes.STRING },
-    password: { type: DataTypes.STRING },
+    mobile_number: {type: DataTypes.STRING,defaultValue: null},
+    country_code:{type: DataTypes.STRING,defaultValue: null},
+    profile_image: { type: DataTypes.STRING ,defaultValue: null},
+    email: { type: DataTypes.STRING,defaultValue: null },
+    password: { type: DataTypes.STRING ,defaultValue: null},
     
     access_token: { type: DataTypes.STRING },
     device_type:{ type:DataTypes.ENUM("Android","Apple","Windows"),defaultValue:"Android"},
     device_token: { type: DataTypes.STRING },
 
-    created_at:{type: DataTypes.BIGINT},
-    updated_at:{type: DataTypes.BIGINT},
+    created_at:{type: DataTypes.BIGINT,defaultValue: null,defaultValue: null},
+    updated_at:{type: DataTypes.BIGINT,defaultValue: null},
     deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
     },{
       hooks: {
