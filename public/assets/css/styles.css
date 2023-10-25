@@ -39,7 +39,6 @@
     --fontregular: PoppinsRegular;
     --fontsemibold: PoppinsSemiBold;
     --fontlight: PoppinsLight;
-
 }
 
 
@@ -225,6 +224,7 @@ img.profile_img {
     height: 45px;
     border-radius: 60px;
     object-fit: cover;
+    margin-left: 1.5rem;
 }
 
 tr.tabl-size th {
@@ -318,6 +318,7 @@ img.passport_img {
     border-radius: 17px;
     object-fit: cover;
 }
+
 
 img.idcard_img {
     width: 40px;

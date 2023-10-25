@@ -70,13 +70,13 @@
                   </thead>
                   <tbody>
                     <tr class="tabl_size">
-                      <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/images/img.png" /></th>
+                      <th scope="row" class=""><img class="profile_img" src="/images/img.png" alt="" /></th>
                       <td>Waloi</td>
                       <td>Male</td>
                       <td>2</td>
-                      <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="/images/pasport.png" /></th>
-                      <th scope="row"><img class="idcard_img" src="/images/idcard.png" /></th>
-                      <th scope="row"><img class="license_img" src="/images/license.png" /></th>
+                      <th scope="row" class=""><img class="passport_img" src="/images/pasport.png" alt=""/></th>
+                      <th scope="row"><img class="idcard_img" src="/images/idcard.png" alt=""/></th>
+                      <th scope="row"><img class="license_img" src="/images/license.png" alt=""/></th>
                       <td>2023</td>
                       <td>425 AIY</td>
                       <td>N/A</td>
@@ -88,14 +88,14 @@
                     <% for(let driver of getDrivers) { %>
                       <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt=""/></th>
+                        <th scope="row" class=""><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt=""/></th>
                         <td><%=driver.username %></td>
                         <td><%=driver.gender %></td>
                         <td><%=driver.total_rides %></td>
-                        <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=(driverImageUrl + driver.passport_photo)%>" alt=""/></th>
-                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + driver.id_card %>" alt="" alt=""/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.license %>" alt="" alt=""/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>" alt="" alt=""/></th>
+                        <th scope="row" class=""><img class="passport_img" src="<%=(driverImageUrl + driver.passport_photo)%>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th></th>
+                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + driver.id_card %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.license %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
                         <td><%= driver.year %></td>
                         <td>N/A</td>      <!-- have to add complaints here -->
                         <td>$2030</td>    <!-- have to total earning here -->
@@ -125,11 +125,11 @@
                   </thead>
                   <tbody>
                     <!-- <tr class="tabl_size">
-                      <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/images/img.png" alt=""/></th>
+                      <th scope="row" class=""><img class="profile_img" src="/images/img.png" alt=""/></th>
                       <td>Waloi</td>
                       <td>Male</td>
                       <th scope="row"><img class="insurance_img" src="/images/insurance.png" alt=""/></th>
-                      <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="/images/pasport.png" alt=""/></th>
+                      <th scope="row" class=""><img class="passport_img" src="/images/pasport.png" alt=""/></th>
                       <th scope="row"><img class="idcard_img" src="/images/idcard.png" alt=""/></th>
                       <th scope="row"><img class="license_img" src="/images/license.png" alt=""/></th>
                       <td>23 Jun, 2023</td>
@@ -139,13 +139,13 @@
                     <% for(let pending of pendingRequests) { %>
                       <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" alt=""/></th>
+                        <th scope="row" class=""><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
                         <td><%=pending.username %></td>
                         <td><%=pending.gender %></td>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>" alt=""/></th>
-                        <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>" alt=""/></th>
-                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>" alt=""/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.license %>" alt=""/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row" class=""><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>" alt=""  onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.license %>" alt=""onerror="this.style.display='none'; this.style.content='';"/></th>
                         <td><%= formattedDate %></td>
                         <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= pending.id %>')"><%= pending.action %></button></td> -->
                         <td><button class="btn btn-info accept" type="button" onclick="updatePendingReq(this,'<%= pending.id %>','accepted')">Accept</button></td>
@@ -237,10 +237,13 @@ document.addEventListener("DOMContentLoaded", function() {
       const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
       originalData[tableId] = Array.from(tableRows);
 
-      dataTableInstances[tableId] = new DataTable(table, {
+      const shouldShowPagination = tableRows.length > 10;
+
+      const dataTableOptions = {
         columnDefs: [{ orderable: false, targets: 4 }],
         language: {
           paginate: {
+            paginate: shouldShowPagination,
             previous: '<span class="fa fa-chevron-left"></span>',
             next: '<span class="fa fa-chevron-right"></span>'
           },
@@ -253,7 +256,13 @@ document.addEventListener("DOMContentLoaded", function() {
             '<option value="-1">All</option>' +
             '</select> results'
         }
-      });
+      };
+      if (!shouldShowPagination) {
+      // If there are 10 or fewer rows, disable pagination
+      dataTableOptions.paging = false;
+    }
+
+    dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
     }
   });
 
