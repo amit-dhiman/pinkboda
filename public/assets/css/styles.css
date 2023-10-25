@@ -95,6 +95,10 @@ img.notification-img {
 
 img.img-profile {
     width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    object-fit: cover;
+    margin-left: 2rem;
 }
 
 .dropdown-menu.dropdown-menu-end.show {
@@ -217,8 +221,10 @@ img.three-dot {
 }
 
 img.profile_img {
-    width: 32px;
+    width: 45px;
+    height: 45px;
     border-radius: 60px;
+    object-fit: cover;
 }
 
 tr.tabl-size th {
@@ -308,24 +314,28 @@ tr.tabel_size td {
 /* driver */
 img.passport_img {
     width: 40px;
+    height: 40px;
     border-radius: 17px;
     object-fit: cover;
 }
 
 img.idcard_img {
     width: 40px;
+    height: 40px;
     border-radius: 17px;
     object-fit: cover;
 }
 
 img.license_img {
     width: 40px;
+    height: 40px;
     border-radius: 17px;
     object-fit: cover;
 }
 
 img.insurance_img {
     width: 40px;
+    height: 40px;
     border-radius: 17px;
     object-fit: cover;
 }
@@ -399,8 +409,8 @@ button.btn.btn-info.reject {
     font-size: 14px;
     color: #000;
     border-radius: 9px;
+    margin-left: -2.4rem;
 }
-
 div#requests {
     margin-top: 1.5rem;
 }
@@ -537,12 +547,12 @@ button.btn.btn-info.submit {
 }
 
 img.profile-pic {
-    width: 100%;
-    border-radius: 60px;
-    height: 100%;
+    width: 200px;
+    border-radius: 100px;
+    height: 200px;
     position: relative;
+    object-fit: cover;
 }
-
 .hauzmart-admin {
     display: flex;
     align-items: baseline;
@@ -552,7 +562,7 @@ img.profile-pic {
 }
 
 .profile_txt {
-    margin-left: 1rem;
+    margin-left: -5rem;
 }
 
 .profile_txt h1 {
@@ -624,8 +634,8 @@ img.mail {
 
 img.camera-pic {
     position: absolute;
-    top: 69%;
-    right: 75%;
+    top: 72%;
+    right: 84%;
     width: 40px;
 }
 

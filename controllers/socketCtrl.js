@@ -440,7 +440,7 @@ async function cancelRideAfterAccept(data, io) {
     "drop_address": updateEndRide.drop_address,
     "vechile_type": "Bike",
     "amount": updateEndRide.amount,
-    "ride_status": "Cancelled",
+    "ride_status": "Canceled",
     "driver_id": updateEndRide.driver_id,
     "user_id": updateEndRide.user_id,
     "booking_id": updateEndRide.id,
@@ -451,8 +451,8 @@ async function cancelRideAfterAccept(data, io) {
 
   if (data.type == "User") {
     let notify_data = {
-      title: "Ride Cancelled",
-      message: `${responceUser.username} cancelled your ride`,
+      title: "Ride Canceled",
+      message: `${responceUser.username} canceled your ride`,
     }
 
     Notify.sendNotifyToDriver(notify_data, responceUser.device_token)
@@ -464,8 +464,8 @@ async function cancelRideAfterAccept(data, io) {
    
   } else {
     let notify_data = {
-      title: "Ride Cancelled",
-      message: `${responceUser.username} cancelled your ride`,
+      title: "Ride Canceled",
+      message: `${responceUser.username} canceled your ride`,
     }
     Notify.sendNotifyToUser(notify_data, responceUser.device_token)
     notify_data.user_id = rideData.user_id;

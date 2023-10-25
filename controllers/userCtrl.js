@@ -298,8 +298,8 @@ const cancelRide = async (req, res) => {
 
       //  ---------send notification----------
       // let data = {
-      //   title: "Ride Cancelled",
-      //   message: `${req.creds.username} cancelled your ride`
+      //   title: "Ride Canceled",
+      //   message: `${req.creds.username} canceled your ride`
       // }
 
       // Notify.sendNotifyToDriver(data, getDriverData.device_token);
@@ -309,7 +309,7 @@ const cancelRide = async (req, res) => {
 
       return res.status(200).json({ code: 200, message: "your ride has been canceled" });
     }
-    res.status(200).json({ code: 200, message: "cant cancelled the ride" });
+    res.status(200).json({ code: 200, message: "cant canceled the ride" });
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res, err);
   }

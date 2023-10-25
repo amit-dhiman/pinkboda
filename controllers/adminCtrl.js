@@ -21,46 +21,60 @@ const addAdmin = async(req, res) => {
 
 const getloginPage = async (req, res) => {
   try {
-    res.render('login');
+    const { pinkbodaToken } = req.cookies;
+
+    if (pinkbodaToken) {
+      console.log('---------req.cookies getLogin---------',req.cookies);
+      const user = await libs.getData(db.admins,{where:{access_token: pinkbodaToken}});
+      if (user) {
+        res.render('login',{email:user.email, password:user.password});
+        return;
+      }
+    }
+    console.log('--------login--------------');
+    res.render('login',{email:'',password:''});
   } catch (err) {
     console.log('----err----',err);
     ERROR.INTERNAL_SERVER_ERROR(res,err);
   }
 };
 
+
 const login = async(req, res) => {
   try {
-    console.log('-------body--------',req.body);
-    const {email,password} = req.body;
+    console.log('----------body---post----------',req.body);
+    console.log('----------req.cookies----------',req.cookies);
+    const {email,password,rememberMe} = req.body;
     
-    if (!email || !password) {
-      alert('Email not found')
-      // res.status(400).json({code:400,message:"email not found"})
-      return res.redirect('/admin/login');
-    }
     const getData = await libs.getData(db.admins,{where:{email:email}});
     if (getData) {
       let checkPswrd = await commonFunc.compPassword(password, getData.password)
       if(!checkPswrd){
         if(getData.password != password){
           // return res.status(400).json({code:400,message:"Incorrect Password"})
-          alert('Incorrect Password')
+          // alert('Incorrect Password')
           return res.redirect('/admin/login');
         }
       }
       req.session.admin = getData.toJSON();
       req.session.role = "admin";
+      const token = await commonFunc.generateAccessToken(getData,{email:email},process.env.admin_secretKey);
 
-      return res.redirect('/admin/renderIndex')
+      if (rememberMe) {
+        res.cookie('pinkbodaToken', token.access_token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true });
+        console.log('----------rememberMe req.cookies----------',req.cookies);
+      }else{
+        res.clearCookie('pinkbodaToken');
+      }
+      res.redirect('/admin/renderIndex');
+      return;
     } 
     else {
-      // res.status(400).json({code:400,message:"email not found"})
       return res.redirect('/admin/login');
     }
   } catch (err) {
     console.log('-----log err-----',err);
-    return res.redirect('/admin/login')
-    ERROR.INTERNAL_SERVER_ERROR(res, err);
+    return res.redirect('/admin/login');
   }
 };
 
@@ -102,7 +116,7 @@ const editProfile = async (req, res,next) => {
     let update = {};
 
     if (admin_name) { update.full_name = admin_name }
-    if (admin_email) { update.email = admin_email }
+    // if (admin_email) { update.email = admin_email }
 
     if(req.file){
       if(getData.profile_image){
@@ -203,13 +217,13 @@ const logout = async (req, res) => {
           res.redirect('/admin/renderProfile');
         } else {
           // res.json({ message: 'Logout successful' });
-          alert('Logout successful')
-          return res.render('login');
+          // alert('Logout successful')
+          return res.redirect('/admin/login');
         }
       });
-    } else {return res.render('login')}
+    } else {return res.redirect('/admin/login')}
   } catch (err) {
-    return res.render('login')
+    res.redirect("/admin/login")
   }
 };
 
@@ -370,7 +384,7 @@ const renderHelpSupport = async (req, res) => {
      getAdmin: req.session.admin
     });
   } catch (err) {
-    res.render('login')
+    res.redirect("/admin/login")
   }
 };
 
@@ -388,7 +402,7 @@ const resolvedIssue = async (req, res) => {
     // console.log('-----------getSupport---------',getSupport);
     return res.status(200).json({ message:'Issue resolved successfully',data: getSupport.issue_status})
   } catch (err) {
-    res.render('login')
+    res.redirect("/admin/login")
   }
 }
 
@@ -397,7 +411,7 @@ const massPushPage = async (req, res) => {
     res.render('mass_push', { getAdmin:req.session.admin});
   } catch (err) {
     console.log('----err----',err);
-    res.render('login')
+    res.redirect("/admin/login")
   }
 };
 
@@ -451,7 +465,7 @@ const sendMassPush = async (req, res) => {
     res.redirect('/admin/massPushPage');
 
   } catch (err) {
-    res.render('login')
+    res.redirect("/admin/login")
   }
 };
 

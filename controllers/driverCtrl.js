@@ -216,8 +216,8 @@ const cancelRide = async (req, res) => {
 
     //   //  ---------send notification----------
     //   let notify_data = {
-    //     title: "Ride Cancelled",
-    //     message: `${req.creds.username} cancelled your ride`,
+    //     title: "Ride Canceled",
+    //     message: `${req.creds.username} canceled your ride`,
     //   }
     //   Notify.sendNotifyToUser(notify_data, req.creds.device_token)
     //   notify_data.user_id = req.body.user_id;
@@ -226,7 +226,7 @@ const cancelRide = async (req, res) => {
 
       return res.status(200).json({code:200,message:"your ride has been canceled"});
     // }
-    res.status(200).json({code:200,message:"cant cancelled the ride or maybe wrong boooking id"});
+    res.status(200).json({code:200,message:"cant canceled the ride or maybe wrong boooking id"});
   } catch (err) {
     res.status(500).json({code:500,message:err.message});
   }

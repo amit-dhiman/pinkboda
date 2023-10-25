@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         vechile_type: { type: DataTypes.STRING},        //  bike
         amount: { type: DataTypes.DECIMAL(6,2) },
 
-        ride_status: { type: DataTypes.ENUM("Completed","Cancelled")},
+        ride_status: { type: DataTypes.ENUM("Completed","Canceled")},
 
         user_id: {
             type: DataTypes.INTEGER,

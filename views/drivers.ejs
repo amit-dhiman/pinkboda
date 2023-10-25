@@ -30,7 +30,7 @@
   <!-- Added SideBar here -->
   <%- include ('./partials/sidebar.ejs') %>
 
-    <div class="col-md-9 mt-4">
+    <div class="col-md-9">
       <div class="row">
       <!------- Add Full Navbar here --------->
       <%- include ('./partials/navbar.ejs') %>
@@ -119,12 +119,12 @@
                       <th scope="col">ID Card</th>
                       <th scope="col">License</th>
                       <th scope="col">Request Date</th>
-                      <th scope="col"></th>
+                      <th scope="col">Action</th>
                       <th scope="col"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="tabl_size">
+                    <!-- <tr class="tabl_size">
                       <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/images/img.png" alt=""/></th>
                       <td>Waloi</td>
                       <td>Male</td>
@@ -135,7 +135,7 @@
                       <td>23 Jun, 2023</td>
                       <td><button class="btn btn-info accept" type="button">Accept</button></td>
                       <td><button class="btn btn-info reject" type="button">Reject</button></td>
-                    </tr>
+                    </tr> -->
                     <% for(let pending of pendingRequests) { %>
                       <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
