@@ -8,9 +8,6 @@ const sendNotifyToUser = async (data,deviceToken) => {
     //   // mine f23's  pinkboda
     //   deviceToken = "cdWfcVZSSVKAS9Ks-HkDRR:APA91bFkmIIByTf4Cy7D8qIxJaPo_qJKv_Kc_n5hENGIvX32vcsSsrlv-ai7xtWWlBLBO6S58oSoNXGvGE7SOeZ6OIhl_PqJ6AVPbgcwJpwNEiNjm9Vw-rfPo0w8HPu8yXb-L6RHlSrn"
     // }
-    // console.log('--------process.env.user_serverKey--------',process.env.user_serverKey);
-    // console.log('--------data--------',data);
-
     let message = {
         to : deviceToken,
         // data: {
@@ -19,7 +16,7 @@ const sendNotifyToUser = async (data,deviceToken) => {
         notification : {
             title : data.title,
             message : data.message,
-            pushType : data.type,
+            // pushType : data.type,
             body : data.message,
             sound : "default",
             badge : 0,
@@ -31,10 +28,10 @@ const sendNotifyToUser = async (data,deviceToken) => {
     // if(data.imageUrl){
     //     message.notification.imageUrl= data.imageUrl
     // }
-    // console.log("---------push_data---------",message)
+    console.log("---------message usr---------",message)
 
     fcm.send(message, function (err, result) {
-        if(err) {console.log("-----fcm err-----",err)}
+        if(err) {console.log("-----fcm err usr-------",err)}
         else{console.log("-------fcm result----",result)}
     });
 };
@@ -42,7 +39,7 @@ const sendNotifyToUser = async (data,deviceToken) => {
 
 const sendNotifyToDriver = async (data,deviceToken) => {
     let fcm = new FCM(process.env.driver_serverKey);
-console.log('---------------ToDriver---------------');
+    console.log('---------------ToDriver---------------');
     // if(!deviceToken){
     //   deviceToken = "cdWfcVZSSVKAS9Ks-HkDRR:APA91bFkmIIByTf4Cy7D8qIxJaPo_qJKv_Kc_n5hENGIvX32vcsSsrlv-ai7xtWWlBLBO6S58oSoNXGvGE7SOeZ6OIhl_PqJ6AVPbgcwJpwNEiNjm9Vw-rfPo0w8HPu8yXb-L6RHlSrn"
     // }
@@ -54,7 +51,7 @@ console.log('---------------ToDriver---------------');
         notification : {
             title : data.title,
             message : data.message,
-            pushType : data.type,
+            // pushType : data.type,
             body : data.message,
             sound : "default",
             badge : 0,
@@ -66,10 +63,10 @@ console.log('---------------ToDriver---------------');
     // if(data.imageUrl){
     //     message.notification.imageUrl= data.imageUrl
     // }
-    console.log("---------push_data---------",message)
+    console.log("---------message dr---------",message)
 
     fcm.send(message, function (err, result) {
-        if(err) {console.log("-----fcm err-----",err)}
+        if(err) {console.log("-----fcm err dr-------",err)}
         else{console.log("-------fcm result----",result)}
     });
 };

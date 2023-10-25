@@ -211,21 +211,16 @@ const cancelRide = async (req, res) => {
     let updateMsg= await libs.updateData(db.bookings,{cancel_reason: req.body.cancel_reason, cancelled_by:"Driver",booking_status:"cancel"},{where:query});
 
     // if(updateMsg[0] !=0){
-      // console.log('-----------------------');
-      // let getUserData= await libs.getData(db.users,{where:{id:req.body.user_id}});
+    //   console.log('-----------------------');
+    //   let getUserData= await libs.getData(db.users,{where:{id:req.body.user_id}});
 
-      //  ---------send notification----------
-      // let notifyData = {
-      //   title: "Ride cancelation",
-      //   message: "your ride has been cancelled",
-      //   user_id: req.body.user_id,
-      //   driver_id: req.creds.id,
-      //   booking_id: req.body.booking_id
-      // }
-
-      // const sendNotify= await Notify.sendNotifyToUser(notifyData,getUserData.device_token);
-      // console.log('-----sendNotify---------',sendNotify);
-
+    //   //  ---------send notification----------
+    //   let notify_data = {
+    //     title: "Ride Cancelled",
+    //     message: `${req.creds.username} cancelled your ride`,
+    //   }
+    //   Notify.sendNotifyToUser(notify_data, req.creds.device_token)
+    //   notify_data.user_id = req.body.user_id;
       // // notifyData
       // const saveNotify= await libs.createData(db.notifications,notifyData)
 
@@ -275,7 +270,6 @@ const endRide = async (req, res) => {
       
       notify_data.user_id= data.user_id
       let saveNotify= await libs.createData(db.notifications,notify_data);
-
 
       let notify_data_Driver={
         title: 'Ride Completed',

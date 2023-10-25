@@ -386,7 +386,7 @@ const resolvedIssue = async (req, res) => {
     }
     await getSupport.save();
     // console.log('-----------getSupport---------',getSupport);
-    return res.status(200).json({ message:'Issue resolved successfully',data: getSupport.issue_status  })
+    return res.status(200).json({ message:'Issue resolved successfully',data: getSupport.issue_status})
   } catch (err) {
     res.render('login')
   }

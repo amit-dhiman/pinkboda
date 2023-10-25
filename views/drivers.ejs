@@ -125,13 +125,13 @@
                   </thead>
                   <tbody>
                     <tr class="tabl_size">
-                      <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/images/img.png" /></th>
+                      <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="/images/img.png" alt=""/></th>
                       <td>Waloi</td>
                       <td>Male</td>
-                      <th scope="row"><img class="insurance_img" src="/images/insurance.png" /></th>
-                      <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="/images/pasport.png" /></th>
-                      <th scope="row"><img class="idcard_img" src="/images/idcard.png" /></th>
-                      <th scope="row"><img class="license_img" src="/images/license.png" /></th>
+                      <th scope="row"><img class="insurance_img" src="/images/insurance.png" alt=""/></th>
+                      <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="/images/pasport.png" alt=""/></th>
+                      <th scope="row"><img class="idcard_img" src="/images/idcard.png" alt=""/></th>
+                      <th scope="row"><img class="license_img" src="/images/license.png" alt=""/></th>
                       <td>23 Jun, 2023</td>
                       <td><button class="btn btn-info accept" type="button">Accept</button></td>
                       <td><button class="btn btn-info reject" type="button">Reject</button></td>
@@ -139,13 +139,13 @@
                     <% for(let pending of pendingRequests) { %>
                       <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" /></th>
+                        <th scope="row" class="d-flex justify-content-center"><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" alt=""/></th>
                         <td><%=pending.username %></td>
                         <td><%=pending.gender %></td>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>"/></th>
-                        <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>"/></th>
-                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>"/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.license %>"/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>" alt=""/></th>
+                        <th scope="row" class="d-flex justify-content-center"><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>" alt=""/></th>
+                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>" alt=""/></th>
+                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.license %>" alt=""/></th>
                         <td><%= formattedDate %></td>
                         <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= pending.id %>')"><%= pending.action %></button></td> -->
                         <td><button class="btn btn-info accept" type="button" onclick="updatePendingReq(this,'<%= pending.id %>','accepted')">Accept</button></td>

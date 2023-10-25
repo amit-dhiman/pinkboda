@@ -479,11 +479,11 @@ const giveRating = async (req, res) => {
       let updateOverAllRating = await libs.findAndUpdate(db.drivers, req.body.driver_id, { over_all_rating: averageRating });
 
       //  ---------send notification----------
-      let notify_data = {
-        title: "rating",
-        message: "user sents you stars"
-      }
-      await Notify.sendNotifyToDriver(notify_data, updateOverAllRating.device_token)
+      // let notify_data = {
+      //   title: "rating",
+      //   message: "user sents you stars"
+      // }
+      // await Notify.sendNotifyToDriver(notify_data, updateOverAllRating.device_token)
     }
 
     res.status(200).json({ code: 200, message: "Rating successful" });
