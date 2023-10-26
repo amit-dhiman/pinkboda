@@ -43,7 +43,6 @@ const getloginPage = async (req, res) => {
 const login = async(req, res) => {
   try {
     console.log('----------body---post----------',req.body);
-    console.log('----------req.cookies----------',req.cookies);
     const {email,password,rememberMe} = req.body;
     
     const getData = await libs.getData(db.admins,{where:{email:email}});
@@ -62,7 +61,6 @@ const login = async(req, res) => {
 
       if (rememberMe) {
         res.cookie('pinkbodaToken', token.access_token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true });
-        console.log('----------rememberMe req.cookies----------',req.cookies);
       }else{
         res.clearCookie('pinkbodaToken');
       }
@@ -178,12 +176,12 @@ const changePassword = async (req, res) => {
     }
     let newhashPassword = await commonFunc.securePassword(newPassword);
 
-    let upatedData= await libs.updateData(getData, {password:newhashPassword});
+    await libs.updateData(getData, {password:newhashPassword});
 
     return res.redirect('/admin/getChangePasswordPage')
     // return res.status(200).json({code:200,data: upatedData});
   } catch (err) {
-    return res.redirect('/admin/login') 
+    return res.redirect('/admin/getChangePasswordPage')
   }
 };
 

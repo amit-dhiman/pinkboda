@@ -102,7 +102,7 @@ async function requestRide(riderPickupLocation, io) {
     let userLongitude = riderPickupLocation.pickupLongitude;
     let genderPreference = riderPickupLocation.genderPreference;
     let response = await models.findAll({
-      attributes: ['id', 'username', 'latitude', 'longitude', 'socket_id',
+      attributes: ['id', 'username', 'latitude', 'longitude', 'socket_id','access_token',
         [sequelize.literal(`6371 * acos(
           cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
           sin(radians(${userLatitude})) * sin(radians(latitude)))`),'distance'],
@@ -123,9 +123,12 @@ async function requestRide(riderPickupLocation, io) {
       if (driver && driver.socket_id) {
         // Send a ride request to the driver
         //console.log("Here we send request to driver====================");
-        dataRequest = { request_id: riderPickupLocation.rideTimestamp, driver_id: driver.id };
+
+        dataRequest = { request_id: riderPickupLocation.rideTimestamp, driver_id: driver.id, };
+        
         let saveRequest = await modelsRequest.create(dataRequest);
         // console.log('----------saveRequest----------',saveRequest.toJSON());
+        riderPickupLocation.access_token = driver.access_token;
 
         io.to(driver.socket_id).emit('new_ride_request', riderPickupLocation);
         //io.emit('new_ride_request', riderPickupLocation);

@@ -49,7 +49,7 @@
             </ul>
             <div class="tab-content table-responsive">
               <div class="tab-pane fade show active" id="drivers">
-                <table id="example" class="table driver">
+                <table class="table driver" id="example">
                   <thead>
                     <tr class="tabl-size">
                       <th scope="col">Driver Profile</th>
@@ -189,6 +189,7 @@
   };
 
 function updateButton(button, driverId) {
+  if (confirm("Are you sure you want to change this users action?")) {
   fetch(`/admin/actionOnDriver/${driverId}`)
     .then(response => {
       if (!response.ok) {
@@ -205,6 +206,9 @@ function updateButton(button, driverId) {
     .catch(error => {
       console.error('Error occurred while updating the button:', error);
     })
+  } else {
+    console.log('-----------------cancel--------------')
+  }
 }
 
 function updatePendingReq(button, driverId,action) {
@@ -222,6 +226,9 @@ function updatePendingReq(button, driverId,action) {
     })
 }
 
+
+
+
 const searchInput = document.getElementById("searchInput");
 
 const originalData = {};
@@ -229,7 +236,7 @@ const dataTableInstances = {};
 
 document.addEventListener("DOMContentLoaded", function() {
   // Initialize all DataTables
-  const tableIds = ["example", "example1", "example2"];
+  const tableIds = ["example", "example1"];
 
   tableIds.forEach(tableId => {
     const table = document.getElementById(tableId);
@@ -243,9 +250,8 @@ document.addEventListener("DOMContentLoaded", function() {
         columnDefs: [{ orderable: false, targets: 4 }],
         language: {
           paginate: {
-            paginate: shouldShowPagination,
-            previous: '<span class="fa fa-chevron-left"></span>',
-            next: '<span class="fa fa-chevron-right"></span>'
+            previous: '<span class="fa fa-chevron-left dataTables_paginate" id="spanL"></span>',
+            next: '<span class="fa fa-chevron-right dataTables_paginate" id="spanR"></span>'
           },
           lengthMenu: 'Display <select class="form-control input-sm">' +
             '<option value="10">10</option>' +
@@ -257,12 +263,12 @@ document.addEventListener("DOMContentLoaded", function() {
             '</select> results'
         }
       };
-      if (!shouldShowPagination) {
-      // If there are 10 or fewer rows, disable pagination
-      dataTableOptions.paging = false;
-    }
 
-    dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
+      if (!shouldShowPagination) {
+        dataTableOptions.paging = false;
+      }
+      
+      dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
     }
   });
 
@@ -270,22 +276,113 @@ document.addEventListener("DOMContentLoaded", function() {
   searchInput.addEventListener('input', function () {
     const searchValue = searchInput.value.toLowerCase();
     
-    // Iterate through each table
     tableIds.forEach(tableId => {
+      console.log('---------tableId 1-----------',tableId);
+
       const matchingRows = originalData[tableId].filter(row => {
         const fullNameCell = row.querySelector('td:nth-child(2)');
         return fullNameCell.textContent.toLowerCase().includes(searchValue);
       });
 
-      // Clear and update the specific DataTable for this table
       if (dataTableInstances[tableId]) {
+        console.log('---------tableId 2-----------',tableId);
+        const paginationContainer = document.querySelector(`.dataTables_paginate`);
+        // const paginationContainer2 = document.getElementsByClassName("spans")
+        console.log('---------paginationContainer-----------',paginationContainer);
+        
         dataTableInstances[tableId].clear();
         dataTableInstances[tableId].rows.add(matchingRows);
         dataTableInstances[tableId].draw();
+        
+        console.log('---------length-----------',matchingRows.length);
+        
+        if (matchingRows.length <= 10) {
+          paginationContainer.style.display = 'none';
+        } else {
+          paginationContainer.style.display = 'block';
+        }
+
       }
     });
   });
 });
+
+
+
+// const searchInput = document.getElementById("searchInput");
+
+// const originalData = {};
+// const dataTableInstances = {};
+
+// document.addEventListener("DOMContentLoaded", function() {
+//   // Initialize all DataTables
+//   const tableIds = ["example", "example1"];
+
+//   tableIds.forEach(tableId => {
+//     const table = document.getElementById(tableId);
+//     if (table) {
+//       const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
+//       originalData[tableId] = Array.from(tableRows);
+
+//       const shouldShowPagination = tableRows.length > 10;
+
+//       const dataTableOptions = {
+//         columnDefs: [{ orderable: false, targets: 4 }],
+//         language: {
+//           paginate: {
+//             paginate: shouldShowPagination,
+//             previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
+//             next: '<span class="fa fa-chevron-right dataTables_paginate"></span>'
+//           },
+//           lengthMenu: 'Display <select class="form-control input-sm">' +
+//             '<option value="10">10</option>' +
+//             '<option value="20">20</option>' +
+//             '<option value="30">30</option>' +
+//             '<option value="40">40</option>' +
+//             '<option value="50">50</option>' +
+//             '<option value="-1">All</option>' +
+//             '</select> results'
+//         }
+//       };
+//       if (!shouldShowPagination) {
+//       // If there are 10 or fewer rows, disable pagination
+//       dataTableOptions.paging = false;
+//     }
+//     dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
+//     }
+//   });
+
+//   // Add an input event listener to the shared search input
+//   searchInput.addEventListener('input', function () {
+//     const searchValue = searchInput.value.toLowerCase();
+    
+//     // Iterate through each table
+//     tableIds.forEach(tableId => {
+//       const matchingRows = originalData[tableId].filter(row => {
+//         const fullNameCell = row.querySelector('td:nth-child(2)');
+//         return fullNameCell.textContent.toLowerCase().includes(searchValue);
+//       });
+
+//       // Clear and update the specific DataTable for this table
+//       if (dataTableInstances[tableId]) {
+//         dataTableInstances[tableId].clear();
+//         dataTableInstances[tableId].rows.add(matchingRows);
+//         dataTableInstances[tableId].draw();
+
+//         const numberOfVisibleRecords = dataTableInstances.rows({ search: 'applied' }).count();
+//         const paginationContainer = document.querySelector('.dataTables_paginate');
+
+//         if (numberOfVisibleRecords <= 10) {
+//           // Hide the pagination controls
+//           paginationContainer.style.display = 'none';
+//         } else {
+//           // Show the pagination controls
+//           paginationContainer.style.display = 'block';
+//         }
+//       }
+//     });
+//   });
+// });
 
 
 </script>

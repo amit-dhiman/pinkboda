@@ -101,8 +101,6 @@
     const toggleMenu = document.querySelector(".menu");
     toggleMenu.classList.toggle("active");
   }
-</script>
-<script>
   const toggle = document.getElementById("toggle");
   const left = document.getElementById("left");
   const bodyClass = document.querySelector("body");
@@ -126,20 +124,22 @@
         console.error('Error occurred while updating the button:', error);
       })
   }
+</script>
+<script type="text/javascript">
+
   document.addEventListener("DOMContentLoaded", function() {
-  // Find the table element by its ID
   const table = document.getElementById("example");
-  const tableRows = document.querySelectorAll('.tabel_size');
   const searchInput= document.getElementById("searchInput");
   
   if (table) {
+    const tableRows = document.querySelectorAll('.tabel_size');
     // Initialize the DataTable
-    let dataTable = new DataTable(table, {
+    const dataTable = new DataTable(table, {
       columnDefs: [{orderable: false, targets: 5}],
       language: {
         paginate: {
-          previous: '<span class="fa fa-chevron-left"></span>',
-          next: '<span class="fa fa-chevron-right"></span>'
+          previous:'<span class="fa fa-chevron-left dataTables_paginate"></span>',
+          next:'<span class="fa fa-chevron-right dataTables_paginate"></span>'
         },
         lengthMenu: 'Display <select class="form-control input-sm">'+
           '<option value="10">10</option>'+
@@ -153,6 +153,15 @@
     });
 
     let originalData = Array.from(tableRows); 
+    console.log('------------originalData-----------',originalData);
+    const paginationContainer = document.querySelector('.dataTables_paginate');
+
+    if (originalData.length <= 10) {
+      paginationContainer.style.display = 'none';
+    } else {
+      paginationContainer.style.display = 'block';
+    }
+
     searchInput.addEventListener('input', function () {
       const searchValue = searchInput.value.toLowerCase();
 
@@ -164,6 +173,15 @@
       dataTable.clear();
       dataTable.rows.add(matchingRows);
       dataTable.draw();
+
+      const numberOfVisibleRecords = dataTable.rows({ search: 'applied' }).count();
+        // const paginationContainer = document.querySelector('.dataTables_paginate');
+
+        if (numberOfVisibleRecords <= 10) {
+          paginationContainer.style.display = 'none';
+        } else {
+          paginationContainer.style.display = 'block';
+        }
     });
   }
   });

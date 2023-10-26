@@ -416,6 +416,13 @@ div#requests {
     margin-top: 1.5rem;
 }
 
+#menu .active a {
+    color: #000; /* Change the text color when active */
+  }
+  
+  #menu .active img {
+    filter: brightness(0) saturate(0%);
+}
 
 /* Total rides */
 img.contact_img {

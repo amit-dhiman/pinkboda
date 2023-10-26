@@ -73,6 +73,7 @@
                       <td><%=rider.total_rides %></td>
                       <td><%=formattedDate %></td>
                       <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>')"><%= rider.action %></button></td>
+                      <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>')" ><%= rider.action %></button></td> -->
                       <td><%=rider.mobile_number %></td>
                     </tr>
                   <% } %>
@@ -115,32 +116,39 @@
 <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded", function() {
-  // Find the table element by its ID
   const table = document.getElementById("example");
-  const tableRows = document.querySelectorAll('.tabel_size');
-  const searchInput= document.getElementById("searchInput");
-  
+  const searchInput = document.getElementById("searchInput");
+
   if (table) {
+    const tableRows = document.querySelectorAll('.tabel_size');
+
     // Initialize the DataTable
-    let dataTable = new DataTable(table, {
-      columnDefs: [{orderable: false, targets: 5}],
+    const dataTable = new DataTable(table, {
+      columnDefs: [{ orderable: false, targets: 5 }],
       language: {
         paginate: {
-          previous: '<span class="fa fa-chevron-left"></span>',
-          next: '<span class="fa fa-chevron-right"></span>'
+          previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
+          next: '<span class="fa fa-chevron-right dataTables_paginate"></span>',
         },
-        lengthMenu: 'Display <select class="form-control input-sm">'+
-          '<option value="10">10</option>'+
-          '<option value="20">20</option>'+
-          '<option value="30">30</option>'+
-          '<option value="40">40</option>'+
-          '<option value="50">50</option>'+
-          '<option value="-1">All</option>'+
-          '</select> results'
-      }
+        lengthMenu: 'Display <select class="form-control input-sm">' +
+          '<option value="10">10</option>' +
+          '<option value="20">20</option>' +
+          '<option value="30">30</option>' +
+          '<option value="40">40</option>' +
+          '<option value="50">50</option>' +
+          '<option value="-1">All</option>' +
+          '</select> results',
+      },
     });
 
-    let originalData = Array.from(tableRows); 
+    let originalData = Array.from(tableRows);
+    const paginationContainer = document.querySelector('.dataTables_paginate');
+
+    if (originalData.length <= 10) {
+      paginationContainer.style.display = 'none';
+    } else {
+      paginationContainer.style.display = 'block';
+    }
     searchInput.addEventListener('input', function () {
       const searchValue = searchInput.value.toLowerCase();
 
@@ -152,29 +160,55 @@ document.addEventListener("DOMContentLoaded", function() {
       dataTable.clear();
       dataTable.rows.add(matchingRows);
       dataTable.draw();
+
+      const numberOfVisibleRecords = dataTable.rows({ search: 'applied' }).count();
+      // const paginationContainer = document.querySelector('.dataTables_paginate');
+
+      if (numberOfVisibleRecords <= 10) {
+        paginationContainer.style.display = 'none';
+      } else {
+        paginationContainer.style.display = 'block';
+      }
     });
   }
-  });
+});
 
-  function updateButton(button, riderId) {
+function updateButton(button, riderId) {
+  if (confirm("Are you sure you want to change this users action?")) {
     fetch(`/admin/actionOnUser/${riderId}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        // console.log('----------response-----------',response);
-        return response.json();
-      })
-      .then(newButtonText => {
-        // console.log('---------newButtonText---------',newButtonText);
-        // console.log('---------.data---------',newButtonText.data);
-        // console.log('---------button---------',button);
-        button.textContent = newButtonText.data;
-      })
-      .catch(error => {
-        console.error('Error occurred while updating the button:', error);
-      })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(newButtonText => {
+      button.textContent = newButtonText.data;
+    })
+    .catch(error => {
+      console.error('Error occurred while updating the button:', error);
+    })
+  } else {
+    console.log('-----------------cancel--------------')
   }
+  document.getElementById("demo").innerHTML = text;
+}
+
+// function updateButton(button, riderId) {
+//   fetch(`/admin/actionOnUser/${riderId}`)
+//     .then(response => {
+//       if (!response.ok) {
+//         throw new Error('Network response was not ok');
+//       }
+//       return response.json();
+//     })
+//     .then(newButtonText => {
+//       button.textContent = newButtonText.data;
+//     })
+//     .catch(error => {
+//       console.error('Error occurred while updating the button:', error);
+//     })
+// }
 
 </script>
 </html>

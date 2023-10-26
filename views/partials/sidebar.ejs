@@ -17,32 +17,46 @@
       <div class="col-md-4"></div>
       <hr class="line" />
       <ul class="nav nav-pills flex-column" id="menu">
-        <li class="nav-item active" id="project_feed">
-          <a href="/admin/renderIndex" class="nav-link align-middle"><img src="/images/users.png" width="20px"/><span class="ms-3">All User</span></a>
+        <li class="nav-item" >
+          <a href="/admin/renderIndex" class="nav-link align-middle"><img src="/images/users.png" width="20px"/><span class="ms-3">All Users</span></a>
         </li>
-        <li class="nav-item" id="Membership">
+        <li class="nav-item" >
           <a href="/admin/renderRider" class="nav-link align-middle"> <img src="/images/rider.png" width="20px"/><span class="ms-3">Riders</span></a>
         </li>
-        <li class="nav-item" id="Photo_feed">
+        <li class="nav-item" >
           <a href="/admin/renderDriver" class="nav-link align-middle"> <img src="/images/driver.png" width="20px"/><span class="ms-3">Drivers</span></a>
         </li>
-        <li class="nav-item" id="Askbob">
+        <li class="nav-item">
           <a href="/admin/renderHelpSupport" class="nav-link align-middle"><img src="/images/help.png" width="20px"/><span class="ms-3">Manage Help & Support</span></a>
         </li>
-        <li class="nav-item" id="Membership">
+        <li class="nav-item" id="terms">
           <a href="" class="nav-link align-middle"><img src="/images/term.png" width="17px"/><span class="ms-3">Terms & Conditions</span></a>
         </li>
-        <li class="nav-item" id="Photo_feed">
-          <a href="/admin/massPushPage" class="nav-link align-middle"> <img src="/images/mass.png" width="17px"/><span class="ms-3">Mass push</span></a>
+        <li class="nav-item">
+          <a href="/admin/massPushPage" class="nav-link align-middle"><img src="/images/mass.png" width="17px"/><span class="ms-3">Mass push</span></a>
         </li>
-        <li class="nav-item" id="Askbob">
-          <a href="/admin/renderProfile" class="nav-link align-middle"> <img src="/images/profile.png" width="17px"/><span class="ms-3">Profile</span></a>
+        <li class="nav-item">
+          <a href="/admin/renderProfile" class="nav-link align-middle"><img src="/images/profile.png" width="17px"/><span class="ms-3">Profile</span></a>
         </li>
       </ul>
     </div>
   </div>
 </body>
 <script>
+const currentPageURL = window.location.pathname;
 
+// Get all the <a> elements within the #menu
+const menuLinks = document.querySelectorAll('#menu a');
+
+// Loop through the links and compare their href attributes with the current URL
+menuLinks.forEach(link => {
+  const linkURL = new URL(link.href).pathname;
+
+  if (linkURL === currentPageURL) {
+    if (link.parentElement.id !== 'terms') {
+      link.parentElement.classList.add('active'); // Add the active class to the parent <li>
+    }
+  }
+});
 </script>
 </html>

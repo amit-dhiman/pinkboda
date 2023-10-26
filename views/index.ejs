@@ -36,7 +36,7 @@
           
           <!----------------- rider section is Starts here -------------->
   
-          <div class="right-sidebar mt-4">
+          <div class="right-sidebar">
             <div class="row">
               <div class="col-md-3">
                 <div class="total_users">
@@ -46,7 +46,7 @@
                     </div>
                     <div class="col-md-8">
                       <h2><%= totalUsers.length %></h2>
-                      <h3>Total User</h3>
+                      <h3>Total Users</h3>
                     </div>
                   </div>
                 </div>
@@ -95,7 +95,7 @@
             <div class="users_tab">
               <ul class="nav nav-tabs project" id="myTab">
                 <li class="nav-item project_tab">
-                  <a href="#user" class="nav-link active" data-bs-toggle="tab">All User</a>
+                  <a href="#user" class="nav-link active" data-bs-toggle="tab">All Users</a>
                 </li>
                 <li class="nav-item project-tab">
                   <a href="#riders" class="nav-link" data-bs-toggle="tab">Riders</a>
@@ -126,7 +126,7 @@
                       </tr>
                       <% for(let user of totalUsers) { %>
                         <tr class="tabl_size user-example">
-                          <th scope="row"><img class="profile_img" src="<%=(user.image ? (userImageUrl + user.image) : (user.hasOwnProperty('image') ? '/images/staticRider.jpg' : (user.profile_image) ? (driverImageUrl + user.profile_image) : '/images/staticDriver.jpg')) %>" /></th>
+                          <th scope="row"><img class="profile_img" src="<%=(user.image ? (userImageUrl + user.image) : (user.hasOwnProperty('image') ? '/images/staticRider.jpg' : (user.profile_image) ? (driverImageUrl + user.profile_image) : '/images/staticDriver.jpg')) %>"  alt=""/></th>
                           <td><%= user.username %></td>
                           <td><%= user.mobile_number %></td>
                           <td><%=(user.image || user.image == '' || user.image == null ? 'User' : 'Driver') %></td>
@@ -157,7 +157,7 @@
                       </tr>
                       <% for(let i =0; i < getRiders.length; i++) { %>
                         <tr class="tabl_size all-example1">
-                          <th scope="row"><img class="profile_img" src="<%= getRiders[i].image || '/images/staticRider.jpg' %>"/></th>
+                          <th scope="row"><img class="profile_img" src="<%= getRiders[i].image || '/images/staticRider.jpg' %>" alt=""/></th>
                           <td><%= getRiders[i].username %></td>
                           <td><%= getRiders[i].mobile_number %></td>
                           <td>Rider</td>
@@ -180,7 +180,7 @@
                     </thead>
                     <tbody>
                       <tr class="tabl_size">
-                        <th scope="row"><img class="profile_img" src="/images/img.png" /></th>
+                        <th scope="row"><img class="profile_img" src="/images/img.png" alt=""/></th>
                         <td>Waloi</td>
                         <td>232-324-45434</td>
                         <td>Driver</td>
@@ -188,7 +188,7 @@
                       </tr>
                       <% for(let i =0; i < getDrivers.length; i++) { %>
                         <tr class="tabl_size">
-                          <th scope="row"><img class="profile_img" src="<%= getDrivers[i].profile_image || '/images/staticDriver.jpg' %>"/></th>
+                          <th scope="row"><img class="profile_img" src="<%= getDrivers[i].profile_image || '/images/staticDriver.jpg' %>" alt=""/></th>
                           <td><%= getDrivers[i].username %></td>
                           <td><%= getDrivers[i].mobile_number %></td>
                           <td>Driver</td>
@@ -248,12 +248,15 @@ document.addEventListener("DOMContentLoaded", function() {
       const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
       originalData[tableId] = Array.from(tableRows);
 
-      dataTableInstances[tableId] = new DataTable(table, {
+      const shouldShowPagination = tableRows.length > 10;
+
+      const dataTableOptions = {
         columnDefs: [{ orderable: false, targets: 3 }],
         language: {
           paginate: {
-            previous: '<span class="fa fa-chevron-left"></span>',
-            next: '<span class="fa fa-chevron-right"></span>'
+            // paginate: shouldShowPagination,
+            previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
+            next: '<span class="fa fa-chevron-right dataTables_paginate"></span>'
           },
           lengthMenu: 'Display <select class="form-control input-sm">' +
             '<option value="10">10</option>' +
@@ -264,7 +267,12 @@ document.addEventListener("DOMContentLoaded", function() {
             '<option value="-1">All</option>' +
             '</select> results'
         }
-      });
+      };
+      if (!shouldShowPagination) {
+      dataTableOptions.paging = false;
+    }
+
+    dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
     }
   });
 
@@ -278,17 +286,27 @@ document.addEventListener("DOMContentLoaded", function() {
         const fullNameCell = row.querySelector('td:nth-child(2)');
         return fullNameCell.textContent.toLowerCase().includes(searchValue);
       });
-
-      // Clear and update the specific DataTable for this table
+      console.log('--------matchingRows--------',matchingRows);
+      
       if (dataTableInstances[tableId]) {
+        const numberOfVisibleRecords = matchingRows.length;
+        const paginationContainer = document.querySelector(`.dataTables_paginate`);
+        console.log('--------paginationContainer--------',paginationContainer);
+
+        if (numberOfVisibleRecords <= 10) {
+          paginationContainer.style.display = 'none';
+          // dataTableInstances[tableId].paging.disable();
+        } else {
+          paginationContainer.style.display = 'block';
+        }
+
         dataTableInstances[tableId].clear();
         dataTableInstances[tableId].rows.add(matchingRows);
-        dataTableInstances[tableId].draw();
+        dataTableInstances[tableId].draw();         
       }
     });
   });
 });
-
 
 </script>
 </body>
