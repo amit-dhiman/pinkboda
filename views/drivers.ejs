@@ -109,16 +109,17 @@
                 <div>
                   <ul class="pagination" id="myDrivers">
                     <% if (page > 1) { %>
-                      <li><a href="/admin/renderDriver?page=<%= page - 1 %>&search=<%= search %>">Previous</a></li>
+                      <li><a href="javascript:void(0);" onclick="driverButtons('<%= page - 1 %>')">Previous</a></li>
                     <% } %>
                     <% for (let i = 1; i <= totalPages; i++) { %>
-                      <li `<%= page === i ? 'class="active"' : '' %>` onclick="driverButtons()"><a href="/admin/renderDriver?page=<%= i %>&search=<%= search %>"><%= i %></a></li>
+                      <li <%= page === i ? 'class="active"' : '' %>
+                          <a href="javascript:void(0);" onclick="driverButtons('<%= i %>')"><%= i %></a></li>
                     <% } %>
                     <% if (page < totalPages) { %>
-                      <li><a href="/admin/renderDriver?page=<%= page + 1 %>&search=<%= search %>">Next</a></li>
+                      <li><a href="javascript:void(0);" onclick="driverButtons('<%= page + 1 %>')">Next</a></li>
                     <% } %>
                   </ul>
-                </div>                
+                </div>
               </div>
               <div class="tab-pane fade" id="requests">
                 <table class="table" id="example1">
@@ -255,11 +256,11 @@ function updatePendingReq(button, driverId,action) {
 let getDriverUL = document.getElementById('myDriver');
 console.log('-------1-----',getDriverUL);
 
-function driverButtons() {
+function driverButtons(page) {
   const searchInputValue = document.getElementById('searchInput').value;
   console.log('Search Input Value:', searchInputValue);
 
-  fetch(`/admin/renderDriver?page=${page}&search=${searchInputValue}`)
+  fetch(`/admin/renderDriver?page=${page}&search=${searchInputValue}&`)   // find div's id and concat here
     .then(response => response.json())
     .then(data => {
       // Handle the data returned from the API
