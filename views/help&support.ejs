@@ -64,7 +64,7 @@
                     <% for(let obj of supportData){%>
                       <tr class="tabel_size">
                       <% const formattedDate = new Date(obj.created_at).toLocaleDateString('en-US', { day: 'numeric',month: 'short', year: 'numeric' }); %>
-                      <th scope="row"><img class="profile_img" src="<%= (obj.user_id && obj.user.image) ? (userImageUrl + obj.user.image) : ((obj.driver && obj.driver.profile_image) ? (driverImageUrl + obj.driver.profile_image) : '/uploads/img.png') %>"/></th>
+                      <th scope="row"><img class="profile_img" src="<%= (obj.user_id && obj.user.image) ? (userImageUrl + obj.user.image) : ((obj.driver_id && obj.driver.profile_image) ? (driverImageUrl + obj.driver.profile_image) : '/images/staticDriver.jpg') %>"/></th>
                         <td><%= (obj.user_id) ? obj.user.username : obj.driver.username %><span class="helpsupport"><%= (obj.user_id)? '(User)':'(Driver)'%></span></td>
                         <td><%= formattedDate %></td>
                         <td class="helpsupport"><%= obj.message %></td>
@@ -175,7 +175,7 @@
       dataTable.draw();
 
       const numberOfVisibleRecords = dataTable.rows({ search: 'applied' }).count();
-        // const paginationContainer = document.querySelector('.dataTables_paginate');
+        const paginationContainer = document.querySelector('.dataTables_paginate');
 
         if (numberOfVisibleRecords <= 10) {
           paginationContainer.style.display = 'none';

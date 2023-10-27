@@ -21,28 +21,40 @@ const addAdmin = async(req, res) => {
 
 const getloginPage = async (req, res) => {
   try {
-    const { pinkbodaToken } = req.cookies;
-
-    if (pinkbodaToken) {
-      console.log('---------req.cookies getLogin---------',req.cookies);
-      const user = await libs.getData(db.admins,{where:{access_token: pinkbodaToken}});
-      if (user) {
-        res.render('login',{email:user.email, password:user.password});
+    console.log('---------req.cookies getLogin---------',req.cookies);
+    
+    if(req.cookies.pinkbodaToken){
+      const pinkbodaToken = req.cookies.pinkbodaToken;
+      console.log('---------pinkbodaToken---------',pinkbodaToken);
+      if (pinkbodaToken) {
+        const email = pinkbodaToken.email;
+        const password = pinkbodaToken.password;
+        console.log('------------render---------');
+        res.render('login',{email: email, password: password});
         return;
       }
     }
-    console.log('--------login--------------');
+
+    // if (pinkbodaToken) {
+    //   console.log('---------req.cookies getLogin---------',req.cookies);
+    //   const user = await libs.getData(db.admins,{where:{access_token: pinkbodaToken}});
+    //   if (user) {
+    //     res.render('login',{email:user.email, password:user.password});
+    //     return;
+    //   }
+    // }
     res.render('login',{email:'',password:''});
   } catch (err) {
     console.log('----err----',err);
-    ERROR.INTERNAL_SERVER_ERROR(res,err);
+    return res.redirect('/admin/login');
   }
 };
 
 
 const login = async(req, res) => {
   try {
-    console.log('----------body---post----------',req.body);
+    // console.log('----------body---post----------',req.body);
+    // console.log('----------cookies 1----------',req.cookies);
     const {email,password,rememberMe} = req.body;
     
     const getData = await libs.getData(db.admins,{where:{email:email}});
@@ -57,14 +69,16 @@ const login = async(req, res) => {
       }
       req.session.admin = getData.toJSON();
       req.session.role = "admin";
-      const token = await commonFunc.generateAccessToken(getData,{email:email},process.env.admin_secretKey);
+      // const token = await commonFunc.generateAccessToken(getData,{email:email},process.env.admin_secretKey);
 
       if (rememberMe) {
-        res.cookie('pinkbodaToken', token.access_token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true });
+        // console.log('----------token----------',token);
+        res.cookie('pinkbodaToken', {email:email,password:password});
       }else{
         res.clearCookie('pinkbodaToken');
       }
-      res.redirect('/admin/renderIndex');
+      // res.redirect('/admin/renderIndex');
+      res.redirect('/admin/renderDriver');
       return;
     } 
     else {
@@ -231,11 +245,11 @@ const renderIndex = async (req, res) => {
   try {
     let skp = req.body.skip || 0;
     // let query= {where:{},limit:10,offset:skp};
-    let query= {where:{is_admin_verified: "accepted"}};
+    let query= {where:{is_admin_verified: "accepted"}, order: [['created_at', 'DESC']],};
 
-    let getDrivers = await libs.getAllData(db.drivers,query,skp);
+    let getDrivers = await libs.getAllData(db.drivers,query);
     
-    let getRiders= await libs.getAllData(db.users,{},skp);
+    let getRiders= await libs.getAllData(db.users,{order: [['created_at', 'DESC']]});
 
     // res.status(200).json({code:200,message:"ALL Drivers and Riders",
     res.render('index',{
@@ -249,18 +263,52 @@ const renderIndex = async (req, res) => {
 
   } catch (err) {
     console.log('-----err-----',err);
-    return res.render('login')
+    return res.redirect('/admin/login')
   }
 };
+
+// const renderIndex = async (req, res) => {
+
+//   const page = req.query.page || 1; // Current page
+//   const itemsPerPage = 10; // Number of items per page
+//   const offset = (page - 1) * itemsPerPage; // Calculate offset for pagination
+
+//   let search = req.query.search || ''; // Get search input value
+
+//   // Prepare a WHERE condition for the search query
+//   const whereCondition = search ? { name: { [Sequelize.Op.like]: `%${search}%` } } : {};
+
+//   const totalItems = await DataModel.count({ where: whereCondition });
+
+//   const data = await DataModel.findAll({
+//     where: whereCondition,
+//     limit: itemsPerPage, 
+//     offset,
+//   });
+
+//   res.render('index', {
+//     getRiders: data,    //getRiders
+//     page,
+//     itemsPerPage,
+//     totalItems,
+//     search,
+//   });
+//     //       getDrivers: getDrivers,
+//     //       getAdmin: req.session.admin,
+//     //       totalUsers:[...getDrivers,...getRiders],
+//     //       userImageUrl: process.env.user_imageUrl_ejs,
+//     //       driverImageUrl : process.env.driver_imageUrl_ejs
+//     //     });
+// };
 
 
 const renderRider = async (req, res) => {
   try {
     let skp = req.body.skip || 0;
     // let query= {where:{},limit:10,offset:skp};
-    let query= {};
+    let query= {order: [['created_at', 'DESC']]};
 
-    let getRiders = await libs.getAllData(db.users,query,skp);
+    let getRiders = await libs.getAllData(db.users,query);
     console.log('------getRiders------',getRiders);
     
     // res.status(200).json({code:200,message:"getRiders",
@@ -277,20 +325,79 @@ const renderRider = async (req, res) => {
 
 const renderDriver = async (req, res) => {
   try {
-    let getDrivers= await libs.getAllData(db.drivers,{where:{is_admin_verified:"accepted"}});
-    let getPendingRequests = await libs.getAllData(db.drivers,{where:{is_admin_verified:"pending"}});
+    // let getDrivers= await libs.getAllData(db.drivers,{where:{is_admin_verified:"accepted"}});
+    // let getPendingRequests = await libs.getAllData(db.drivers,{where:{is_admin_verified:"pending"}});
     
-    // res.status(200).json({code:200,message:"Get all drivers",
-    res.render('drivers',{
-      getDrivers : getDrivers,
+    // // res.status(200).json({code:200,message:"Get all drivers",
+    // res.render('drivers',{
+    //   getDrivers : getDrivers,
+    //   pendingRequests : getPendingRequests,
+    //   driverImageUrl : process.env.driver_imageUrl_ejs,
+    //   getAdmin: req.session.admin
+    // });
+    let getAdmin = await libs.getData(db.admins,{})
+
+    console.log('----------req.body----------',req.body);
+    console.log('----------req.query--------',req.query);
+
+    const page =  parseInt(req.query.page) || 1;       // Current page
+    const itemsPerPage = 2;                          // Number of items per page
+    const offset = (page - 1) * itemsPerPage;        // Calculate offset for pagination
+
+    let search = req.query.searchInput || '';              // Get search input value
+    // console.log('------------search 1---------------',search);
+
+    const whereCondition = search ? {username:{[Op.like]:`%${search}%`}}:{};
+    whereCondition.is_admin_verified = 'accepted';
+
+    console.log('----------whereCondition-----------',whereCondition);
+    const getDrivers = await libs.getAllData(db.drivers, {
+      where: whereCondition,
+      limit: itemsPerPage,
+      offset,
+      order: [['created_at', 'DESC']]
+    });
+
+    const totalDrivers = await db.drivers.count({ where: whereCondition });
+    const totalPages = Math.ceil(totalDrivers / itemsPerPage);
+    console.log('------------totalPages---------------',totalPages);
+
+    whereCondition.is_admin_verified="pending";
+    console.log('----------whereCondition-----------',whereCondition);
+
+    let getPendingRequests = await libs.getAllData(db.drivers,{
+      where: whereCondition,
+      limit: itemsPerPage,
+      offset,
+      order: [['created_at', 'DESC']]
+    });
+    
+    const total_pendingDrivers = await db.drivers.count({ where: whereCondition });
+    const total_pendingPages = Math.ceil(total_pendingDrivers / itemsPerPage);
+    console.log('------------total_pendingPages---------------',total_pendingPages);
+    console.log('------------search 2---------------',search);
+
+    // res.status(200).json({
+    res.render('drivers', {
+      getDrivers: getDrivers,
       pendingRequests : getPendingRequests,
       driverImageUrl : process.env.driver_imageUrl_ejs,
-      getAdmin: req.session.admin
+      getAdmin: req.session.admin || getAdmin,
+      pendingRequests: getPendingRequests,
+      itemsPerPage,
+      totalItems: getDrivers.length,
+      page,
+      search,
+      totalPages,
+      total_pendingPages
     });
+    //    getDrivers: getDrivers,
+    //    getAdmin: req.session.admin,
+    //    driverImageUrl : process.env.driver_imageUrl_ejs
 
   } catch (err) {
     console.log('-----err------',err);
-    return res.render('login')
+    return res.redirect('/admin/login')
   }
 };
 
@@ -363,16 +470,17 @@ const renderHelpSupport = async (req, res) => {
   try {
     const usersData = await libs.getAllData(db.supports,{
       where: {user_id: {[Op.gt]: 0}},
-      include: [{model: db.users,attributes:["id","username","image","mobile_number"]}]
+      include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
     });
     
     const driversData = await libs.getAllData(db.supports,{
       where: {driver_id: {[Op.gt]: 0}},
-      include: [{model: db.drivers,attributes:["id","username","profile_image","mobile_number"]}]
+      include: [{model: db.drivers,attributes:["id","username","profile_image","mobile_number"]}],
     });
     
     // For example, combine usersData and driversData into a single array
     const combinedData = usersData.concat(driversData);
+    combinedData.sort((a, b) => b.created_at - a.created_at);
        
     // res.status(200).json({message:'help support data',
     res.render('help&support',{
@@ -385,6 +493,7 @@ const renderHelpSupport = async (req, res) => {
     res.redirect("/admin/login")
   }
 };
+
 
 const resolvedIssue = async (req, res) => {
   try {

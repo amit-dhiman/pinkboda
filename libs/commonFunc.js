@@ -24,7 +24,7 @@ const generateAccessToken = async (saveData, token_info, secret_key) => {
     if (token_info.device_token) { update.device_token = token_info.device_token }
     if (token_info.device_type) { update.device_type = token_info.device_type };
 
-    console.log('---------token_info----------', token_info);
+    // console.log('---------token_info----------', token_info);
 
     let updatedData = await libs.setData(saveData, update);
     return updatedData;

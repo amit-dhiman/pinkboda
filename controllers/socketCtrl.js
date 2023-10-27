@@ -111,7 +111,8 @@ async function requestRide(riderPickupLocation, io) {
         [sequelize.Op.and]: [sequelize.where(sequelize.literal(`6371 * acos(
             cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
             sin(radians(${userLatitude})) * sin(radians(latitude)))`), '<=', 10),     // 10 km radius
-        { driving_status: 'Online' }, // Adding the status condition here
+        { driving_status: 'Online' }, // Adding the status condition here 
+        { already_on_ride: 'No' }, // if aready on ride
         { gender: genderPreference } // Gender condition
         ]
       },
@@ -245,6 +246,7 @@ async function acceptRideRequest(driver, io) {
         user_id: driver.userId
       }
       Notify.sendNotifyToUser(notify_data, responceUser.device_token)
+      let updateRideStatus = await libs.updateData(db.drivers,{already_on_ride:"Yes"},{where:{id: driver.driverId}})
 
       let saveNotify = await libs.createData(db.notifications, notify_data)
 

@@ -11,7 +11,7 @@ const {signupDriverValid,editdriverValid,reportValid,supportValid,adminChangePsw
 router.get('/addAdmin', adminCtrl.addAdmin);
 
 router.get('/sessionData', (req,res)=>{
-    res.status(200).json({data:req.session.admin});
+    res.status(200).json({sessionData:req.session.admin, cookieData: req.cookies});
     // res.status(200).json({data:req.session});
 });
 
@@ -35,7 +35,9 @@ router.post('/admin/editProfile',admin_auth, admin_upload.single('profile_image'
 router.get('/admin/renderIndex', admin_auth, adminCtrl.renderIndex);
 
 router.get('/admin/renderRider', admin_auth, adminCtrl.renderRider);
-router.get('/admin/renderDriver', admin_auth, adminCtrl.renderDriver);
+
+// router.get('/admin/renderDriver', admin_auth, adminCtrl.renderDriver);
+router.get('/admin/renderDriver', adminCtrl.renderDriver);
 
 
 router.get('/admin/actionOnDriver/:driverId', admin_auth, adminCtrl.actionOnDriver);

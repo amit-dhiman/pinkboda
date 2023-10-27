@@ -33,7 +33,6 @@ const driverSignup = async (req, res) => {
       model: model,
       license_plate: license_plate,
       year: year,
-      is_admin_verified: "accepted"
     };
 
     if(req.files.license){data.license= req.files.license[0].filename}
@@ -82,6 +81,9 @@ const login = async(req,res) => {
     }
     if(getData.is_admin_verified=="rejected"){
       return res.status(400).json({code:400,message:"your previous request has been rejected"})
+    }
+    if(getData.action == "Disable"){
+      return res.status(400).json({ code: 400, message: "Your number is disabled by Admin" })
     }
 
     if(getData.is_admin_verified=="accepted"){
@@ -209,6 +211,7 @@ const cancelRide = async (req, res) => {
       // booking_status:"pending"
     }
     let updateMsg= await libs.updateData(db.bookings,{cancel_reason: req.body.cancel_reason, cancelled_by:"Driver",booking_status:"cancel"},{where:query});
+    let updateRideStatus= await libs.updateData(db.drivers,{already_on_ride:"No"},{where:{id:req.creds.id}});
 
     // if(updateMsg[0] !=0){
     //   console.log('-----------------------');
@@ -280,11 +283,10 @@ const endRide = async (req, res) => {
 
 
       // update rides in users & drivers
-      let incDriverRide= await libs.updateData(req.creds, {total_rides: db.sequelize.literal(`total_rides + ${1}`)});
+      let incDriverRide= await libs.updateData(req.creds,{total_rides: db.sequelize.literal(`total_rides + ${1}`),already_on_ride:"No"});
       // console.log('------------incDriverRide----------',incDriverRide);
       
-      let incUserRide= await libs.findAndUpdate(db.users, user_id , {total_rides: db.sequelize.literal(`total_rides + ${1}`),
-      },{where: { id: user_id }});
+      let incUserRide= await libs.findAndUpdate(db.users,user_id,{total_rides: db.sequelize.literal(`total_rides + ${1}`)},{where:{id:user_id}});
       // console.log('---------------incUserRide-------------------',incUserRide.toJSON());
 
       if(incUserRide.total_rides == 20){

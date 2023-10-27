@@ -41,10 +41,10 @@
           <div class="riders_tab">
             <ul class="nav nav-tabs driver" id="myTab">
               <li class="nav-item project_tab">
-                <a href="#drivers" class="nav-link active" data-bs-toggle="tab">My drivers</a>
+                <a href="#drivers" class="nav-link active" id="myDriver" data-bs-toggle="tab">My drivers</a>
               </li>
               <li class="nav-item project-tab">
-                <a href="#requests" class="nav-link" data-bs-toggle="tab">Pending requests</a>
+                <a href="#requests" class="nav-link" id="myPendingReq" data-bs-toggle="tab">Pending requests</a>
               </li>
             </ul>
             <div class="tab-content table-responsive">
@@ -88,7 +88,7 @@
                     <% for(let driver of getDrivers) { %>
                       <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class=""><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt=""/></th>
+                        <th scope="row" class=""><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
                         <td><%=driver.username %></td>
                         <td><%=driver.gender %></td>
                         <td><%=driver.total_rides %></td>
@@ -106,6 +106,19 @@
                     <% } %>
                   </tbody>
                 </table>
+                <div>
+                  <ul class="pagination" id="myDrivers">
+                    <% if (page > 1) { %>
+                      <li><a href="/admin/renderDriver?page=<%= page - 1 %>&search=<%= search %>">Previous</a></li>
+                    <% } %>
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                      <li `<%= page === i ? 'class="active"' : '' %>` onclick="driverButtons()"><a href="/admin/renderDriver?page=<%= i %>&search=<%= search %>"><%= i %></a></li>
+                    <% } %>
+                    <% if (page < totalPages) { %>
+                      <li><a href="/admin/renderDriver?page=<%= page + 1 %>&search=<%= search %>">Next</a></li>
+                    <% } %>
+                  </ul>
+                </div>                
               </div>
               <div class="tab-pane fade" id="requests">
                 <table class="table" id="example1">
@@ -154,6 +167,19 @@
                     <% } %>
                   </tbody>
                 </table>
+                <div>
+                  <ul class="pagination" id="pending_request">
+                    <% if (page > 1) { %>
+                      <li><a href="/admin/renderDriver?page=<%= page - 1 %>&search=<%= search %>">Previous</a></li>
+                    <% } %>
+                    <% for (let i = 1; i <= total_pendingPages; i++) { %>
+                      <li <%= page === i ? 'class="active"' : '' %>><a href="javascript:void(0);" onclick="driverButtons('<%= i %>')"><%= i %></a></li>
+                    <% } %>
+                    <% if (page < total_pendingPages) { %>
+                      <li><a href="/admin/renderDriver?page=<%= page + 1 %>&search=<%= search %>">Next</a></li>
+                    <% } %>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -226,6 +252,25 @@ function updatePendingReq(button, driverId,action) {
     })
 }
 
+let getDriverUL = document.getElementById('myDriver');
+console.log('-------1-----',getDriverUL);
+
+function driverButtons() {
+  const searchInputValue = document.getElementById('searchInput').value;
+  console.log('Search Input Value:', searchInputValue);
+
+  fetch(`/admin/renderDriver?page=${page}&search=${searchInputValue}`)
+    .then(response => response.json())
+    .then(data => {
+      // Handle the data returned from the API
+      // You can update your page with the new data here
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+
 
 
 
@@ -267,44 +312,43 @@ document.addEventListener("DOMContentLoaded", function() {
       if (!shouldShowPagination) {
         dataTableOptions.paging = false;
       }
-      
       dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
     }
   });
 
   // Add an input event listener to the shared search input
-  searchInput.addEventListener('input', function () {
-    const searchValue = searchInput.value.toLowerCase();
+  // searchInput.addEventListener('input', function () {
+  //   const searchValue = searchInput.value.toLowerCase();
     
-    tableIds.forEach(tableId => {
-      console.log('---------tableId 1-----------',tableId);
+  //   tableIds.forEach(tableId => {
+  //     console.log('---------tableId 1-----------',tableId);
 
-      const matchingRows = originalData[tableId].filter(row => {
-        const fullNameCell = row.querySelector('td:nth-child(2)');
-        return fullNameCell.textContent.toLowerCase().includes(searchValue);
-      });
+  //     const matchingRows = originalData[tableId].filter(row => {
+  //       const fullNameCell = row.querySelector('td:nth-child(2)');
+  //       return fullNameCell.textContent.toLowerCase().includes(searchValue);
+  //     });
 
-      if (dataTableInstances[tableId]) {
-        console.log('---------tableId 2-----------',tableId);
-        const paginationContainer = document.querySelector(`.dataTables_paginate`);
-        // const paginationContainer2 = document.getElementsByClassName("spans")
-        console.log('---------paginationContainer-----------',paginationContainer);
+  //     if (dataTableInstances[tableId]) {
+  //       console.log('---------tableId 2-----------',tableId);
+  //       const paginationContainer = document.querySelector(`.dataTables_paginate`);
+  //       // const paginationContainer2 = document.getElementsByClassName("spans")
+  //       console.log('---------paginationContainer-----------',paginationContainer);
         
-        dataTableInstances[tableId].clear();
-        dataTableInstances[tableId].rows.add(matchingRows);
-        dataTableInstances[tableId].draw();
+  //       dataTableInstances[tableId].clear();
+  //       dataTableInstances[tableId].rows.add(matchingRows);
+  //       dataTableInstances[tableId].draw();
         
-        console.log('---------length-----------',matchingRows.length);
+  //       console.log('---------length-----------',matchingRows.length);
         
-        if (matchingRows.length <= 10) {
-          paginationContainer.style.display = 'none';
-        } else {
-          paginationContainer.style.display = 'block';
-        }
+  //       if (matchingRows.length <= 10) {
+  //         paginationContainer.style.display = 'none';
+  //       } else {
+  //         paginationContainer.style.display = 'block';
+  //       }
 
-      }
-    });
-  });
+  //     }
+  //   });
+  // });
 });
 
 

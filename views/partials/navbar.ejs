@@ -10,7 +10,10 @@
   <div id="searchbar" class="col-md-8 col-12">
     <div class="search-bar">
       <img src="/images/search.png" />
-      <input type="search" id="searchInput" class="form-control search" placeholder="Search" />
+      <form action="/admin/renderDriver?page=<%= page - 1 %>&search=<%= search %>" method="get">
+        <input type="search" id="searchInput" class="form-control search" name="searchInput" placeholder="Search" value="<%= search %>"/>
+        <button type="submit">Search</button>
+      </form>
     </div>
   </div>
 

@@ -66,7 +66,9 @@ const numberLogin = async (req, res) => {
     const getData = await libs.getData(User, { where: { mobile_number: mobile_number } });
 
     if (getData) {
-
+      if(getData.action == "Disable"){
+        return res.status(400).json({ code: 400, message: "Your number is disabled by Admin" })
+      }
       let token_info = { id: getData.id, mobile_number: getData.mobile_number };
       if (device_type) { token_info.device_type = device_type }
       if (device_token) { token_info.device_token = device_token }

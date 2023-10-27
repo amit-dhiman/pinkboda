@@ -34,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     total_earning: { type: DataTypes.BIGINT ,defaultValue: 0},        // Earning
 
     action: { type: DataTypes.ENUM("Enable","Disable"),defaultValue:"Disable"},
+    already_on_ride: { type: DataTypes.ENUM("Yes","No"),defaultValue:"No"},
 
     access_token: { type: DataTypes.STRING },
     device_type:{type:DataTypes.ENUM("Android","Apple"),defaultValue:"Android"},
