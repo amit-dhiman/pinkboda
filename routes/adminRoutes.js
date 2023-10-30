@@ -36,8 +36,8 @@ router.get('/admin/renderIndex', admin_auth, adminCtrl.renderIndex);
 
 router.get('/admin/renderRider', admin_auth, adminCtrl.renderRider);
 
-// router.get('/admin/renderDriver', admin_auth, adminCtrl.renderDriver);
-router.get('/admin/renderDriver', adminCtrl.renderDriver);
+router.get('/admin/renderDriver', admin_auth, adminCtrl.renderDriver);
+// router.get('/admin/renderDriver', adminCtrl.renderDriver);
 
 
 router.get('/admin/actionOnDriver/:driverId', admin_auth, adminCtrl.actionOnDriver);

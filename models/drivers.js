@@ -40,10 +40,17 @@ module.exports = (sequelize, DataTypes) => {
     device_type:{type:DataTypes.ENUM("Android","Apple"),defaultValue:"Android"},
     device_token: { type: DataTypes.STRING },
 
+    // created_at:{type: DataTypes.BIGINT, defaultValue: function(){
+    //   return +new Date(Date.now());
+    // }},
+    // updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
+    //   return +new Date(Date.now());
+    // }},
     created_at:{type: DataTypes.BIGINT},
     updated_at:{type: DataTypes.BIGINT},
     deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
-    },{
+    },
+    {
         hooks: {
           beforeValidate: (instance, options) => {
           instance.created_at = +new Date(Date.now());
@@ -53,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
             instance.deleted_at = +new Date(Date.now())
           },
         },
-        timestamps: true,
+    timestamps: true,
     paranoid: true,
     createdAt: "created_at",
     updatedAt: "updated_at",

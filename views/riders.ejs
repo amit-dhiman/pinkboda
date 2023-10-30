@@ -55,7 +55,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="tabel_size">
+                  <!-- <tr class="tabel_size">
                     <th scope="row"><img class="profile_img" src="/images/img.png" /></th>
                     <td>Waloi</td>
                     <td>Male</td>
@@ -63,7 +63,7 @@
                     <td>23 Jun,2023</td>
                     <td><button class="btn btn-info data" type="button">Disable</button></td>
                     <td>565646564</td>
-                  </tr>
+                  </tr> -->
                   <% for(let rider of getRiders) { %>
                     <% const formattedDate = new Date(rider.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                     <tr class="tabel_size">
@@ -79,6 +79,20 @@
                   <% } %>
                 </tbody>
               </table>
+              <div>
+                <ul class="pagination" id="myRiders">
+                  <% if (page > 1) { %>
+                    <li><a href="javascript:void(0);" onclick="driverButtons('<%= page - 1 %>')">Previous</a></li>
+                  <% } %>
+                  <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li <%= page === i ? 'class="active"' : '' %>
+                      <a href="javascript:void(0);" onclick="driverButtons('<%= i %>')"><%= i %></a></li>
+                  <% } %>
+                  <% if (page < totalPages) { %>
+                    <li><a href="javascript:void(0);" onclick="driverButtons('<%= page + 1 %>')">Next</a></li>
+                  <% } %>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -115,63 +129,63 @@
 
 <script type="text/javascript">
 
-document.addEventListener("DOMContentLoaded", function() {
-  const table = document.getElementById("example");
-  const searchInput = document.getElementById("searchInput");
+// document.addEventListener("DOMContentLoaded", function() {
+//   const table = document.getElementById("example");
+//   const searchInput = document.getElementById("searchInput");
 
-  if (table) {
-    const tableRows = document.querySelectorAll('.tabel_size');
+//   if (table) {
+//     const tableRows = document.querySelectorAll('.tabel_size');
 
-    // Initialize the DataTable
-    const dataTable = new DataTable(table, {
-      columnDefs: [{ orderable: false, targets: 5 }],
-      language: {
-        paginate: {
-          previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
-          next: '<span class="fa fa-chevron-right dataTables_paginate"></span>',
-        },
-        lengthMenu: 'Display <select class="form-control input-sm">' +
-          '<option value="10">10</option>' +
-          '<option value="20">20</option>' +
-          '<option value="30">30</option>' +
-          '<option value="40">40</option>' +
-          '<option value="50">50</option>' +
-          '<option value="-1">All</option>' +
-          '</select> results',
-      },
-    });
+//     // Initialize the DataTable
+//     const dataTable = new DataTable(table, {
+//       columnDefs: [{ orderable: false, targets: 5 }],
+//       language: {
+//         paginate: {
+//           previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
+//           next: '<span class="fa fa-chevron-right dataTables_paginate"></span>',
+//         },
+//         lengthMenu: 'Display <select class="form-control input-sm">' +
+//           '<option value="10">10</option>' +
+//           '<option value="20">20</option>' +
+//           '<option value="30">30</option>' +
+//           '<option value="40">40</option>' +
+//           '<option value="50">50</option>' +
+//           '<option value="-1">All</option>' +
+//           '</select> results',
+//       },
+//     });
 
-    let originalData = Array.from(tableRows);
-    const paginationContainer = document.querySelector('.dataTables_paginate');
+//     let originalData = Array.from(tableRows);
+//     const paginationContainer = document.querySelector('.dataTables_paginate');
 
-    if (originalData.length <= 10) {
-      paginationContainer.style.display = 'none';
-    } else {
-      paginationContainer.style.display = 'block';
-    }
-    searchInput.addEventListener('input', function () {
-      const searchValue = searchInput.value.toLowerCase();
+//     if (originalData.length <= 10) {
+//       paginationContainer.style.display = 'none';
+//     } else {
+//       paginationContainer.style.display = 'block';
+//     }
+//     searchInput.addEventListener('input', function () {
+//       const searchValue = searchInput.value.toLowerCase();
 
-      let matchingRows = originalData.filter(row => {
-        const fullNameCell = row.querySelector('td:nth-child(2)');
-        return fullNameCell.textContent.toLowerCase().includes(searchValue);
-      });
+//       let matchingRows = originalData.filter(row => {
+//         const fullNameCell = row.querySelector('td:nth-child(2)');
+//         return fullNameCell.textContent.toLowerCase().includes(searchValue);
+//       });
 
-      dataTable.clear();
-      dataTable.rows.add(matchingRows);
-      dataTable.draw();
+//       dataTable.clear();
+//       dataTable.rows.add(matchingRows);
+//       dataTable.draw();
 
-      const numberOfVisibleRecords = dataTable.rows({ search: 'applied' }).count();
-      // const paginationContainer = document.querySelector('.dataTables_paginate');
+//       const numberOfVisibleRecords = dataTable.rows({ search: 'applied' }).count();
+//       // const paginationContainer = document.querySelector('.dataTables_paginate');
 
-      if (numberOfVisibleRecords <= 10) {
-        paginationContainer.style.display = 'none';
-      } else {
-        paginationContainer.style.display = 'block';
-      }
-    });
-  }
-});
+//       if (numberOfVisibleRecords <= 10) {
+//         paginationContainer.style.display = 'none';
+//       } else {
+//         paginationContainer.style.display = 'block';
+//       }
+//     });
+//   }
+// });
 
 function updateButton(button, riderId) {
   if (confirm("Are you sure you want to change this users action?")) {
@@ -194,21 +208,13 @@ function updateButton(button, riderId) {
   document.getElementById("demo").innerHTML = text;
 }
 
-// function updateButton(button, riderId) {
-//   fetch(`/admin/actionOnUser/${riderId}`)
-//     .then(response => {
-//       if (!response.ok) {
-//         throw new Error('Network response was not ok');
-//       }
-//       return response.json();
-//     })
-//     .then(newButtonText => {
-//       button.textContent = newButtonText.data;
-//     })
-//     .catch(error => {
-//       console.error('Error occurred while updating the button:', error);
-//     })
-// }
+
+function driverButtons(page) {
+  const searchInputValue = document.getElementById('searchInput').value;
+  const url = `/admin/renderRider?page=${page}&searchInput=${searchInputValue}`;
+  window.location.href = url;
+}
+
 
 </script>
 </html>

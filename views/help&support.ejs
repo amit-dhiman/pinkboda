@@ -31,7 +31,7 @@
     <div class="col-md-9">
       <div class="row">
         <!------- Add Full Navbar here --------->
-        <%- include ('./partials/navbar.ejs') %>
+        <%- include ('./partials/helpNavbar.ejs') %>
         
         <!----------------- rider section is Starts here -------------->
         <div class="right-sidebar1">
@@ -52,7 +52,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="tabel_size">
+                    <!-- <tr class="tabel_size">
                       <th scope="row"><img class="profile_img" src="/images/img.png" /></th>
                       <td>Waloi <span class="helpsupport">(Driver)</span></td>
                       <td>23 Jun,2023</td>
@@ -60,7 +60,7 @@
                       <td>jasi@gmail.com</td>
                       <td>565646564</td>
                       <td><button class="btn btn-info data" type="button">Resolved</button></td>                   
-                    </tr>
+                    </tr> -->
                     <% for(let obj of supportData){%>
                       <tr class="tabel_size">
                       <% const formattedDate = new Date(obj.created_at).toLocaleDateString('en-US', { day: 'numeric',month: 'short', year: 'numeric' }); %>

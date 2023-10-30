@@ -555,9 +555,9 @@ button.btn.btn-info.submit {
 }
 
 img.profile-pic {
-    width: 200px;
+    width: 160px;
     border-radius: 100px;
-    height: 200px;
+    height: 160px;
     position: relative;
     object-fit: cover;
 }
@@ -570,7 +570,7 @@ img.profile-pic {
 }
 
 .profile_txt {
-    margin-left: -5rem;
+    margin-left: -3rem;
 }
 
 .profile_txt h1 {

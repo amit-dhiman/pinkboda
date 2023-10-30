@@ -45,7 +45,7 @@
                       <img src="/images/Vector.png" />
                     </div>
                     <div class="col-md-8">
-                      <h2><%= totalUsers.length %></h2>
+                      <h2><%= totalUsersCount %></h2>
                       <h3>Total Users</h3>
                     </div>
                   </div>
@@ -58,7 +58,7 @@
                       <img src="/images/vector1.png" />
                     </div>
                     <div class="col-md-8">
-                      <h2><%= getDrivers.length %></h2>
+                      <h2><%= totalDriversCount %></h2>
                       <h3>Total Drivers</h3>
                     </div>
                   </div>
@@ -71,7 +71,7 @@
                       <img src="/images/vector2.png" />
                     </div>
                     <div class="col-md-8">
-                      <h2><%= getRiders.length %></h2>
+                      <h2><%= totalRidersCount %></h2>
                       <h3>Total Riders</h3>
                     </div>
                   </div>
@@ -117,13 +117,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr class="tabl_size">
+                      <!-- <tr class="tabl_size">
                         <th scope="row"><img class="profile_img" src="/images/img.png" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
                         <td>Waloi</td>
                         <td>232-324-45434</td>
                         <td>Rider</td>
-                        <!-- <td><img class="three-dot" src="/images/dots.png" /></td> -->
-                      </tr>
+                        <td><img class="three-dot" src="/images/dots.png" /></td>
+                      </tr> -->
                       <% for(let user of totalUsers) { %>
                         <tr class="tabl_size user-example">
                           <% let jsonUser = user.toJSON()%>
@@ -138,6 +138,20 @@
                       <% } %>
                     </tbody>
                   </table>
+                  <div>
+                    <ul class="pagination" id="myIndexUser">
+                      <% if (driver_page > 1) { %>
+                        <li><a href="javascript:void(0);" onclick="driverButtons('<%= driver_page - 1 %>')">Previous</a></li>
+                      <% } %>
+                      <% for (let i = 1; i <= total_UsersPages; i++) { %>
+                        <li <%= driver_page === i ? 'class="active"' : '' %>
+                          <a href="javascript:void(0);" onclick="driverButtons('<%= i %>')"><%= i %></a></li>
+                      <% } %>
+                      <% if (driver_page < total_UsersPages) { %>
+                        <li><a href="javascript:void(0);" onclick="driverButtons('<%= driver_page + 1 %>')">Next</a></li>
+                      <% } %>
+                    </ul>
+                  </div>
                 </div>
                 <div class="tab-pane fade" id="riders">
                   <table id="example1" class="table">  
@@ -151,13 +165,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr class="tabl_size">
+                      <!-- <tr class="tabl_size">
                         <th scope="row"><img class="profile_img" src="/images/img.png" /></th>
                         <td>Waloi</td>
                         <td>232-324-45434</td>
                         <td>Rider</td>
-                        <!-- <td><img class="three-dot" src="/images/dots.png" /></td> -->
-                      </tr>
+                         <td><img class="three-dot" src="/images/dots.png" /></td>
+                      </tr> -->
                       <% for(let i =0; i < getRiders.length; i++) { %>
                         <tr class="tabl_size all-example1">
                           <th scope="row"><img class="profile_img" src="<%= getRiders[i].image || '/images/staticRider.jpg' %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
@@ -169,6 +183,20 @@
                       <% } %>
                     </tbody>
                   </table>
+                  <div>
+                    <ul class="pagination" id="myIndexRiders">
+                      <% if (rider_page > 1) { %>
+                        <li><a href="javascript:void(0);" onclick="riderButtons('<%= rider_page - 1 %>')">Previous</a></li>
+                      <% } %>
+                      <% for (let i = 1; i <= total_RidersPages; i++) { %>
+                        <li <%= rider_page === i ? 'class="active"' : '' %>
+                          <a href="javascript:void(0);" onclick="riderButtons('<%= i %>')"><%= i %></a></li>
+                      <% } %>
+                      <% if (rider_page < total_RidersPages) { %>
+                        <li><a href="javascript:void(0);" onclick="riderButtons('<%= rider_page + 1 %>')">Next</a></li>
+                      <% } %>
+                    </ul>
+                  </div>
                 </div>
                 <div class="tab-pane fade" id="drivers">
                   <table id="example2" class="table">
@@ -182,13 +210,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr class="tabl_size">
+                      <!-- <tr class="tabl_size">
                         <th scope="row"><img class="profile_img" src="/images/img.png" alt=""/></th>
                         <td>Waloi</td>
                         <td>232-324-45434</td>
                         <td>Driver</td>
-                        <!-- <td><img class="three-dot" src="/images/dots.png" /></td> -->
-                      </tr>
+                        <td><img class="three-dot" src="/images/dots.png" /></td> 
+                      </tr> -->
                       <% for(let i =0; i < getDrivers.length; i++) { %>
                         <tr class="tabl_size">
                           <th scope="row"><img class="profile_img" src="<%= getDrivers[i].profile_image || '/images/staticDriver.jpg' %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
@@ -200,6 +228,20 @@
                       <% } %>
                     </tbody>
                   </table>
+                  <div>
+                    <ul class="pagination" id="myIndexDrivers">
+                      <% if (driver_page > 1) { %>
+                        <li><a href="javascript:void(0);" onclick="driverButtons('<%= driver_page - 1 %>')">Previous</a></li>
+                      <% } %>
+                      <% for (let i = 1; i <= total_DriversPages; i++) { %>
+                        <li <%= driver_page === i ? 'class="active"' : '' %>
+                          <a href="javascript:void(0);" onclick="driverButtons('<%= i %>')"><%= i %></a></li>
+                      <% } %>
+                      <% if (driver_page < total_DriversPages) { %>
+                        <li><a href="javascript:void(0);" onclick="driverButtons('<%= driver_page + 1 %>')">Next</a></li>
+                      <% } %>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -235,81 +277,91 @@
 </script>
 
 <script type="text/javascript">
+  
+function riderButtons(rider_page) {
+  const searchInputValue = document.getElementById('searchInput').value;
+  const url = `/admin/renderIndex?rider_page=${rider_page}&searchInput=${searchInputValue}`;
+  window.location.href = url;
+}
 
-const searchInput = document.getElementById("searchInput");
+function driverButtons(driver_page) {
+  const searchInputValue = document.getElementById('searchInput').value;
+  const url = `/admin/renderIndex?driver_page=${driver_page}&searchInput=${searchInputValue}`;
+  window.location.href = url;
+}
 
-const originalData = {};
-const dataTableInstances = {};
+// const searchInput = document.getElementById("searchInput");
+// const originalData = {};
+// const dataTableInstances = {};
+// document.addEventListener("DOMContentLoaded", function() {
+//   // Initialize all DataTables
+//   const tableIds = ["example", "example1", "example2"];
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Initialize all DataTables
-  const tableIds = ["example", "example1", "example2"];
+//   tableIds.forEach(tableId => {
+//     const table = document.getElementById(tableId);
+//     if (table) {
+//       const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
+//       originalData[tableId] = Array.from(tableRows);
 
-  tableIds.forEach(tableId => {
-    const table = document.getElementById(tableId);
-    if (table) {
-      const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
-      originalData[tableId] = Array.from(tableRows);
+//       const shouldShowPagination = tableRows.length > 10;
 
-      const shouldShowPagination = tableRows.length > 10;
+//       const dataTableOptions = {
+//         columnDefs: [{ orderable: false, targets: 3 }],
+//         language: {
+//           paginate: {
+//             // paginate: shouldShowPagination,
+//             previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
+//             next: '<span class="fa fa-chevron-right dataTables_paginate"></span>'
+//           },
+//           lengthMenu: 'Display <select class="form-control input-sm">' +
+//             '<option value="10">10</option>' +
+//             '<option value="20">20</option>' +
+//             '<option value="30">30</option>' +
+//             '<option value="40">40</option>' +
+//             '<option value="50">50</option>' +
+//             '<option value="-1">All</option>' +
+//             '</select> results'
+//         }
+//       };
+//       if (!shouldShowPagination) {
+//       dataTableOptions.paging = false;
+//     }
 
-      const dataTableOptions = {
-        columnDefs: [{ orderable: false, targets: 3 }],
-        language: {
-          paginate: {
-            // paginate: shouldShowPagination,
-            previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
-            next: '<span class="fa fa-chevron-right dataTables_paginate"></span>'
-          },
-          lengthMenu: 'Display <select class="form-control input-sm">' +
-            '<option value="10">10</option>' +
-            '<option value="20">20</option>' +
-            '<option value="30">30</option>' +
-            '<option value="40">40</option>' +
-            '<option value="50">50</option>' +
-            '<option value="-1">All</option>' +
-            '</select> results'
-        }
-      };
-      if (!shouldShowPagination) {
-      dataTableOptions.paging = false;
-    }
+//     dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
+//     }
+//   });
 
-    dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
-    }
-  });
-
-  // Add an input event listener to the shared search input
-  searchInput.addEventListener('input', function () {
-    const searchValue = searchInput.value.toLowerCase();
+//   // Add an input event listener to the shared search input
+//   searchInput.addEventListener('input', function () {
+//     const searchValue = searchInput.value.toLowerCase();
     
-    // Iterate through each table
-    tableIds.forEach(tableId => {
-      const matchingRows = originalData[tableId].filter(row => {
-        const fullNameCell = row.querySelector('td:nth-child(2)');
-        return fullNameCell.textContent.toLowerCase().includes(searchValue);
-      });
-      console.log('--------matchingRows--------',matchingRows);
+//     // Iterate through each table
+//     tableIds.forEach(tableId => {
+//       const matchingRows = originalData[tableId].filter(row => {
+//         const fullNameCell = row.querySelector('td:nth-child(2)');
+//         return fullNameCell.textContent.toLowerCase().includes(searchValue);
+//       });
+//       console.log('--------matchingRows--------',matchingRows);
       
-      if (dataTableInstances[tableId]) {
-        const numberOfVisibleRecords = matchingRows.length;
-        const paginationContainer = document.querySelector(`.dataTables_paginate`);
-        console.log('--------paginationContainer--------',paginationContainer);
+//       if (dataTableInstances[tableId]) {
+//         const numberOfVisibleRecords = matchingRows.length;
+//         const paginationContainer = document.querySelector(`.dataTables_paginate`);
+//         console.log('--------paginationContainer--------',paginationContainer);
 
-        if (numberOfVisibleRecords <= 10) {
-          paginationContainer.style.display = 'none';
-          // dataTableInstances[tableId].paging.disable();
-        } else {
-          paginationContainer.style.display = 'block';
-        }
+//         if (numberOfVisibleRecords <= 10) {
+//           paginationContainer.style.display = 'none';
+//           // dataTableInstances[tableId].paging.disable();
+//         } else {
+//           paginationContainer.style.display = 'block';
+//         }
 
-        dataTableInstances[tableId].clear();
-        dataTableInstances[tableId].rows.add(matchingRows);
-        dataTableInstances[tableId].draw();         
-      }
-    });
-  });
-});
+//         dataTableInstances[tableId].clear();
+//         dataTableInstances[tableId].rows.add(matchingRows);
+//         dataTableInstances[tableId].draw();         
+//       }
+//     });
+//   });
+// });
 
 </script>
 </body>

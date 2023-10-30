@@ -1,0 +1,43 @@
+<nav class="navbar">
+<div class="container-fluid">
+    <a class="navbar-brand" href="#"></a>
+    <button class="navbar-toggler" id="toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+</nav>
+
+<div id="searchbar" class="col-md-8 col-12">
+<div class="search-bar">
+    <img src="/images/search.png" />
+    <form  id="searchForm" onsubmit="driverButtons(); return false;">
+    <input type="search" id="searchInput" class="form-control search" name="searchInput" placeholder="Search" value=""/>
+    <!-- <button type="submit">Search</button> -->
+    </form>
+</div>
+</div>
+
+<!-----------------------Notification section is here------------>
+<div class="col-md-1 col-5">
+<div class="col-md-2 col-2"></div>
+</div> 
+
+<div class="col-md-3 col-7 d-flex justify-content-center align-items-center">
+    <!--/uploads/admin/ -->
+    <img class="img-profile" src="/uploads/admin/<%= getAdmin.profile_image %>" />  
+<ul class="nav navbar-nav ms-auto" style="width: 67%">
+    <li class="nav-item dropdown">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><%= getAdmin.full_name %></a>
+    <div class="dropdown-menu dropdown-menu-end">
+        <div class="locker_img d-flex justify-content-center align-items-center">
+        <img src="/images/lock.png" />
+        <a href="/admin/getChangePasswordPage" class="dropdown-item">Change Password</a>
+        </div>
+        <div class="locker_img d-flex justify-content-center align-items-center">
+        <img src="/images/logout.png" />
+        <a href="/admin/logout" class="dropdown-item" style="color: #ff0000";>Logout</a>
+        </div>
+    </div>
+    </li>
+</ul>
+</div>

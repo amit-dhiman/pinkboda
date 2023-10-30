@@ -69,22 +69,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="tabl_size">
-                      <th scope="row" class=""><img class="profile_img" src="/images/img.png" alt="" /></th>
-                      <td>Waloi</td>
-                      <td>Male</td>
-                      <td>2</td>
-                      <th scope="row" class=""><img class="passport_img" src="/images/pasport.png" alt=""/></th>
-                      <th scope="row"><img class="idcard_img" src="/images/idcard.png" alt=""/></th>
-                      <th scope="row"><img class="license_img" src="/images/license.png" alt=""/></th>
-                      <td>2023</td>
-                      <td>425 AIY</td>
-                      <td>N/A</td>
-                      <td>$2030</td>
-                      <td>23 Jun, 2023</td>
-                      <td><button class="btn btn-info data" type="button">Disable</button></td>
-                      <td>565646564</td>
-                    </tr>
+
                     <% for(let driver of getDrivers) { %>
                       <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
@@ -169,15 +154,16 @@
                   </tbody>
                 </table>
                 <div>
-                  <ul class="pagination" id="pending_request">
-                    <% if (page > 1) { %>
-                      <li><a href="/admin/renderDriver?page=<%= page - 1 %>&search=<%= search %>">Previous</a></li>
+                  <ul class="pagination" id="mypendingDrivers">
+                    <% if (pending_page > 1) { %>
+                      <li><a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= pending_page - 1 %>')">Previous</a></li>
                     <% } %>
                     <% for (let i = 1; i <= total_pendingPages; i++) { %>
-                      <li <%= page === i ? 'class="active"' : '' %>><a href="javascript:void(0);" onclick="driverButtons('<%= i %>')"><%= i %></a></li>
+                      <li <%= pending_page === i ? 'class="active"' : '' %>
+                          <a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= i %>')"><%= i %></a></li>
                     <% } %>
-                    <% if (page < total_pendingPages) { %>
-                      <li><a href="/admin/renderDriver?page=<%= page + 1 %>&search=<%= search %>">Next</a></li>
+                    <% if (pending_page < total_pendingPages) { %>
+                      <li><a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= pending_page + 1 %>')">Next</a></li>
                     <% } %>
                   </ul>
                 </div>
@@ -204,8 +190,7 @@
     const toggleMenu = document.querySelector(".menu");
     toggleMenu.classList.toggle("active");
   }
-</script>
-<script>
+
   const toggle = document.getElementById("toggle");
   const left = document.getElementById("left");
   const bodyClass = document.querySelector("body");
@@ -253,104 +238,117 @@ function updatePendingReq(button, driverId,action) {
     })
 }
 
-let getDriverUL = document.getElementById('myDriver');
-console.log('-------1-----',getDriverUL);
+
+// function driverButtons(page) {
+//   const searchInputValue = document.getElementById('searchInput').value;
+//   console.log('Search Input Value:', searchInputValue);
+//   fetch(`/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}`)   // find div's id and concat here
+//     .then(response => response.json())
+//     .then(data => {
+//       // Handle the data returned from the API
+//       // You can update your page with the new data here
+//       window.location.href = url;
+//     })
+//     .catch(error => {
+//       console.error('Error:', error);
+//     });
+// }
+
 
 function driverButtons(page) {
   const searchInputValue = document.getElementById('searchInput').value;
-  console.log('Search Input Value:', searchInputValue);
-
-  fetch(`/admin/renderDriver?page=${page}&search=${searchInputValue}&`)   // find div's id and concat here
-    .then(response => response.json())
-    .then(data => {
-      // Handle the data returned from the API
-      // You can update your page with the new data here
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  const url = `/admin/renderDriver?page=${page}&searchInput=${searchInputValue}`;
+  
+    if (activeDiv) {
+      activeDiv.classList.add('active'); // Reapply the "active" class
+    }
+  window.location.href = url;
 }
 
+function driverPending_pageButtons(pending_page) {
+  const searchInputValue = document.getElementById('searchInput').value;
+  const url = `/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}`;
 
+  window.location.href = url;
+  if (activeDiv) {
+    activeDiv.classList.add('active'); // Reapply the "active" class
+  }
+}
 
+// const originalData = {};
+// const dataTableInstances = {};
 
+// document.addEventListener("DOMContentLoaded", function() {
+//   // Initialize all DataTables
+//   const tableIds = ["example", "example1"];
 
-const searchInput = document.getElementById("searchInput");
+//   tableIds.forEach(tableId => {
+//     const table = document.getElementById(tableId);
+//     if (table) {
+//       const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
+//       originalData[tableId] = Array.from(tableRows);
 
-const originalData = {};
-const dataTableInstances = {};
+//       const shouldShowPagination = tableRows.length > 10;
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Initialize all DataTables
-  const tableIds = ["example", "example1"];
+//       const dataTableOptions = {
+//         columnDefs: [{ orderable: false, targets: 4 }],
+//         language: {
+//           paginate: {
+//             previous: '<span class="fa fa-chevron-left dataTables_paginate" id="spanL"></span>',
+//             next: '<span class="fa fa-chevron-right dataTables_paginate" id="spanR"></span>'
+//           },
+//           lengthMenu: 'Display <select class="form-control input-sm">' +
+//             '<option value="10">10</option>' +
+//             '<option value="20">20</option>' +
+//             '<option value="30">30</option>' +
+//             '<option value="40">40</option>' +
+//             '<option value="50">50</option>' +
+//             '<option value="-1">All</option>' +
+//             '</select> results'
+//         }
+//       };
 
-  tableIds.forEach(tableId => {
-    const table = document.getElementById(tableId);
-    if (table) {
-      const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
-      originalData[tableId] = Array.from(tableRows);
+//       if (!shouldShowPagination) {
+//         dataTableOptions.paging = false;
+//       }
+//       dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
+//     }
+//   });
 
-      const shouldShowPagination = tableRows.length > 10;
-
-      const dataTableOptions = {
-        columnDefs: [{ orderable: false, targets: 4 }],
-        language: {
-          paginate: {
-            previous: '<span class="fa fa-chevron-left dataTables_paginate" id="spanL"></span>',
-            next: '<span class="fa fa-chevron-right dataTables_paginate" id="spanR"></span>'
-          },
-          lengthMenu: 'Display <select class="form-control input-sm">' +
-            '<option value="10">10</option>' +
-            '<option value="20">20</option>' +
-            '<option value="30">30</option>' +
-            '<option value="40">40</option>' +
-            '<option value="50">50</option>' +
-            '<option value="-1">All</option>' +
-            '</select> results'
-        }
-      };
-
-      if (!shouldShowPagination) {
-        dataTableOptions.paging = false;
-      }
-      dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
-    }
-  });
-
-  // Add an input event listener to the shared search input
-  // searchInput.addEventListener('input', function () {
-  //   const searchValue = searchInput.value.toLowerCase();
+//   // Add an input event listener to the shared search input
+//   // searchInput.addEventListener('input', function () {
+//   //   const searchValue = searchInput.value.toLowerCase();
     
-  //   tableIds.forEach(tableId => {
-  //     console.log('---------tableId 1-----------',tableId);
+//   //   tableIds.forEach(tableId => {
+//   //     console.log('---------tableId 1-----------',tableId);
 
-  //     const matchingRows = originalData[tableId].filter(row => {
-  //       const fullNameCell = row.querySelector('td:nth-child(2)');
-  //       return fullNameCell.textContent.toLowerCase().includes(searchValue);
-  //     });
+//   //     const matchingRows = originalData[tableId].filter(row => {
+//   //       const fullNameCell = row.querySelector('td:nth-child(2)');
+//   //       return fullNameCell.textContent.toLowerCase().includes(searchValue);
+//   //     });
 
-  //     if (dataTableInstances[tableId]) {
-  //       console.log('---------tableId 2-----------',tableId);
-  //       const paginationContainer = document.querySelector(`.dataTables_paginate`);
-  //       // const paginationContainer2 = document.getElementsByClassName("spans")
-  //       console.log('---------paginationContainer-----------',paginationContainer);
+//   //     if (dataTableInstances[tableId]) {
+//   //       console.log('---------tableId 2-----------',tableId);
+//   //       const paginationContainer = document.querySelector(`.dataTables_paginate`);
+//   //       // const paginationContainer2 = document.getElementsByClassName("spans")
+//   //       console.log('---------paginationContainer-----------',paginationContainer);
         
-  //       dataTableInstances[tableId].clear();
-  //       dataTableInstances[tableId].rows.add(matchingRows);
-  //       dataTableInstances[tableId].draw();
+//   //       dataTableInstances[tableId].clear();
+//   //       dataTableInstances[tableId].rows.add(matchingRows);
+//   //       dataTableInstances[tableId].draw();
         
-  //       console.log('---------length-----------',matchingRows.length);
+//   //       console.log('---------length-----------',matchingRows.length);
         
-  //       if (matchingRows.length <= 10) {
-  //         paginationContainer.style.display = 'none';
-  //       } else {
-  //         paginationContainer.style.display = 'block';
-  //       }
+//   //       if (matchingRows.length <= 10) {
+//   //         paginationContainer.style.display = 'none';
+//   //       } else {
+//   //         paginationContainer.style.display = 'block';
+//   //       }
 
-  //     }
-  //   });
-  // });
-});
+//   //     }
+//   //   });
+//   // });
+// });
 
 
 
@@ -428,7 +426,6 @@ document.addEventListener("DOMContentLoaded", function() {
 //     });
 //   });
 // });
-
 
 </script>
 </html>
