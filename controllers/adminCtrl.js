@@ -382,7 +382,6 @@ const logout = async (req, res) => {
 // };
 
 
-
 const renderIndex = async (req, res) => {
   try {
     // console.log('----------req.body----------',req.body);
@@ -522,6 +521,11 @@ const renderIndex = async (req, res) => {
 
 const renderRider = async (req, res) => {
   try {
+    const totalDriversCount = await db.drivers.count({ where: {is_admin_verified:'accepted'}});
+    const totalRidersCount= await db.users.count({where:{}});
+    const totalUsersCount= (totalDriversCount + totalRidersCount);
+    // console.log('--------totalUsersCount-------',totalUsersCount);
+  
     let search = req.query.searchInput || '';              // Get search input value
 
     console.log('----------req.body----------',req.body);
@@ -534,7 +538,7 @@ const renderRider = async (req, res) => {
 
     const whereCondition = search ? {username:{[Op.like]:`%${search}%`}}:{};
 
-    console.log('----------whereCondition-----------',whereCondition);
+    // console.log('----------whereCondition-----------',whereCondition);
     const getRiders = await libs.getAllData(db.users, {
       where: whereCondition,
       limit: itemsPerPage,
@@ -545,8 +549,8 @@ const renderRider = async (req, res) => {
     const totalDrivers = await db.drivers.count({ where: whereCondition });
     const totalPages = Math.ceil(totalDrivers / itemsPerPage);
     
-    console.log('------------totalPages---------------',totalPages);
-    console.log('------------search 2---------------',search);
+    // console.log('------------totalPages---------------',totalPages);
+    // console.log('------------search 2---------------',search);
 
     // res.status(200).json({
     res.render('riders', {
@@ -558,6 +562,9 @@ const renderRider = async (req, res) => {
       page,
       search,
       totalPages,
+      totalUsersCount,
+      totalDriversCount,
+      totalRidersCount
     });
     //    getDrivers: getDrivers,
     //    getAdmin: req.session.admin,
@@ -572,34 +579,27 @@ const renderRider = async (req, res) => {
 
 const renderDriver = async (req, res) => {
   try {
-    // let getDrivers= await libs.getAllData(db.drivers,{where:{is_admin_verified:"accepted"}});
-    // let getPendingRequests = await libs.getAllData(db.drivers,{where:{is_admin_verified:"pending"}});
-    
-    // // res.status(200).json({code:200,message:"Get all drivers",
-    // res.render('drivers',{
-    //   getDrivers : getDrivers,
-    //   pendingRequests : getPendingRequests,
-    //   driverImageUrl : process.env.driver_imageUrl_ejs,
-    //   getAdmin: req.session.admin
-    // });
+    const totalDriversCount = await db.drivers.count({ where: {is_admin_verified:'accepted'}});
+    const totalRidersCount= await db.users.count({where:{}});
+    const totalUsersCount= (totalDriversCount + totalRidersCount);
+    console.log('--------totalUsersCount-------',totalUsersCount);
+  
     let search = req.query.searchInput || '';              // Get search input value
 
-    console.log('----------req.body----------',req.body);
+    // console.log('----------req.body----------',req.body);
     console.log('----------req.query--------',req.query);
-    console.log('------------search 1---------------',search);
+    // console.log('------------search 1---------------',search);
 
-    const page =  parseInt(req.query.page) || 1;      // Current page
-    const pending_page =  parseInt(req.query.pending_page) || 1;      // Current pending_page
-    const itemsPerPage = 4;                          // Number of items per page
-    const offset = (page - 1) * itemsPerPage;        // Calculate offset for pagination
-    const pending_page_offset = (pending_page - 1) * itemsPerPage;        // Calculate offset for pagination
+    const page =  parseInt(req.query.page) || 1;                        // Current page
+    let pending_page =  parseInt(req.query.pending_page) || 1;          // Current pending_page
+    const itemsPerPage = 3;                                             // Number of items per page
+    const offset = (page - 1) * itemsPerPage;                           // Calculate offset for pagination
+    let pending_page_offset = (pending_page - 1) * itemsPerPage;        // Calculate offset for pagination
 
-    console.log('------------search 1---------------',search);
 
     const whereCondition = search ? {username:{[Op.like]:`%${search}%`}}:{};
     whereCondition.is_admin_verified = 'accepted';
 
-    console.log('----------whereCondition-----------',whereCondition);
     const getDrivers = await libs.getAllData(db.drivers, {
       where: whereCondition,
       limit: itemsPerPage,
@@ -609,22 +609,22 @@ const renderDriver = async (req, res) => {
 
     const totalDrivers = await db.drivers.count({ where: whereCondition });
     const totalPages = Math.ceil(totalDrivers / itemsPerPage);
-    console.log('------------totalPages---------------',totalPages);
 
     whereCondition.is_admin_verified="pending";
-    console.log('----------whereCondition-----------',whereCondition);
 
     let getPendingRequests = await libs.getAllData(db.drivers,{
       where: whereCondition,
       limit: itemsPerPage,
-      pending_page_offset,
+      offset: pending_page_offset,
       order: [['created_at', 'DESC']]
     });
     
     const total_pendingDrivers = await db.drivers.count({ where: whereCondition });
     const total_pendingPages = Math.ceil(total_pendingDrivers / itemsPerPage);
-    console.log('------------total_pendingPages---------------',total_pendingPages);
+    // console.log('------------total_pendingDrivers---------------',total_pendingDrivers);
+    // console.log('------------total_pendingPages---------------',total_pendingPages);
     console.log('------------search 2---------------',search);
+    // console.log('------------getPendingRequests---------------',getPendingRequests);
 
     // res.status(200).json({
     res.render('drivers', {
@@ -632,18 +632,20 @@ const renderDriver = async (req, res) => {
       pendingRequests : getPendingRequests,
       driverImageUrl : process.env.driver_imageUrl_ejs,
       getAdmin: req.session.admin ,
-      pendingRequests: getPendingRequests,
       itemsPerPage,
       page,
       pending_page,
       search,
       totalPages,
-      total_pendingPages
+      total_pendingPages,
+      totalUsersCount,
+      totalDriversCount,
+      totalRidersCount
     });
-
   } catch (err) {
     console.log('-----err------',err);
-    return res.redirect('/admin/login')
+    res.redirect('/admin/login')
+    return;
   }
 };
 

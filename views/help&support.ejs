@@ -125,6 +125,8 @@
       })
   }
 </script>
+
+
 <script type="text/javascript">
 
   document.addEventListener("DOMContentLoaded", function() {
@@ -153,7 +155,6 @@
     });
 
     let originalData = Array.from(tableRows); 
-    console.log('------------originalData-----------',originalData);
     const paginationContainer = document.querySelector('.dataTables_paginate');
 
     if (originalData.length <= 10) {

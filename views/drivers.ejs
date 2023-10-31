@@ -38,6 +38,7 @@
       <!----------------- driver section is here -------------->
 
         <div class="right-sidebar1">
+          <%- include ('./partials/dashboard.ejs') %>
           <div class="riders_tab">
             <ul class="nav nav-tabs driver" id="myTab">
               <li class="nav-item project_tab">
@@ -69,7 +70,6 @@
                     </tr>
                   </thead>
                   <tbody>
-
                     <% for(let driver of getDrivers) { %>
                       <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
@@ -85,7 +85,7 @@
                         <td>N/A</td>      <!-- have to add complaints here -->
                         <td>$2030</td>    <!-- have to total earning here -->
                         <td><%= formattedDate %></td>
-                        <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= driver.id %>')"><%= driver.action %></button></td>
+                        <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= driver.id %>','<%= driver.action %>')"><%= driver.action %></button></td>
                         <td><%= driver.mobile_number %></td>
                       </tr>
                     <% } %>
@@ -146,7 +146,7 @@
                         <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
                         <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.license %>" alt=""onerror="this.style.display='none'; this.style.content='';"/></th>
                         <td><%= formattedDate %></td>
-                        <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= pending.id %>')"><%= pending.action %></button></td> -->
+                        <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= pending %>')"><%= pending.action %></button></td> -->
                         <td><button class="btn btn-info accept" type="button" onclick="updatePendingReq(this,'<%= pending.id %>','accepted')">Accept</button></td>
                         <td><button class="btn btn-info reject" type="button" onclick="updatePendingReq(this,'<%= pending.id %>','rejected')">Reject</button></td>
                       </tr>
@@ -200,31 +200,37 @@
     bodyClass.classList.toggle("bodyOverflow");
   };
 
-function updateButton(button, driverId) {
-  if (confirm("Are you sure you want to change this users action?")) {
-  fetch(`/admin/actionOnDriver/${driverId}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      // console.log('----------response-----------',response);
-      return response.text();
-    })
-    .then(newButtonText => {
-      // console.log('---------newButtonText---------',newButtonText);
-      // console.log('---------button---------',button);
-      button.textContent = newButtonText;
-    })
-    .catch(error => {
-      console.error('Error occurred while updating the button:', error);
-    })
-  } else {
-    console.log('-----------------cancel--------------')
-  }
-}
 
+  function updateButton(button, driverId,driverAction) {
+    
+    let act = driverAction == 'Enable' ? 'Disable' : 'Enable';
+    if (confirm(`Are you sure you want to ${act} this driver ?`)) {
+      fetch(`/admin/actionOnDriver/${driverId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(newButtonText => {
+          button.textContent = newButtonText;
+          const newAction = newButtonText.data;
+          const newAct = newAction === 'Enable' ? 'Disable' : 'Enable';
+          button.setAttribute('onclick', `updateButton(this, '${driverId}', '${newAction}')`);
+        })
+        .catch(error => {
+          console.error('Error occurred while updating the button:', error);
+        })
+    } else {
+      console.log('---------cancel-----------');
+    }
+  }
+
+   
 function updatePendingReq(button, driverId,action) {
-  fetch(`/admin/pendingRequests?pendingAction=${action}&driverId=${driverId}`)
+
+  // if(confirm(`This driver is being ${action}`)){
+    fetch(`/admin/pendingRequests?pendingAction=${action}&driverId=${driverId}`)
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -236,44 +242,117 @@ function updatePendingReq(button, driverId,action) {
     }).catch(error => {
       console.error('Error occurred while updating the button:', error);
     })
+  // }
 }
-
-
-// function driverButtons(page) {
-//   const searchInputValue = document.getElementById('searchInput').value;
-//   console.log('Search Input Value:', searchInputValue);
-//   fetch(`/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}`)   // find div's id and concat here
-//     .then(response => response.json())
-//     .then(data => {
-//       // Handle the data returned from the API
-//       // You can update your page with the new data here
-//       window.location.href = url;
-//     })
-//     .catch(error => {
-//       console.error('Error:', error);
-//     });
-// }
 
 
 function driverButtons(page) {
   const searchInputValue = document.getElementById('searchInput').value;
-  const url = `/admin/renderDriver?page=${page}&searchInput=${searchInputValue}`;
   
-    if (activeDiv) {
-      activeDiv.classList.add('active'); // Reapply the "active" class
-    }
-  window.location.href = url;
-}
+  const activeNavLink = document.querySelector('.nav-link.active');
+  // console.log('---------activeNavLink btn------------',activeNavLink);
 
-function driverPending_pageButtons(pending_page) {
-  const searchInputValue = document.getElementById('searchInput').value;
-  const url = `/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}`;
-
-  window.location.href = url;
-  if (activeDiv) {
-    activeDiv.classList.add('active'); // Reapply the "active" class
+  let act = null;
+  if(activeNavLink){
+    act = "btnclass";
   }
+  const url = `/admin/renderDriver?page=${page}&searchInput=${searchInputValue}&activeLink=${act}`;
+  window.location.href = url;
+
+  // if (activeNavLink) {
+  //   console.log('--------------tn active-------------',activeNavLink);
+  //   activeNavLink.classList.add('active');
+  // }  
 }
+
+async function driverPending_pageButtons(pending_page) {
+  const searchInputValue = document.getElementById('searchInput').value;
+
+  const activeNavLink = document.querySelector('.nav-link.active');
+  // console.log('---------activeNavLink Pending------------',activeNavLink);
+
+  let act = null;
+  if(activeNavLink){
+    act = "pendingReq";
+  }
+  const url = `/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}&activeLink=${act}`;
+
+  window.location.href = url;
+
+  // if (activeNavLink) {
+  //   console.log('-----------------Pend active 1------------------',activeNavLink);
+  //   // console.log('----------Pend active- 2 --------',activeNavLink);
+  //   activeNavLink.classList.add('active');
+  // }
+
+}
+  
+document.addEventListener('DOMContentLoaded', function() {
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const activeLink = urlParams.get('activeLink');
+  const activeLinkElement = document.getElementById('myDriver');
+  const pending_activeLink = document.getElementById('myPendingReq');
+
+
+  const drivers = document.getElementById('drivers');
+  const requests = document.getElementById('requests');
+
+  if(activeLink == "pendingReq"){
+    console.log('------------p--------------');
+    activeLinkElement.classList.remove('active');
+    pending_activeLink.classList.add('active');
+
+    drivers.classList.remove('active');
+    drivers.classList.remove('show');
+
+    requests.classList.add('active');
+    requests.classList.add('show');
+
+  }else{
+    console.log('----------btn----------------');
+    activeLinkElement.classList.add('active');
+    pending_activeLink.classList.remove('active');
+
+    requests.classList.remove('active');
+    requests.classList.remove('show');
+
+    drivers.classList.add('active');
+    drivers.classList.add('show');
+  }
+});
+
+
+// function driverButtons(page) {
+//   const searchInputValue = document.getElementById('searchInput').value;
+//   const url = `/admin/renderDriver?page=${page}&searchInput=${searchInputValue}`;
+  
+//     // if (activeDiv) {
+//     //   activeDiv.classList.add('active'); // Reapply the "active" class
+//     // }
+//   window.location.href = url;
+// }
+
+// function driverPending_pageButtons(pending_page) {
+//   const searchInputValue = document.getElementById('searchInput').value;
+//   const url = `/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}`;
+
+//   const activeNavLink = document.querySelector('.nav-link.active');
+//   console.log('---------activeNavLink------------',activeNavLink);
+
+//   window.location.href = url;
+
+//   if (activeNavLink) {
+//     activeNavLink.classList.add('active'); // Reapply the "active" class
+//   }
+// }
+
+
+
+
+
+
+
 
 // const originalData = {};
 // const dataTableInstances = {};

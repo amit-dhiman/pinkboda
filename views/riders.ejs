@@ -38,6 +38,7 @@
       <!------------ rider section is Starts here -------------->
 
       <div class="right-sidebar1">
+        <%- include ('./partials/dashboard.ejs') %>
         <div class="riders_tab">
           <h2>Riders</h2>
           <div class="tab-content table-responsive">
@@ -72,7 +73,7 @@
                       <td><%=rider.gender %></td>
                       <td><%=rider.total_rides %></td>
                       <td><%=formattedDate %></td>
-                      <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>')"><%= rider.action %></button></td>
+                      <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>','<%= rider.action %>')"><%= rider.action %></button></td>
                       <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>')" ><%= rider.action %></button></td> -->
                       <td><%=rider.mobile_number %></td>
                     </tr>
@@ -187,8 +188,9 @@
 //   }
 // });
 
-function updateButton(button, riderId) {
-  if (confirm("Are you sure you want to change this users action?")) {
+function updateButton(button, riderId,riderAction) {
+  let act = riderAction == 'Enable' ? 'Disable' : 'Enable';
+  if (confirm(`Are you sure you want to ${act} this rider ?`)) {
     fetch(`/admin/actionOnUser/${riderId}`)
     .then(response => {
       if (!response.ok) {
@@ -198,6 +200,9 @@ function updateButton(button, riderId) {
     })
     .then(newButtonText => {
       button.textContent = newButtonText.data;
+      const newAction = newButtonText.data;
+      const newAct = newAction === 'Enable' ? 'Disable' : 'Enable';
+      button.setAttribute('onclick', `updateButton(this, '${riderId}', '${newAction}')`);
     })
     .catch(error => {
       console.error('Error occurred while updating the button:', error);
@@ -205,7 +210,6 @@ function updateButton(button, riderId) {
   } else {
     console.log('-----------------cancel--------------')
   }
-  document.getElementById("demo").innerHTML = text;
 }
 
 
