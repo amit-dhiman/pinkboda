@@ -97,7 +97,7 @@ img.img-profile {
     height: 50px;
     border-radius: 50px;
     object-fit: cover;
-    margin-left: 2rem;
+    margin-left: 1rem;
 }
 
 .dropdown-menu.dropdown-menu-end.show {
@@ -398,7 +398,7 @@ ul.nav.nav-tabs.driver {
 button.btn.btn-info.accept {
     background: #E40984;
     border-color: #E40984;
-    padding: 4px 15px;
+    padding: 4px 9px;
     font-size: 14px;
     color: #fff;
     border-radius: 9px;
@@ -407,11 +407,11 @@ button.btn.btn-info.accept {
 button.btn.btn-info.reject {
     background: #E7E7E7;
     border-color: #E7E7E7;
-    padding: 4px 15px;
+    padding: 4px 12px;
     font-size: 14px;
     color: #000;
     border-radius: 9px;
-    margin-left: -2.4rem;
+    margin-left: -1em;
 }
 div#requests {
     margin-top: 1.5rem;
@@ -556,9 +556,9 @@ button.btn.btn-info.submit {
 }
 
 img.profile-pic {
-    width: 200px;
+    width: 160px;
     border-radius: 100px;
-    height: 200px;
+    height: 160px;
     position: relative;
     object-fit: cover;
 }
@@ -571,7 +571,7 @@ img.profile-pic {
 }
 
 .profile_txt {
-    margin-left: -5rem;
+    margin-left: -3rem;
 }
 
 .profile_txt h1 {
@@ -644,7 +644,7 @@ img.mail {
 img.camera-pic {
     position: absolute;
     top: 72%;
-    right: 84%;
+    right: 82%;
     width: 40px;
 }
 

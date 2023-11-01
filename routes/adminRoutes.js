@@ -39,13 +39,13 @@ router.get('/admin/renderRider', admin_auth, adminCtrl.renderRider);
 router.get('/admin/renderDriver', admin_auth, adminCtrl.renderDriver);
 // router.get('/admin/renderDriver', adminCtrl.renderDriver);
 
-
 router.get('/admin/actionOnDriver/:driverId', admin_auth, adminCtrl.actionOnDriver);
 router.get('/admin/actionOnUser/:riderId', admin_auth, adminCtrl.actionOnUser);
 
 router.get('/admin/pendingRequests', admin_auth, adminCtrl.pendingRequests);
 
 router.get('/admin/renderHelpSupport', admin_auth, adminCtrl.renderHelpSupport);
+// router.get('/admin/renderHelpSupport',  adminCtrl.renderHelpSupport);
 
 router.get('/admin/resolvedIssue/:issueId', admin_auth, adminCtrl.resolvedIssue); 
 

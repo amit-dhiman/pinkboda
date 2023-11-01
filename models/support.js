@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Supports = sequelize.define('supports', {
 
-    id: {type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
+    id: {type:DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
 
     email: { type: DataTypes.STRING },
     user_id:{ type: DataTypes.INTEGER, references:{model:'users',key:'id'}},

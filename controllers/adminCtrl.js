@@ -537,8 +537,8 @@ const renderRider = async (req, res) => {
       order: [['created_at', 'DESC']]
     });
 
-    const totalDrivers = await db.drivers.count({ where: whereCondition });
-    const totalPages = Math.ceil(totalDrivers / itemsPerPage);
+    const totalUsers = await db.users.count({ where: whereCondition });
+    const totalPages = Math.ceil(totalUsers / itemsPerPage);
     
     // console.log('------------totalPages---------------',totalPages);
     // console.log('------------search 2---------------',search);
@@ -547,7 +547,7 @@ const renderRider = async (req, res) => {
     res.render('riders', {
       getRiders: getRiders,
       userImageUrl: process.env.user_imageUrl_ejs,
-      getAdmin: req.session.admin || getAdmin,
+      getAdmin: req.session.admin,
       itemsPerPage,
       totalItems: getRiders.length,
       page,
@@ -557,10 +557,6 @@ const renderRider = async (req, res) => {
       totalDriversCount,
       totalRidersCount
     });
-    //    getDrivers: getDrivers,
-    //    getAdmin: req.session.admin,
-    //    driverImageUrl : process.env.driver_imageUrl_ejs
-
   } catch (err) {
     console.log('-----err------',err);
     return res.redirect('/admin/login')
@@ -649,13 +645,12 @@ const actionOnDriver = async (req, res) => {
     if (driver) {
       driver.action = driver.action === 'Enable' ? 'Disable' : 'Enable';
       await driver.save();
-      return res.status(200).send(driver.action);
-      // res.status(200).json({ message: 'Status toggled successfully', data:driver.action});
+      // res.status(200).send(driver.action);
+      res.status(200).json({ message: 'Status toggled successfully', data:driver.action});
     }
-    return alert('Driver not found');
   } catch (err) {
     console.log('---err---',err);
-    return res.render('login')
+    res.redirect('/admin/login')
   }
 };
 
@@ -668,11 +663,11 @@ const actionOnUser = async (req, res) => {
     if (rider) {
       rider.action = rider.action === 'Enable' ? 'Disable' : 'Enable';
       await rider.save();
-      res.status(200).json({ message: 'Status toggled successfully', data:rider.action  });
+      res.status(200).json({ message: 'Status toggled successfully', data:rider.action });
     }
   } catch (err) {
     console.log('---err---',err);
-    res.render('login')
+    res.redirect('/admin/login')
   }
 };
 
@@ -705,9 +700,9 @@ const pendingRequests = async (req, res) => {
   }
 };
 
-
 // const renderHelpSupport = async (req, res) => {
 //   try {
+//     console.log('----------req.session.admin-----------',req.session.admin);
 //     const usersData = await libs.getAllData(db.supports,{
 //       where: {user_id: {[Op.gt]: 0}},
 //       include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
@@ -730,40 +725,81 @@ const pendingRequests = async (req, res) => {
 //      getAdmin: req.session.admin
 //     });
 //   } catch (err) {
+//     console.log('--------err---------',err);
 //     res.redirect("/admin/login")
 //   }
 // };
 
 
+// working in this
 
 const renderHelpSupport = async (req, res) => {
-  try {
-    const usersData = await libs.getAllData(db.supports,{
-      where: {user_id: {[Op.gt]: 0}},
-      include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
-    });
-    
-    const driversData = await libs.getAllData(db.supports,{
-      where: {driver_id: {[Op.gt]: 0}},
-      include: [{model: db.drivers,attributes:["id","username","profile_image","mobile_number"]}],
-    });
-    
-    // For example, combine usersData and driversData into a single array
-    const combinedData = usersData.concat(driversData);
-    combinedData.sort((a, b) => b.created_at - a.created_at);
-       
-    // res.status(200).json({message:'help support data',
-    res.render('help&support',{
-     supportData: combinedData,
-     driverImageUrl : process.env.driver_imageUrl_ejs,
-     userImageUrl: process.env.user_imageUrl_ejs,
-     getAdmin: req.session.admin
-    });
-  } catch (err) {
-    console.log('--------err---------',err);
-    res.redirect("/admin/login")
+try {
+  let search = req.query.searchInput || '';              // Get search input value
+
+  console.log('----------req.body----------',req.body);
+  console.log('----------req.query--------',req.query);
+  console.log('------------search 1---------------',search);
+
+  const page =  parseInt(req.query.page) || 1;       // Current page
+  const itemsPerPage = 10;                          // Number of items per page
+  const offset = (page - 1) * itemsPerPage;        // Calculate offset for pagination
+
+  // const whereCondition = search ? {username:{[Op.like]:`%${search}%`}}:{};
+  const whereCondition = {};
+  console.log('-----------whereCondition------------',whereCondition);
+
+  let query= {
+    include: [{
+        model: db.users,
+        attributes: ["id", "username", "image", "mobile_number"],
+        required: false,                                       // Use "required: false" to make it a LEFT JOIN
+        where: {username: {[Op.like]: `%${search}%`}},
+      },
+      {
+        model: db.drivers,
+        attributes: ["id", "username", "profile_image", "mobile_number"],
+        required: false,                                        // Use "required: false" to make it a LEFT JOIN
+        where: {username: {[Op.like]: `%${search}%`}},
+      },
+    ],
+    where: {
+      [Op.or]: [{'$user.username$': {[Op.ne]: null}},{'$driver.username$': {[Op.ne]: null}}],
+    },
+    offset,
+    limit: itemsPerPage,
+    order: [['created_at', 'DESC']],
   }
+  const supportData = await await libs.getAllData(db.supports,query);
+  delete query.offset;
+  delete query.limit;
+  delete query.order;
+  const totalUsers = await db.supports.count(query);
+  const totalPages = Math.ceil(totalUsers / itemsPerPage);
+  console.log('------------totalUsers---------------',totalUsers);
+  console.log('------------totalPages---------------',totalPages);
+  console.log('------------totalPages---------------',totalPages);
+  
+  // res.status(200).json({message:'help support data',
+    res.render('help&support', {
+    supportData: supportData,
+    driverImageUrl: process.env.driver_imageUrl_ejs,
+    userImageUrl: process.env.user_imageUrl_ejs,
+    getAdmin: req.session.admin,
+    page,
+    search,
+    totalPages,
+  });
+
+} catch (err) {
+  console.log('--------err---------', err);
+  return res.status(200).json({err})
+  res.redirect('/admin/login');
+}
 };
+
+
+
 
 
 const resolvedIssue = async (req, res) => {

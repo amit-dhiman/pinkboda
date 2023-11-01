@@ -102,7 +102,7 @@ const login = async(req,res) => {
 
       return SUCCESS.DEFAULT(res,"login successfully", token)
     }
-    res.status(400).json({code:400,message:"your previous request is null check db"})
+    res.status(400).json({code:400,message:"your previous request is null check database"})
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res, err);
   }
@@ -397,19 +397,19 @@ const reportOnUser = async (req, res) => {
 };
 
 const support = async (req, res) => {
-    try {
-      let data= {
-        driver_id: req.creds.id,
-        email: req.body.email,
-        message: req.body.message,
-      }
-      let saveSupport = await libs.createData(db.supports, data);
-  
-      res.status(200).json({code:200,message:"Your messages has been sent successfully"});
-    } catch (err) {
-        console.log('-----err-----------',err);
-      ERROR.INTERNAL_SERVER_ERROR(res,err);
+  try {
+    let data= {
+      driver_id: req.creds.id,
+      email: req.body.email,
+      message: req.body.message,
     }
+    let saveSupport = await libs.createData(db.supports, data);
+
+    res.status(200).json({code:200,message:"Your messages has been sent successfully"});
+  } catch (err) {
+    console.log('-----err-----------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
 };
 
 const getNotifications = async (req, res) => {
