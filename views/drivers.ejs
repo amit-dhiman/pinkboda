@@ -235,7 +235,7 @@
    
 function updatePendingReq(button, driverId,action) {
 
-  // if(confirm(`This driver is being ${action}`)){
+  if(confirm(`This driver is being ${action}`)){
     fetch(`/admin/pendingRequests?pendingAction=${action}&driverId=${driverId}`)
     .then(response => {
       if (!response.ok) {
@@ -248,7 +248,7 @@ function updatePendingReq(button, driverId,action) {
     }).catch(error => {
       console.error('Error occurred while updating the button:', error);
     })
-  // }
+  }
 }
 
 
@@ -278,7 +278,6 @@ async function driverPending_pageButtons(pending_page) {
   window.location.href = url;
 }
   
-
 
 document.addEventListener('DOMContentLoaded', function() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -316,195 +315,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 const iconTrigger = document.getElementById("searchIcon");
-  const searchButton = document.getElementById("searchButton");
+const searchButton = document.getElementById("searchButton");
 
-  iconTrigger.addEventListener("click", () => {
-    searchButton.click();
-  });
+iconTrigger.addEventListener("click", () => {
+  searchButton.click();
+});
   
-
-// function driverButtons(page) {
-//   const searchInputValue = document.getElementById('searchInput').value;
-//   const url = `/admin/renderDriver?page=${page}&searchInput=${searchInputValue}`;
-  
-//     // if (activeDiv) {
-//     //   activeDiv.classList.add('active'); // Reapply the "active" class
-//     // }
-//   window.location.href = url;
-// }
-
-// function driverPending_pageButtons(pending_page) {
-//   const searchInputValue = document.getElementById('searchInput').value;
-//   const url = `/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}`;
-
-//   const activeNavLink = document.querySelector('.nav-link.active');
-//   console.log('---------activeNavLink------------',activeNavLink);
-
-//   window.location.href = url;
-
-//   if (activeNavLink) {
-//     activeNavLink.classList.add('active'); // Reapply the "active" class
-//   }
-// }
-
-
-
-
-
-
-
-
-// const originalData = {};
-// const dataTableInstances = {};
-
-// document.addEventListener("DOMContentLoaded", function() {
-//   // Initialize all DataTables
-//   const tableIds = ["example", "example1"];
-
-//   tableIds.forEach(tableId => {
-//     const table = document.getElementById(tableId);
-//     if (table) {
-//       const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
-//       originalData[tableId] = Array.from(tableRows);
-
-//       const shouldShowPagination = tableRows.length > 10;
-
-//       const dataTableOptions = {
-//         columnDefs: [{ orderable: false, targets: 4 }],
-//         language: {
-//           paginate: {
-//             previous: '<span class="fa fa-chevron-left dataTables_paginate" id="spanL"></span>',
-//             next: '<span class="fa fa-chevron-right dataTables_paginate" id="spanR"></span>'
-//           },
-//           lengthMenu: 'Display <select class="form-control input-sm">' +
-//             '<option value="10">10</option>' +
-//             '<option value="20">20</option>' +
-//             '<option value="30">30</option>' +
-//             '<option value="40">40</option>' +
-//             '<option value="50">50</option>' +
-//             '<option value="-1">All</option>' +
-//             '</select> results'
-//         }
-//       };
-
-//       if (!shouldShowPagination) {
-//         dataTableOptions.paging = false;
-//       }
-//       dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
-//     }
-//   });
-
-//   // Add an input event listener to the shared search input
-//   // searchInput.addEventListener('input', function () {
-//   //   const searchValue = searchInput.value.toLowerCase();
-    
-//   //   tableIds.forEach(tableId => {
-//   //     console.log('---------tableId 1-----------',tableId);
-
-//   //     const matchingRows = originalData[tableId].filter(row => {
-//   //       const fullNameCell = row.querySelector('td:nth-child(2)');
-//   //       return fullNameCell.textContent.toLowerCase().includes(searchValue);
-//   //     });
-
-//   //     if (dataTableInstances[tableId]) {
-//   //       console.log('---------tableId 2-----------',tableId);
-//   //       const paginationContainer = document.querySelector(`.dataTables_paginate`);
-//   //       // const paginationContainer2 = document.getElementsByClassName("spans")
-//   //       console.log('---------paginationContainer-----------',paginationContainer);
-        
-//   //       dataTableInstances[tableId].clear();
-//   //       dataTableInstances[tableId].rows.add(matchingRows);
-//   //       dataTableInstances[tableId].draw();
-        
-//   //       console.log('---------length-----------',matchingRows.length);
-        
-//   //       if (matchingRows.length <= 10) {
-//   //         paginationContainer.style.display = 'none';
-//   //       } else {
-//   //         paginationContainer.style.display = 'block';
-//   //       }
-
-//   //     }
-//   //   });
-//   // });
-// });
-
-
-
-// const searchInput = document.getElementById("searchInput");
-
-// const originalData = {};
-// const dataTableInstances = {};
-
-// document.addEventListener("DOMContentLoaded", function() {
-//   // Initialize all DataTables
-//   const tableIds = ["example", "example1"];
-
-//   tableIds.forEach(tableId => {
-//     const table = document.getElementById(tableId);
-//     if (table) {
-//       const tableRows = document.querySelectorAll(`#${tableId} .tabl_size`);
-//       originalData[tableId] = Array.from(tableRows);
-
-//       const shouldShowPagination = tableRows.length > 10;
-
-//       const dataTableOptions = {
-//         columnDefs: [{ orderable: false, targets: 4 }],
-//         language: {
-//           paginate: {
-//             paginate: shouldShowPagination,
-//             previous: '<span class="fa fa-chevron-left dataTables_paginate"></span>',
-//             next: '<span class="fa fa-chevron-right dataTables_paginate"></span>'
-//           },
-//           lengthMenu: 'Display <select class="form-control input-sm">' +
-//             '<option value="10">10</option>' +
-//             '<option value="20">20</option>' +
-//             '<option value="30">30</option>' +
-//             '<option value="40">40</option>' +
-//             '<option value="50">50</option>' +
-//             '<option value="-1">All</option>' +
-//             '</select> results'
-//         }
-//       };
-//       if (!shouldShowPagination) {
-//       // If there are 10 or fewer rows, disable pagination
-//       dataTableOptions.paging = false;
-//     }
-//     dataTableInstances[tableId] = new DataTable(table, dataTableOptions);
-//     }
-//   });
-
-//   // Add an input event listener to the shared search input
-//   searchInput.addEventListener('input', function () {
-//     const searchValue = searchInput.value.toLowerCase();
-    
-//     // Iterate through each table
-//     tableIds.forEach(tableId => {
-//       const matchingRows = originalData[tableId].filter(row => {
-//         const fullNameCell = row.querySelector('td:nth-child(2)');
-//         return fullNameCell.textContent.toLowerCase().includes(searchValue);
-//       });
-
-//       // Clear and update the specific DataTable for this table
-//       if (dataTableInstances[tableId]) {
-//         dataTableInstances[tableId].clear();
-//         dataTableInstances[tableId].rows.add(matchingRows);
-//         dataTableInstances[tableId].draw();
-
-//         const numberOfVisibleRecords = dataTableInstances.rows({ search: 'applied' }).count();
-//         const paginationContainer = document.querySelector('.dataTables_paginate');
-
-//         if (numberOfVisibleRecords <= 10) {
-//           // Hide the pagination controls
-//           paginationContainer.style.display = 'none';
-//         } else {
-//           // Show the pagination controls
-//           paginationContainer.style.display = 'block';
-//         }
-//       }
-//     });
-//   });
-// });
 
 </script>
 </html>
