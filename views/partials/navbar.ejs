@@ -9,10 +9,10 @@
 
 <div id="searchbar" class="col-md-8 col-12">
   <div class="search-bar">
-    <img src="/images/search.png" />
-    <form  id="searchForm" onsubmit="driverButtons(); return false;">
+    <img id="searchIcon" src="/images/search.png" />
+    <form id="searchForm" onsubmit="driverButtons(); return false;">
       <input type="search" id="searchInput" class="form-control search" name="searchInput" placeholder="Search" value="<%= search %>"/>
-      <button type="submit">Search</button>
+      <button id="searchButton" type="submit" style="display: none;" >Search</button>
     </form>
   </div>
 </div>
@@ -68,6 +68,10 @@
     <li class="nav-item dropdown">
       <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><%= getAdmin.full_name %></a>
       <div class="dropdown-menu dropdown-menu-end">
+        <div class="locker_img d-flex justify-content-center align-items-center">
+          <img src="/images/profile.png" />
+          <a href="/admin/renderProfile" class="dropdown-item">Profile</a>
+        </div>
         <div class="locker_img d-flex justify-content-center align-items-center">
           <img src="/images/lock.png" />
           <a href="/admin/getChangePasswordPage" class="dropdown-item">Change Password</a>

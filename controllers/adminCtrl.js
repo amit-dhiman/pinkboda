@@ -22,6 +22,8 @@ const addAdmin = async(req, res) => {
 const getloginPage = async (req, res) => {
   try {
     console.log('---------req.cookies getLogin---------',req.cookies);
+    console.log('---------req query--------',req.query);
+    console.log('---------req body--------',req.body);
     
     if(req.cookies.pinkbodaToken){
       const pinkbodaToken = req.cookies.pinkbodaToken;
@@ -30,11 +32,10 @@ const getloginPage = async (req, res) => {
         const email = pinkbodaToken.email;
         const password = pinkbodaToken.password;
         console.log('------------render---------');
-        res.render('login',{email: email, password: password});
+        res.render('login',{email: email, password: password, message: req.query.message|| ""});   //
         return;
       }
     }
-
     // if (pinkbodaToken) {
     //   console.log('---------req.cookies getLogin---------',req.cookies);
     //   const user = await libs.getData(db.admins,{where:{access_token: pinkbodaToken}});
@@ -43,7 +44,7 @@ const getloginPage = async (req, res) => {
     //     return;
     //   }
     // }
-    res.render('login',{email:'',password:''});
+    res.render('login',{email:'',password:'',message: req.query.message || ""});
   } catch (err) {
     console.log('----err----',err);
     return res.redirect('/admin/login');
@@ -56,33 +57,28 @@ const login = async(req, res) => {
     // console.log('----------body---post----------',req.body);
     // console.log('----------cookies 1----------',req.cookies);
     const {email,password,rememberMe} = req.body;
-    
     const getData = await libs.getData(db.admins,{where:{email:email}});
     if (getData) {
       let checkPswrd = await commonFunc.compPassword(password, getData.password)
       if(!checkPswrd){
         if(getData.password != password){
           // return res.status(400).json({code:400,message:"Incorrect Password"})
-          // alert('Incorrect Password')
-          return res.redirect('/admin/login');
+          return res.redirect('/admin/login?message=Incorrect_Password');
         }
       }
       req.session.admin = getData.toJSON();
       req.session.role = "admin";
       // const token = await commonFunc.generateAccessToken(getData,{email:email},process.env.admin_secretKey);
-
       if (rememberMe) {
-        // console.log('----------token----------',token);
-        res.cookie('pinkbodaToken', {email:email,password:password});
+        res.cookie('pinkbodaToken', {email:email, password:password});
       }else{
         res.clearCookie('pinkbodaToken');
       }
-      res.redirect('/admin/renderIndex');
-      // res.redirect('/admin/renderDriver');
+      res.redirect('/admin/renderRider');
       return;
     } 
     else {
-      return res.redirect('/admin/login');
+      return res.redirect('/admin/login?message=Email doesnt exist');
     }
   } catch (err) {
     console.log('-----log err-----',err);
@@ -151,7 +147,7 @@ const editProfile = async (req, res,next) => {
   } catch (err) {
     console.log('-----err-----',err);
     if(req.file){ fs.unlink(req.file.path, (err)=>{if (err) return})}
-    return res.redirect('/admin/login');
+    return res.redirect('/admin/login',{message:""});
     ERROR.ERROR_OCCURRED(res, err);
   }
 };
@@ -159,9 +155,7 @@ const editProfile = async (req, res,next) => {
 
 const getChangePasswordPage = async (req, res) => {
   try {
-    
-    res.render('change_password',{getAdmin:req.session.admin})
-
+    res.render('change_password',{getAdmin:req.session.admin, message: req.query.message || ""})
   } catch (err) {
     console.log('-------er-----',err);
     return res.redirect('/admin/login');
@@ -175,8 +169,7 @@ const changePassword = async (req, res) => {
     // const userId = req.creds.id;
 
     if(newPassword != confirmPassword){
-      alert('old password and new password doesnt matched')
-      return res.redirect('/admin/getChangePasswordPage');
+      return res.redirect('/admin/getChangePasswordPage?message=New password and Confirm password doesnt match');
     }
 
     const getData = await libs.getData(db.admins, {});
@@ -184,18 +177,17 @@ const changePassword = async (req, res) => {
     const passwordMatches = await commonFunc.compPassword(oldPassword,getData.password);
     if(!passwordMatches){
       if(getData.password != oldPassword){
-        alert("password doesn't match")
-        return res.redirect('/admin/getChangePasswordPage');
+        return res.redirect('/admin/getChangePasswordPage?message=Incorrect Password');
       }
     }
     let newhashPassword = await commonFunc.securePassword(newPassword);
 
-    await libs.updateData(getData, {password:newhashPassword});
+    await libs.updateData(getData, {password: newhashPassword});
 
-    return res.redirect('/admin/getChangePasswordPage')
+    return res.redirect('/admin/getChangePasswordPage?message=Password changed successfully')
     // return res.status(200).json({code:200,data: upatedData});
   } catch (err) {
-    return res.redirect('/admin/getChangePasswordPage')
+    return res.redirect('/admin/getChangePasswordPage?message=""')
   }
 };
 
@@ -220,6 +212,7 @@ const forgotPassword = async (req, res) => {
 //   }
 };
 
+
 const logout = async (req, res) => {
   try {
     if (req.session.admin) {
@@ -229,8 +222,7 @@ const logout = async (req, res) => {
           res.redirect('/admin/renderProfile');
         } else {
           // res.json({ message: 'Logout successful' });
-          // alert('Logout successful')
-          return res.redirect('/admin/login');
+          return res.redirect('/admin/login?message=Logout successful');
         }
       });
     } else {return res.redirect('/admin/login')}
@@ -494,8 +486,7 @@ const renderIndex = async (req, res) => {
     console.log('-----err-------',err);
     return res.redirect('/admin/login')
   }
-  };
-
+};
 
 
 // const renderRider = async (req, res) => {
@@ -592,7 +583,7 @@ const renderDriver = async (req, res) => {
 
     const page =  parseInt(req.query.page) || 1;                        // Current page
     let pending_page =  parseInt(req.query.pending_page) || 1;          // Current pending_page
-    const itemsPerPage = 3;                                             // Number of items per page
+    const itemsPerPage = 10;                                             // Number of items per page
     const offset = (page - 1) * itemsPerPage;                           // Calculate offset for pagination
     let pending_page_offset = (pending_page - 1) * itemsPerPage;        // Calculate offset for pagination
 
@@ -715,36 +706,6 @@ const pendingRequests = async (req, res) => {
 };
 
 
-const renderHelpSupport = async (req, res) => {
-  try {
-    const usersData = await libs.getAllData(db.supports,{
-      where: {user_id: {[Op.gt]: 0}},
-      include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
-    });
-    
-    const driversData = await libs.getAllData(db.supports,{
-      where: {driver_id: {[Op.gt]: 0}},
-      include: [{model: db.drivers,attributes:["id","username","profile_image","mobile_number"]}],
-    });
-    
-    // For example, combine usersData and driversData into a single array
-    const combinedData = usersData.concat(driversData);
-    combinedData.sort((a, b) => b.created_at - a.created_at);
-       
-    // res.status(200).json({message:'help support data',
-    res.render('help&support',{
-     supportData: combinedData,
-     driverImageUrl : process.env.driver_imageUrl_ejs,
-     userImageUrl: process.env.user_imageUrl_ejs,
-     getAdmin: req.session.admin
-    });
-  } catch (err) {
-    res.redirect("/admin/login")
-  }
-};
-
-
-
 // const renderHelpSupport = async (req, res) => {
 //   try {
 //     const usersData = await libs.getAllData(db.supports,{
@@ -772,6 +733,37 @@ const renderHelpSupport = async (req, res) => {
 //     res.redirect("/admin/login")
 //   }
 // };
+
+
+
+const renderHelpSupport = async (req, res) => {
+  try {
+    const usersData = await libs.getAllData(db.supports,{
+      where: {user_id: {[Op.gt]: 0}},
+      include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
+    });
+    
+    const driversData = await libs.getAllData(db.supports,{
+      where: {driver_id: {[Op.gt]: 0}},
+      include: [{model: db.drivers,attributes:["id","username","profile_image","mobile_number"]}],
+    });
+    
+    // For example, combine usersData and driversData into a single array
+    const combinedData = usersData.concat(driversData);
+    combinedData.sort((a, b) => b.created_at - a.created_at);
+       
+    // res.status(200).json({message:'help support data',
+    res.render('help&support',{
+     supportData: combinedData,
+     driverImageUrl : process.env.driver_imageUrl_ejs,
+     userImageUrl: process.env.user_imageUrl_ejs,
+     getAdmin: req.session.admin
+    });
+  } catch (err) {
+    console.log('--------err---------',err);
+    res.redirect("/admin/login")
+  }
+};
 
 
 const resolvedIssue = async (req, res) => {

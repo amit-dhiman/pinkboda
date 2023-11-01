@@ -3,28 +3,28 @@
 
 
     font-family: PoppinsLight;
-    src: url(../../uploads/fonts/PoppinsLight.ttf);
+    src: url(../../images/fonts/PoppinsLight.ttf);
 
 }
 
 @font-face {
     font-family: PoppinsMedium;
-    src: url(../../uploads/fonts/PoppinsMedium.ttf);
+    src: url(../../images/fonts/PoppinsMedium.ttf);
 }
 
 @font-face {
     font-family: PoppinsRegular;
-    src: url(../../uploads/fonts/PoppinsRegular.ttf);
+    src: url(../../images/fonts/PoppinsRegular.ttf);
 }
 
 @font-face {
     font-family: PoppinsSemiBold;
-    src: url(../../uploads/fonts/PoppinsSemiBold.ttf);
+    src: url(../../images/fonts/PoppinsSemiBold.ttf);
 }
 
 @font-face {
     font-family: Begum-W03-Bold-1;
-    src: url(../../uploads/fonts/Begum-W03-Bold-1.ttf);
+    src: url(../../images/fonts/Begum-W03-Bold-1.ttf);
 }
 
 
@@ -257,6 +257,7 @@ tr.tabl_size th {
     background: #fff;
     border-radius: 17px;
     padding: 15px 15px;
+    margin-top: 2rem;
 }
 
 .right-sidebar1 {
@@ -555,9 +556,9 @@ button.btn.btn-info.submit {
 }
 
 img.profile-pic {
-    width: 160px;
+    width: 200px;
     border-radius: 100px;
-    height: 160px;
+    height: 200px;
     position: relative;
     object-fit: cover;
 }
@@ -570,7 +571,7 @@ img.profile-pic {
 }
 
 .profile_txt {
-    margin-left: -3rem;
+    margin-left: -5rem;
 }
 
 .profile_txt h1 {
@@ -1560,4 +1561,32 @@ input[type=checkbox]:checked {
     font-family: var(--fontregular);
     padding: 3px 69px;
     text-align: center;
+}
+
+ul.pagination {
+    border: 2px solid #a0a0a0;
+    /* padding: 2px 0px; */
+    border-radius: 8px;
+    width: fit-content;
+    max-width: 100%;
+}
+ul.pagination a {
+    padding: 11px 11px;
+    font-size: 18px;
+    border-right: 2px solid #a0a0a0;
+    color: #000;
+    text-decoration: none;
+}
+ul.pagination li {
+    padding: 10px 0px;
+}
+/* li.\"active\" {
+    z-index: 3;
+    background-color: #e40984;
+    border-color: #e40984;
+} */
+li.\"active\" a {
+    color: #fff;
+    background-color: #e40984;
+    border-color: #e40984;
 }

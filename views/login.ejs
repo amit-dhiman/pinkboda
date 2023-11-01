@@ -38,12 +38,16 @@
             <div class="mb-4">
               <input type="password" name="password" class="form-control pasword" id="password" placeholder="Password" value="<%= password || '' %>" required/>
             </div>
+            <div class="mb-4">
+              <% if (message) { %>
+                <p style="color: red;"><%= message %></p>
+              <% } %> 
+            </div>
             <div class="mb-5 d-flex">
               <div class="remember d-flex">
                 <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe"/>
                 <h3 ><label for="rememberMe">Remember me</label></h3>    <!-- change h3 into label -->
               </div>
-
               <!-- <a class="forgot-link" href="/admin/forgotPassword">
                 <h2 class="forgot-pwd">Forgot Password?</h2>
               </a> -->

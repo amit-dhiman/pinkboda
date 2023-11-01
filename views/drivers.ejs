@@ -94,14 +94,15 @@
                 <div>
                   <ul class="pagination" id="myDrivers">
                     <% if (page > 1) { %>
-                      <li><a href="javascript:void(0);" onclick="driverButtons('<%= page - 1 %>')">Previous</a></li>
+                      <li><a href="javascript:void(0);" onclick="driverButtons('<%= page - 1 %>')"><i class="fa fa-chevron-left" aria-hidden="false"></i></a></li>
                     <% } %>
-                    <% for (let i = 1; i <= totalPages; i++) { %>
-                      <li <%= page === i ? 'class="active"' : '' %>
+                    <% if(totalPages > 1){%>
+                      <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li <%= page === i ? 'class="active"' : '' %>>
                           <a href="javascript:void(0);" onclick="driverButtons('<%= i %>')"><%= i %></a></li>
-                    <% } %>
+                      <% }} %>
                     <% if (page < totalPages) { %>
-                      <li><a href="javascript:void(0);" onclick="driverButtons('<%= page + 1 %>')">Next</a></li>
+                      <li><a href="javascript:void(0);" onclick="driverButtons('<%= page + 1 %>')"><i class="fa fa-chevron-right" aria-hidden="false"></i></a></li>
                     <% } %>
                   </ul>
                 </div>
@@ -153,20 +154,25 @@
                     <% } %>
                   </tbody>
                 </table>
+
                 <div>
                   <ul class="pagination" id="mypendingDrivers">
                     <% if (pending_page > 1) { %>
-                      <li><a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= pending_page - 1 %>')">Previous</a></li>
+                      <li><a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= pending_page - 1 %>')"><i class="fa fa-chevron-left" aria-hidden="false"></i></a></li>
                     <% } %>
-                    <% for (let i = 1; i <= total_pendingPages; i++) { %>
-                      <li <%= pending_page === i ? 'class="active"' : '' %>
-                          <a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= i %>')"><%= i %></a></li>
+                    <% if(total_pendingPages > 1){%>
+                      <% for (let i = 1; i <= total_pendingPages; i++) { %>
+                        <li <%= pending_page === i ? 'class="active"' : '' %>>
+                          <a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= i %>')"> <%= i %></a>
+                        </li>
+                      <% } %>
                     <% } %>
                     <% if (pending_page < total_pendingPages) { %>
-                      <li><a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= pending_page + 1 %>')">Next</a></li>
+                      <li><a href="javascript:void(0);" onclick="driverPending_pageButtons('<%= pending_page + 1 %>')"><i class="fa fa-chevron-right" aria-hidden="false"></i></a></li>
                     <% } %>
                   </ul>
                 </div>
+
               </div>
             </div>
           </div>
@@ -248,7 +254,6 @@ function updatePendingReq(button, driverId,action) {
 
 function driverButtons(page) {
   const searchInputValue = document.getElementById('searchInput').value;
-  
   const activeNavLink = document.querySelector('.nav-link.active');
   // console.log('---------activeNavLink btn------------',activeNavLink);
 
@@ -258,16 +263,10 @@ function driverButtons(page) {
   }
   const url = `/admin/renderDriver?page=${page}&searchInput=${searchInputValue}&activeLink=${act}`;
   window.location.href = url;
-
-  // if (activeNavLink) {
-  //   console.log('--------------tn active-------------',activeNavLink);
-  //   activeNavLink.classList.add('active');
-  // }  
 }
 
 async function driverPending_pageButtons(pending_page) {
   const searchInputValue = document.getElementById('searchInput').value;
-
   const activeNavLink = document.querySelector('.nav-link.active');
   // console.log('---------activeNavLink Pending------------',activeNavLink);
 
@@ -276,19 +275,12 @@ async function driverPending_pageButtons(pending_page) {
     act = "pendingReq";
   }
   const url = `/admin/renderDriver?pending_page=${pending_page}&searchInput=${searchInputValue}&activeLink=${act}`;
-
   window.location.href = url;
-
-  // if (activeNavLink) {
-  //   console.log('-----------------Pend active 1------------------',activeNavLink);
-  //   // console.log('----------Pend active- 2 --------',activeNavLink);
-  //   activeNavLink.classList.add('active');
-  // }
-
 }
   
-document.addEventListener('DOMContentLoaded', function() {
 
+
+document.addEventListener('DOMContentLoaded', function() {
   const urlParams = new URLSearchParams(window.location.search);
   const activeLink = urlParams.get('activeLink');
   const activeLinkElement = document.getElementById('myDriver');
@@ -322,6 +314,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+
+const iconTrigger = document.getElementById("searchIcon");
+  const searchButton = document.getElementById("searchButton");
+
+  iconTrigger.addEventListener("click", () => {
+    searchButton.click();
+  });
+  
 
 // function driverButtons(page) {
 //   const searchInputValue = document.getElementById('searchInput').value;
