@@ -255,7 +255,7 @@ function driverButtons(page) {
 
   let act = null;
   if (activeNavLink) {
-    const activeTabId = activeTab.getAttribute('id');
+    const activeTabId = activeNavLink.getAttribute('id');
     console.log(`The tab with id '${activeTabId}' is active.`);
     if(activeNavLink == 'myPendingReq'){
       act = "pendingReq";
@@ -263,8 +263,8 @@ function driverButtons(page) {
       act= 'btnClass'
     }
   }
-
   const url = `/admin/renderDriver?page=${page}&searchInput=${searchInputValue}&activeLink=${act}`;
+  // console.log('---------url-----------',url);
   window.location.href = url;
 }
 
