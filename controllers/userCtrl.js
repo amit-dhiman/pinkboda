@@ -81,7 +81,7 @@ const numberLogin = async (req, res) => {
       return SUCCESS.DEFAULT(res, "logged in", token);
     }
     else {
-      res.status(400).json({ code: 400, message: "mobile number not found" })
+      res.status(404).json({ code: 404, message: "mobile number not found" })
     }
   } catch (err) {
     ERROR.ERROR_OCCURRED(res, err);
