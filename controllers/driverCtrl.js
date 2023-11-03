@@ -74,16 +74,16 @@ const login = async(req,res) => {
     const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
     console.log('-----2');
     if(!getData){
-      return res.status(400).json({code:400,message:"mobile number does't exist"})
+      return res.status(404).json({code:404,message:"mobile number does't exist"})
     }
     if(getData.is_admin_verified=="pending"){
-      return res.status(400).json({code:400,message:"your previous request is still pending"})
+      return res.status(202).json({code:202,message:"your previous request is still pending"})
     }
     if(getData.is_admin_verified=="rejected"){
       return res.status(400).json({code:400,message:"your previous request has been rejected"})
     }
     if(getData.action == "Disable"){
-      return res.status(400).json({ code: 400, message: "Your number is disabled by Admin" })
+      return res.status(403).json({ code: 403, message: "Your number is disabled by Admin" })
     }
 
     if(getData.is_admin_verified=="accepted"){
@@ -433,13 +433,12 @@ const getNotifications = async (req, res) => {
 };
 
 const clearNotifications = async (req, res) => {
-    try {
-      let getNotify = await libs.destroyData(db.notifications, {where:{driver_id: req.creds.id}});
-  
-      res.status(200).json({code:200,message:"Cleared All Notifications",data: getNotify});
-    } catch (err) {
-      ERROR.INTERNAL_SERVER_ERROR(res,err);
-    }
+  try {
+    let getNotify = await libs.destroyData(db.notifications, {where:{driver_id: req.creds.id}});
+    res.status(200).json({code:200,message:"Cleared All Notifications",data: getNotify});
+  } catch (err) {
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
 };
 
 const getMyRides = async (req, res) => {

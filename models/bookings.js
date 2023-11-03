@@ -35,25 +35,41 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       references: { model: 'drivers', key: 'id' },defaultValue: null
     },
-    created_at:{type: DataTypes.BIGINT,allowNull: true},
-    updated_at:{type: DataTypes.BIGINT,allowNull: true},
-    deleted_at: {type: DataTypes.BIGINT,allowNull: true},
-  },{
-    hooks: {
-      beforeValidate: (instance, options) => {
-      instance.created_at = +new Date(Date.now());
-      instance.updated_at = +new Date(Date.now());
-      },
-      beforeDestroy: (instance, options) => {
-        instance.deleted_at = +new Date(Date.now())
-      },
-    },
-    timestamps: true,
-    paranoid: true,
-    createdAt: 'created_at',
-    updatedAt: "updated_at",
-    deletedAt: 'deleted_at',
-  })
+
+    created_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    deleted_at: {type: DataTypes.DATE,defaultValue: null},
+    },{
+      timestamps: true,
+      paranoid: true,
+      createdAt: 'created_at',
+      updatedAt: "updated_at",
+      deletedAt: 'deleted_at',
+    })
+
+  //   created_at:{type: DataTypes.BIGINT,allowNull: true},
+  //   updated_at:{type: DataTypes.BIGINT,allowNull: true},
+  //   deleted_at: {type: DataTypes.BIGINT,allowNull: true},
+  // },{
+  //   hooks: {
+  //     beforeValidate: (instance, options) => {
+  //     instance.created_at = +new Date(Date.now());
+  //     instance.updated_at = +new Date(Date.now());
+  //     },
+  //     beforeDestroy: (instance, options) => {
+  //       instance.deleted_at = +new Date(Date.now())
+  //     },
+  //   },
+  //   timestamps: true,
+  //   paranoid: true,
+  //   createdAt: 'created_at',
+  //   updatedAt: "updated_at",
+  //   deletedAt: 'deleted_at',
+  // })
 
   return Bookings;
 }

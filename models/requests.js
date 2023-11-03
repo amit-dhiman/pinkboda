@@ -11,18 +11,33 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       // references:{model:'bookings'},
     },
-    created_at:{type: DataTypes.BIGINT},
-    updated_at:{type: DataTypes.BIGINT},
+    created_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    deleted_at: {type: DataTypes.DATE,defaultValue: null},
     },{
-    hooks: {
-      beforeValidate: (instance, options) => {
-      instance.created_at = +new Date(Date.now());
-      instance.updated_at = +new Date(Date.now());
-      }},
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-  })
+      timestamps: true,
+      paranoid: true,
+      createdAt: 'created_at',
+      updatedAt: "updated_at",
+      deletedAt: 'deleted_at',
+    })
+
+  //   created_at:{type: DataTypes.BIGINT},
+  //   updated_at:{type: DataTypes.BIGINT},
+  //   },{
+  //   hooks: {
+  //     beforeValidate: (instance, options) => {
+  //     instance.created_at = +new Date(Date.now());
+  //     instance.updated_at = +new Date(Date.now());
+  //     }},
+  //   timestamps: true,
+  //   createdAt: 'created_at',
+  //   updatedAt: 'updated_at',
+  // })
   return Request;
 }
 

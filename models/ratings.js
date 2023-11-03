@@ -19,30 +19,21 @@ module.exports = (sequelize, DataTypes) => {
     },
     
     star: { type: DataTypes.INTEGER, defaultValue:1},
-    created_at:{type: DataTypes.BIGINT},
-    updated_at:{type: DataTypes.BIGINT},
-    deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
+    created_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    deleted_at: {type: DataTypes.DATE,defaultValue: null},
     },{
-        hooks: {
-          beforeValidate: (instance, options) => {
-          instance.created_at = +new Date(Date.now());
-          instance.updated_at = +new Date(Date.now());
-          },
-          beforeDestroy: (instance, options) => {
-            instance.deleted_at = +new Date(Date.now())
-          },
-        },
-        timestamps: true,
-    paranoid: true,
-    createdAt: 'created_at',
-    updatedAt: "updated_at",
-    deletedAt: 'deleted_at',
-  })
+      timestamps: true,
+      paranoid: true,
+      createdAt: 'created_at',
+      updatedAt: "updated_at",
+      deletedAt: 'deleted_at',
+    })
 
-  // Ratings.beforeCreate((rating) => {
-  //   rating.created_at = moment().unix(); // Set createdAt to current timestamp in seconds
-  //   rating.updated_at = moment().unix(); // Set createdAt to current timestamp in seconds
-  // });
   // Users.hasMany(db, { foreignKey: 'user_id' });
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });
   return Ratings;

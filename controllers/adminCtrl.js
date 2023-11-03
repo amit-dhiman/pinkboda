@@ -681,7 +681,7 @@ const pendingRequests = async (req, res) => {
     if(pendingAction == 'accepted'){
       // send mail to the driver, admin accepted your signup request
 
-      updateRequest = await libs.findAndUpdate(db.drivers,driverId, {is_admin_verified:pendingAction,driving_status:'Online'});
+      updateRequest = await libs.findAndUpdate(db.drivers,driverId, {is_admin_verified:pendingAction,driving_status:'Online',action:"Enable"});
     }else{
       let getData= await libs.getData(db.drivers,{where:{id:driverId}});
 
@@ -703,10 +703,10 @@ const pendingRequests = async (req, res) => {
 // const renderHelpSupport = async (req, res) => {
 //   try {
 //     console.log('----------req.session.admin-----------',req.session.admin);
-//     const usersData = await libs.getAllData(db.supports,{
-//       where: {user_id: {[Op.gt]: 0}},
-//       include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
-//     });
+    // const usersData = await libs.getAllData(db.supports,{
+    //   where: {user_id: {[Op.gt]: 0}},
+    //   include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
+    // });
     
 //     const driversData = await libs.getAllData(db.supports,{
 //       where: {driver_id: {[Op.gt]: 0}},
@@ -797,8 +797,6 @@ try {
   res.redirect('/admin/login');
 }
 };
-
-
 
 
 

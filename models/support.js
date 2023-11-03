@@ -11,26 +11,20 @@ module.exports = (sequelize, DataTypes) => {
     issue_status:{type:DataTypes.ENUM("Resolved","Unselected"),defaultValue:"Unselected"},
    
     message: { type:DataTypes.STRING,defaultValue:1},
-    created_at:{type:DataTypes.BIGINT},
-    updated_at:{type:DataTypes.BIGINT},
-    deleted_at: {type:DataTypes.BIGINT,defaultValue:null},
+    created_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    deleted_at: {type: DataTypes.DATE,defaultValue: null},
     },{
-        hooks: {
-          beforeValidate: (instance, options) => {
-          instance.created_at = +new Date(Date.now());
-          instance.updated_at = +new Date(Date.now());
-          },
-          beforeDestroy: (instance, options) => {
-            instance.deleted_at = +new Date(Date.now())
-          },
-        },
-        timestamps: true,
-    paranoid: true,
-    createdAt: 'created_at',
-    updatedAt: "updated_at",
-    deletedAt: 'deleted_at',
-  })
-
+      timestamps: true,
+      paranoid: true,
+      createdAt: 'created_at',
+      updatedAt: "updated_at",
+      deletedAt: 'deleted_at',
+    })
   // Supports.beforeCreate((support) => {
   //   support.created_at = moment().unix(); // Set created_at to current timestamp in seconds
   //   support.updated_at = moment().unix(); // Set updated_at to current timestamp in seconds

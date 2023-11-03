@@ -525,9 +525,9 @@ const getNotifications = async (req, res) => {
     // let save = await libs.createData(db.notifications, data);
     // console.log('-----save------',save.toJSON());
 
-    let getNotify = await libs.getAllData(db.notifications, { where: { user_id: req.creds.id }, order: [['created_at', 'DESC']] });
+    let getNotify = await libs.getAllData(db.notifications,{where:{user_id: req.creds.id},order: [['created_at', 'DESC']]});
 
-    res.status(200).json({ code: 200, message: "get All Notifications", data: getNotify });
+    res.status(200).json({ code: 200, message: "Get All Notifications", data: getNotify });
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res, err);
   }
@@ -536,7 +536,7 @@ const getNotifications = async (req, res) => {
 
 const clearNotifications = async (req, res) => {
   try {
-    let getNotify = await libs.destroyData(db.notifications, { where: { user_id: req.creds.id } });
+    let getNotify = await libs.destroyData(db.notifications, {where: { user_id: req.creds.id } });
 
     res.status(200).json({ code: 200, message: "Cleared All Notifications", data: getNotify });
   } catch (err) {

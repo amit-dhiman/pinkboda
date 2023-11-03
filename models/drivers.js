@@ -40,37 +40,22 @@ module.exports = (sequelize, DataTypes) => {
     device_type:{type:DataTypes.ENUM("Android","Apple"),defaultValue:"Android"},
     device_token: { type: DataTypes.STRING },
 
-    // created_at:{type: DataTypes.BIGINT, defaultValue: function(){
-    //   return +new Date(Date.now());
-    // }},
-    // updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
-    //   return +new Date(Date.now());
-    // }},
-    created_at:{type: DataTypes.BIGINT},
-    updated_at:{type: DataTypes.BIGINT},
-    deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
-    },
-    {
-        hooks: {
-          beforeValidate: (instance, options) => {
-          instance.created_at = +new Date(Date.now());
-          instance.updated_at = +new Date(Date.now());
-          },
-          beforeDestroy: (instance, options) => {
-            instance.deleted_at = +new Date(Date.now())
-          },
-        },
-    timestamps: true,
-    paranoid: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
-    deletedAt: "deleted_at",
-  })
+    created_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
+      return +new Date(Date.now());
+    }},
+    deleted_at: {type: DataTypes.DATE,defaultValue: null},
+    },{
+      timestamps: true,
+      paranoid: true,
+      createdAt: 'created_at',
+      updatedAt: "updated_at",
+      deletedAt: 'deleted_at',
+    })
 
-  // Drivers.beforeCreate((driver) => {
-  //   driver.created_at = moment().unix();        // Set createdAt to current timestamp in seconds
-  //   driver.updated_at = moment().unix();        // Set createdAt to current timestamp in seconds
-  // });
+
 
   // Drivers.hasMany(db.bookings, { foreignKey: 'driver_id' });
   // Drivers.hasMany(Booking, { foreignKey: 'driver_id', as: 'booking_id' }); 

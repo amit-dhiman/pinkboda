@@ -25,19 +25,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       references: { model: 'users', key: 'id' },
     },
-    // created_at:{type: DataTypes.BIGINT,function(){
-    //   return new Date(Date.now());
-    // }},
     created_at:{type: DataTypes.BIGINT, defaultValue: function(){
       return +new Date(Date.now());
     }},
     updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
       return +new Date(Date.now());
     }},
-    deleted_at: {type: DataTypes.BIGINT,defaultValue: null},
+    deleted_at: {type: DataTypes.DATE,defaultValue: null},
     },{
-     timestamps: false
-  })
+      timestamps: true,
+      paranoid: true,
+      createdAt: 'created_at',
+      updatedAt: "updated_at",
+      deletedAt: 'deleted_at',
+    })
 
   return search_history;
 }
