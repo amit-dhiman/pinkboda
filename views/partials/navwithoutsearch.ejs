@@ -57,7 +57,9 @@
 
 <div class="col-md-3 col-7 d-flex justify-content-center align-items-center">
  <!--/uploads/admin/ -->
- <img class="img-profile" src="/uploads/admin/<%= getAdmin.profile_image %>" />  
+  <a href="/uploads/admin/<%= getAdmin.profile_image %>" target="_blank">
+    <img class="img-profile" src="/uploads/admin/<%= getAdmin.profile_image %>" />
+  </a>
   <ul class="nav navbar-nav ms-auto" style="width: 67%">
     <li class="nav-item dropdown">
       <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><%= getAdmin.full_name %></a>

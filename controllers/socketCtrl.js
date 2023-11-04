@@ -95,6 +95,7 @@ function setupSocketEvents(socket, io) {
 
 
 async function requestRide(riderPickupLocation, io) {
+  // console.log('--------------riderPickupLocation---------------',riderPickupLocation);
   let models = db.drivers;
   let modelsRequest = db.requests;
   try {
@@ -123,7 +124,7 @@ async function requestRide(riderPickupLocation, io) {
       // console.log("-------Here is driver socket id --in for loop----------------------------",driver);
       if (driver && driver.socket_id) {
         // Send a ride request to the driver
-        //console.log("Here we send request to driver====================");
+        // console.log("----Here we send request to driver====================");
 
         dataRequest = { request_id: riderPickupLocation.rideTimestamp, driver_id: driver.id, };
         
@@ -202,7 +203,7 @@ async function requestRide(riderPickupLocation, io) {
 // Function to accept a ride request (for drivers)
 async function acceptRideRequest(driver, io) {
   //const acceptingDriver = availableDrivers.find((driver) => driver.id === driverId);
-  //console.log("Here we have accpted od ============------------------+++++++++++++++++++++",driver);
+  console.log("-------------Here we have accpted od----------------+++++++++++++++++++++",driver);
   if (driver) {
     // Simulate accepting the ride request
     //console.log(`accepted the ride request!`);
@@ -427,32 +428,8 @@ async function cancelRideAfterAccept(data, io) {
   }
 
   // console.log("===========================End ride user ",responceUser);
-  // let models = db.bookings;
-  // let [ct , response] = await models.update({ booking_status: 'cancel',cancelled_by:data.type}, {
-  //   where: { id: data.bookingId }
-  // });
 
   let updateEndRide = await libs.findAndUpdate(db.bookings, data.bookingId, { booking_status: 'cancel', cancelled_by: data.type });
-
-  // console.log('-------------cancelRideAfterAccept-bookings--------------', updateEndRide);
-
-  let rideData = {
-    "pickup_long": updateEndRide.pickup_long,
-    "pickup_lat": updateEndRide.pickup_lat,
-    "drop_long": updateEndRide.drop_long,
-    "drop_lat": updateEndRide.drop_lat,
-    "pickup_address": updateEndRide.pickup_address,
-    "drop_address": updateEndRide.drop_address,
-    "vechile_type": "Bike",
-    "amount": updateEndRide.amount,
-    "ride_status": "Canceled",
-    "driver_id": updateEndRide.driver_id,
-    "user_id": updateEndRide.user_id,
-    "booking_id": updateEndRide.id,
-  }
-
-  let save = await libs.createData(db.myrides, rideData);
-  // console.log('------------save-----------', save);
 
   if (data.type == "User") {
     let notify_data = {
@@ -462,7 +439,7 @@ async function cancelRideAfterAccept(data, io) {
 
     Notify.sendNotifyToDriver(notify_data, responceUser.device_token)
 
-    notify_data.driver_id = rideData.driver_id;
+    notify_data.driver_id = updateEndRide.driver_id;
 
     let saveNotify = await libs.createData(db.notifications, notify_data)
     // console.log('-------saveNotify---------', saveNotify);
@@ -473,7 +450,7 @@ async function cancelRideAfterAccept(data, io) {
       message: `${responceUser.username} canceled your ride`,
     }
     Notify.sendNotifyToUser(notify_data, responceUser.device_token)
-    notify_data.user_id = rideData.user_id;
+    notify_data.user_id = updateEndRide.user_id;
 
     let saveNotify = await libs.createData(db.notifications, notify_data)
     // console.log('-------saveNotify---------', saveNotify);

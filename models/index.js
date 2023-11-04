@@ -18,7 +18,6 @@ db.chats = require('./chat')(sequelize, DataTypes);
 db.reports = require('./reports')(sequelize, DataTypes);
 db.ratings = require('./ratings')(sequelize, DataTypes);
 db.supports = require('./support')(sequelize, DataTypes);
-db.myrides = require('./myrides')(sequelize, DataTypes);
 db.offers = require('./offers')(sequelize, DataTypes);
 db.requests = require('./requests')(sequelize, DataTypes);
 
@@ -77,18 +76,6 @@ db.notifications.belongsTo(db.users,{foreignKey:"user_id"})
 db.notifications.belongsTo(db.drivers,{foreignKey:"driver_id"})
 db.notifications.belongsTo(db.bookings,{foreignKey:"booking_id"})
 
-
-
-// For user's, drivers, bookings & myrides  relationship
-
-db.users.hasMany(db.myrides, {foreignKey:"user_id"})                 // , as: "ratings"
-db.drivers.hasMany(db.myrides,{foreignKey:"driver_id"})             // , as: "ratings"
-db.bookings.hasMany(db.myrides,{foreignKey:"booking_id"})    // ,as: "allRatings"
-
-
-db.myrides.belongsTo(db.users,{foreignKey:"user_id"})
-db.myrides.belongsTo(db.drivers,{foreignKey:"driver_id"})
-db.myrides.belongsTo(db.bookings,{foreignKey:"booking_id"})
 
 
 // For user's, drivers, bookings & supports  relationship

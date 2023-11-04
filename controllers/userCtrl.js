@@ -547,25 +547,11 @@ const clearNotifications = async (req, res) => {
 
 const getMyRides = async (req, res) => {
   try {
-    // let data = {
-    //   "pickup_long": 76.717957,
-    //   "pickup_lat": 30.718521,
-    //   "drop_long": 20.655001,
-    //   "drop_lat": 25.569,
-    //   "pickup_address": "mohali",
-    //   "drop_address": "chandigarh",
-    //   "vechile_type": "Bike",
-    //   "amount": 10,
-    //   "ride_status": "Completed",
-    //   "user_id": req.creds.id,
-    //   "driver_id": 1,
-    //   "booking_id": 1,
-    // }
-    // // bookings me se data find kr k rides wali mw save krva do manually api se hi
-    // let save = await libs.createData(db.myrides,data);
-
-    let getRides = await libs.getAllData(db.myrides, {
-      where: { user_id: req.creds.id },
+    let getRides = await libs.getAllData(db.bookings, {
+      where: { user_id: req.creds.id,
+        booking_status: {
+        [Op.or]: ['completed', 'cancel'],
+      },},
       include: [{
         model: db.drivers,
         attributes: ['username', 'profile_image'],
@@ -575,12 +561,12 @@ const getMyRides = async (req, res) => {
 
     let arr = []
     for (let i = 0; i < getRides.length; i++) {
-      let getRating = await libs.getData(db.ratings, { where: { booking_id: getRides[i].booking_id } });
+      let getRating = await libs.getData(db.ratings,{where:{booking_id: getRides[i].id}});
       let jsonData = getRides[i].toJSON();
-      if (getRating) {
-        jsonData.star = getRating.star
-      }
-      jsonData.driver.profile_image = `${process.env.driver_image_baseUrl}${getRides[i].driver.profile_image}`
+      if (getRating) {jsonData.star = getRating.star}
+      if(jsonData.driver.profile_image){jsonData.driver.profile_image = `${process.env.driver_image_baseUrl}${getRides[i].driver.profile_image}`}
+      if(getRides[i].booking_status == 'completed'){ jsonData.booking_status = "Completed"}
+      if(getRides[i].booking_status == 'cancel'){ jsonData.booking_status = "Canceled"}
       arr.push(jsonData)
     }
 
@@ -590,12 +576,11 @@ const getMyRides = async (req, res) => {
   }
 };
 
-
 const getSingleRide = async (req, res) => {
   try {
     let booking_id = req.query.booking_id;
 
-    let getOneNotify = await libs.getData(db.myrides, { where: { user_id: req.creds.id, booking_id: booking_id } });
+    let getOneNotify = await libs.getData(db.bookings, { where: { user_id: req.creds.id, booking_id: booking_id } });
 
     let getDriverData = await libs.getData(db.drivers, { where: { id: getOneNotify.driver_id } });
 
@@ -614,17 +599,10 @@ const getSingleRide = async (req, res) => {
   }
 };
 
+
+
 const getOffers = async (req, res) => {
   try {
-    // let data = {
-    //   user_id:req.creds.id,
-    //   title:"Wow!",
-    //   message:"you have completed 20 rides. Get a free ride now"
-    // }
-
-    // let add = await libs.createData(db.offers,data);
-
-    // // let del = await libs.destroyData(db.offers,{where:{user_id:req.creds.id}})
 
     let getData = await libs.getAllData(db.offers, { where: { user_id: req.creds.id } });
     res.status(200).json({ code: 200, message: "users offer", data: getData });

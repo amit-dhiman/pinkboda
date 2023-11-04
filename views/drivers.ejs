@@ -73,14 +73,15 @@
                     <% for(let driver of getDrivers) { %>
                       <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class=""><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row" class=""><a href="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" target="_blank"><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
                         <td><%=driver.username %></td>
                         <td><%=driver.gender %></td>
                         <td><%=driver.total_rides %></td>
-                        <th scope="row" class=""><img class="passport_img" src="<%=(driverImageUrl + driver.passport_photo)%>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th></th>
-                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + driver.id_card %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.license %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row" class=""> <a href="<%=(driverImageUrl + driver.passport_photo)%>" target="_blank"><img class="passport_img" src="<%=(driverImageUrl + driver.passport_photo)%>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+                        <th scope="row"><a href="<%=driverImageUrl + driver.id_card %>" target="_blank"><img class="idcard_img" src="<%=driverImageUrl + driver.id_card %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+
+                        <th scope="row"><a href="<%=driverImageUrl + driver.license %>" target="_blank"><img class="license_img" src="<%=driverImageUrl + driver.license %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+                        <th scope="row"><a href="<%=driverImageUrl + driver.vechile_insurance %>" target="_blank"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
                         <td><%= driver.year %></td>
                         <td>N/A</td>      <!-- have to add complaints here -->
                         <td>$2030</td>    <!-- have to total earning here -->
@@ -124,28 +125,16 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- <tr class="tabl_size">
-                      <th scope="row" class=""><img class="profile_img" src="/images/img.png" alt=""/></th>
-                      <td>Waloi</td>
-                      <td>Male</td>
-                      <th scope="row"><img class="insurance_img" src="/images/insurance.png" alt=""/></th>
-                      <th scope="row" class=""><img class="passport_img" src="/images/pasport.png" alt=""/></th>
-                      <th scope="row"><img class="idcard_img" src="/images/idcard.png" alt=""/></th>
-                      <th scope="row"><img class="license_img" src="/images/license.png" alt=""/></th>
-                      <td>23 Jun, 2023</td>
-                      <td><button class="btn btn-info accept" type="button">Accept</button></td>
-                      <td><button class="btn btn-info reject" type="button">Reject</button></td>
-                    </tr> -->
                     <% for(let pending of pendingRequests) { %>
                       <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class=""><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row" class=""><a href="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>"><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
                         <td><%=pending.username %></td>
                         <td><%=pending.gender %></td>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
-                        <th scope="row" class=""><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>" alt=""  onerror="this.style.display='none'; this.style.content='';"/></th>
-                        <th scope="row"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></th>
-                        <th scope="row"><img class="license_img" src="<%=driverImageUrl + pending.license %>" alt=""onerror="this.style.display='none'; this.style.content='';"/></th>
+                        <th scope="row"><a href="<%=driverImageUrl + pending.vechile_insurance %>" target="_blank"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+                        <th scope="row" class=""><a href="<%=driverImageUrl + pending.passport_photo %>" target="_blank"><img class="passport_img" src="<%=driverImageUrl + pending.passport_photo %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+                        <th scope="row"><a href="<%=driverImageUrl + pending.id_card %>" target="_blank"><img class="idcard_img" src="<%=driverImageUrl + pending.id_card %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+                        <th scope="row"><a href="<%=driverImageUrl + pending.license %>" target="_blank"><img class="license_img" src="<%=driverImageUrl + pending.license %>" alt=""onerror="this.style.display='none'; this.style.content='';"/></a></th>
                         <td><%= formattedDate %></td>
                         <!-- <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= pending %>')"><%= pending.action %></button></td> -->
                         <td><button class="btn btn-info accept" type="button" onclick="updatePendingReq(this,'<%= pending.id %>','accepted')">Accept</button></td>

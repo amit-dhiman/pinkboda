@@ -17,13 +17,10 @@ module.exports = (sequelize, DataTypes) => {
     updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
       return +new Date(Date.now());
     }},
-    deleted_at: {type: DataTypes.DATE,defaultValue: null},
     },{
       timestamps: true,
-      paranoid: true,
       createdAt: 'created_at',
       updatedAt: "updated_at",
-      deletedAt: 'deleted_at',
     })
 
   //   created_at:{type: DataTypes.BIGINT},

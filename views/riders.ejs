@@ -59,7 +59,7 @@
                    <% for(let rider of getRiders) { %>
                     <% const formattedDate = new Date(rider.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                     <tr class="tabel_size">
-                      <th scope="row"><img class="profile_img" src="<%=rider.image ? (userImageUrl + rider.image) : '/images/staticRider.jpg'%>"/></th>
+                      <th scope="row"><a href="<%=rider.image ? (userImageUrl + rider.image) : '/images/staticRider.jpg'%>" target="_blank"><img class="profile_img" src="<%=rider.image ? (userImageUrl + rider.image) : '/images/staticRider.jpg'%>"/></a></th>
                       <td><%=rider.username %></td>
                       <td><%=rider.gender %></td>
                       <td><%=rider.total_rides %></td>

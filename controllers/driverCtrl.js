@@ -242,23 +242,6 @@ const endRide = async (req, res) => {
     let updateEndRide = await libs.findAndUpdate(db.bookings,booking_id,{booking_status:"completed"});
 
     if(updateEndRide){
-      let data = {
-        "pickup_long": updateEndRide.pickup_long,
-        "pickup_lat": updateEndRide.pickup_lat,
-        "drop_long": updateEndRide.drop_long,
-        "drop_lat": updateEndRide.drop_lat,
-        "pickup_address": updateEndRide.pickup_address,
-        "drop_address": updateEndRide.drop_address,
-        "vechile_type":updateEndRide.vechile_type,
-        "amount": updateEndRide.amount,
-        "ride_status": "Completed",
-        "driver_id": req.creds.id,
-        "user_id": user_id,
-        "booking_id":updateEndRide.id,
-      }
-      
-      let save = await libs.createData(db.myrides,data);
-      // console.log('------save------',save.toJSON());
 
       let notify_data={
         title: 'Ride Completed',
@@ -271,14 +254,14 @@ const endRide = async (req, res) => {
   
       Notify.sendNotifyToUser(notify_data,getData.device_token);
       
-      notify_data.user_id= data.user_id
+      notify_data.user_id= user_id
       let saveNotify= await libs.createData(db.notifications,notify_data);
 
       let notify_data_Driver={
         title: 'Ride Completed',
         message: 'Your ride has been completed',
       }
-      notify_data_Driver.driver_id= data.driver_id
+      notify_data_Driver.driver_id= req.creds.id
       let saveNotify_driver= await libs.createData(db.notifications,notify_data_Driver);
 
 
@@ -442,59 +425,45 @@ const clearNotifications = async (req, res) => {
 };
 
 const getMyRides = async (req, res) => {
-    try {
-      // let data = {
-      //   "pickup_long": 76.717957,
-      //   "pickup_lat": 30.718521,
-      //   "drop_long": 20.655001,
-      //   "drop_lat": 25.569,
-      //   "pickup_address": "mohali",
-      //   "drop_address": "chandigarh",
-      //   "vechile_type": "Bike",
-      //   "amount": 10,
-      //   "ride_status": "Completed",
-      //   "driver_id": req.creds.id,
-      //   "user_id": 1,
-      //   "booking_id": 1,
-      // }
-      // // bookings me se data find kr k rides wali mw save krva do manually api se hi
-      // let save = await libs.createData(db.myrides,data);
-      // console.log('-------save--------',save.toJSON());
+  try {
+    let getRides = await libs.getAllData(db.bookings, {
+      where:{ 
+        driver_id: req.creds.id,
+        booking_status: {
+          [Op.or]: ['completed', 'cancel'],
+        },},
+      include:[{
+        model: db.users,
+        attributes: ['username','image'],
+      }],
+      order:[['created_at','DESC']]
+    });
       
-      let getRides = await libs.getAllData(db.myrides, {
-        where:{driver_id: req.creds.id},
-        include:[{
-          model: db.users,
-          attributes: ['username','image'],
-        }],
-        order:[['created_at','DESC']]
-      });
-        
-      let arr = []
-      if(getRides.length){
-        for(let i=0;i<getRides.length; i++){
-          let getRating = await libs.getData(db.ratings,{where:{booking_id:getRides[i].booking_id}});
-          let jsonData = getRides[i].toJSON();
-          if(jsonData.user.image){jsonData.user.image= `${process.env.user_image_baseUrl}${jsonData.user.image}`}
-
-          if(getRating){ jsonData.star = getRating.star }
-
-          arr.push(jsonData)
-        }
+    let arr = []
+    if(getRides.length){
+      for(let i=0;i<getRides.length; i++){
+        let getRating = await libs.getData(db.ratings,{where:{booking_id:getRides[i].id}});
+        let jsonData = getRides[i].toJSON();
+        if(jsonData.user.image){jsonData.user.image= `${process.env.user_image_baseUrl}${jsonData.user.image}`}
+        if(getRating){ jsonData.star = getRating.star }
+        if(getRides[i].booking_status == 'completed'){ jsonData.ride_status = "Completed"}
+        if(getRides[i].booking_status == 'cancel'){ jsonData.ride_status = "Canceled"}
+        arr.push(jsonData);
       }
-  
-      res.status(200).json({code:200,message:"My All Rides",data: arr});
-    } catch (err) {
-      ERROR.INTERNAL_SERVER_ERROR(res,err);
     }
+    res.status(200).json({code:200,message:"My All Rides",length:arr.length,data: arr});
+  } catch (err) {
+    console.log('------err------',err);
+    ERROR.INTERNAL_SERVER_ERROR(res,err);
+  }
 };
 
-// get single notification detail
+
 const getSingleRide = async (req, res) => {
   try {
     let booking_id = req.query.booking_id;
 
-    let getOneNotify = await libs.getData(db.myrides, {where:{driver_id: req.creds.id,booking_id:booking_id}});
+    let getOneNotify = await libs.getData(db.bookings, {where:{driver_id: req.creds.id,id:booking_id}});
     if(!getOneNotify){
       res.status(404).json({code:404,message:"notification not found",data: getOneNotify });
     }
@@ -504,7 +473,7 @@ const getSingleRide = async (req, res) => {
     let edit_data = getOneNotify.toJSON();
 
     edit_data.user_username = getUserData.username;
-    edit_data.user_profile_image = `${process.env.user_image_baseUrl}${getDriverData.image}`;
+    edit_data.user_profile_image = `${process.env.user_image_baseUrl}${edit_data.image}`;
     edit_data.star= null;
 
     let getRating = await libs.getData(db.ratings, {where:{booking_id: booking_id}});
@@ -516,6 +485,9 @@ const getSingleRide = async (req, res) => {
     res.status(500).json({code:500,message: err.message,error:err});
   }
 };
+
+// get single notification detail   its working
+
 
 const getTotalRatings = async (req, res) => {
   try {
@@ -574,10 +546,8 @@ const getTotalRatings = async (req, res) => {
   }
 };
 
-
 const findPreviousRide = async (req, res) => {
-  try {
-    
+  try {  
     let findRide = await libs.getData(db.bookings,{
       where:{driver_id: req.creds.id, booking_status:{[Op.or]:['accept','started']}},
       include:db.users
