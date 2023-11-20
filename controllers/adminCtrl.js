@@ -799,6 +799,14 @@ try {
 };
 
 
+const termsAndConditions = async (req, res) => {
+try {
+  res.render('termsAndConditions')
+  } catch (err) {
+  res.redirect("/admin/login")
+}
+}
+
 
 const resolvedIssue = async (req, res) => {
   try {
@@ -837,7 +845,8 @@ const sendMassPush = async (req, res) => {
 
     let data={
       title: title,
-      message: description
+      message: description,
+      pushType:'masspush'
     }
 
     let driversData = [];
@@ -850,7 +859,8 @@ const sendMassPush = async (req, res) => {
       driversData.push({
         driver_id: key.id,
         title: title,
-        message: description
+        message: description,
+        pushType:'masspush'
       })
       if(key.device_token){ driverDeviceTokens.push(key.device_token)}
     }
@@ -859,12 +869,11 @@ const sendMassPush = async (req, res) => {
       usersData.push({
         user_id: key.id,
         title: title,
-        message : description
-      })
+        message : description,
+        pushType:'masspush'
+    })
       if(key.device_token){ userDeviceTokens.push(key.device_token)}
     }
-    let saveDriverData = null;
-    let saveRiderData = null;
     
     if (role === 'Driver' || role === 'Both') {
       Notify.sendNotifyToDriver(data, driverDeviceTokens);
@@ -885,4 +894,4 @@ const sendMassPush = async (req, res) => {
 
 
 
-module.exports= {addAdmin,getloginPage,login,getChangePasswordPage,changePassword,getForgotPswrdPage,forgotPassword,logout,renderIndex,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,renderProfile,resolvedIssue, massPushPage, sendMassPush}
+module.exports= {addAdmin,getloginPage,login,getChangePasswordPage,changePassword,getForgotPswrdPage,forgotPassword,logout,renderIndex,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,termsAndConditions,renderProfile,resolvedIssue, massPushPage, sendMassPush}

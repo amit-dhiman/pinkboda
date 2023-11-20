@@ -446,9 +446,10 @@ const getMyRides = async (req, res) => {
         let jsonData = getRides[i].toJSON();
         if(jsonData.user.image){jsonData.user.image= `${process.env.user_image_baseUrl}${jsonData.user.image}`}
         if(getRating){ jsonData.star = getRating.star }
-        if(getRides[i].booking_status == 'completed'){ jsonData.ride_status = "Completed"}
-        if(getRides[i].booking_status == 'cancel'){ jsonData.ride_status = "Canceled"}
-        arr.push(jsonData);
+        if(getRides[i].booking_status == 'completed'){ jsonData.booking_status = "Completed"}
+        if(getRides[i].booking_status == 'cancel'){ jsonData.booking_status = "Canceled"}
+        jsonData.ride_status = jsonData.booking_status
+        arr.push(jsonData)
       }
     }
     res.status(200).json({code:200,message:"My All Rides",length:arr.length,data: arr});

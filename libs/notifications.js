@@ -11,14 +11,14 @@ const sendNotifyToUser = async (data,deviceToken) => {
     for(let token of deviceToken){
 
     let message = {
-        to : deviceToken,
+        to : token,
         // data: {
         //     your_custom_data_key: 'your_custom_data_value'
         // },
         notification : {
             title : data.title,
             message : data.message,
-            // pushType : data.type,
+            pushType : data.pushType,
             body : data.message,
             sound : "default",
             badge : 0,

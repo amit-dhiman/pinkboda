@@ -567,6 +567,7 @@ const getMyRides = async (req, res) => {
       if(jsonData.driver.profile_image){jsonData.driver.profile_image = `${process.env.driver_image_baseUrl}${getRides[i].driver.profile_image}`}
       if(getRides[i].booking_status == 'completed'){ jsonData.booking_status = "Completed"}
       if(getRides[i].booking_status == 'cancel'){ jsonData.booking_status = "Canceled"}
+      jsonData.ride_status = jsonData.booking_status
       arr.push(jsonData)
     }
 

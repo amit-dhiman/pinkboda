@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: { type: DataTypes.STRING },
     message: { type: DataTypes.STRING },
-
+    pushType: { type: DataTypes.STRING },
+    
     created_at:{type: DataTypes.BIGINT, defaultValue: function(){
       return +new Date(Date.now());
     }},
