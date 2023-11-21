@@ -264,9 +264,19 @@ const endRide = async (req, res) => {
       notify_data_Driver.driver_id= req.creds.id
       let saveNotify_driver= await libs.createData(db.notifications,notify_data_Driver);
 
+      let driverAmount = (90 / 100) * updateEndRide.amount;
+      let adminAmount = updateEndRide.amount - driverAmount;
+      console.log('------driverAmoun,adminAmount------',driverAmount,adminAmount);
 
       // update rides in users & drivers
-      let incDriverRide= await libs.updateData(req.creds,{total_rides: db.sequelize.literal(`total_rides + ${1}`),already_on_ride:"No"});
+      let incDriverRide= await libs.updateData(req.creds,{
+        total_rides: db.sequelize.literal(`total_rides + ${1}`),
+        total_earning: db.sequelize.literal(`total_earning + ${driverAmount}`),
+        already_on_ride:"No"
+      });
+
+      let incAdminEarning= await libs.updateData(db.admins,{total_earning: db.sequelize.literal(`total_earning + ${adminAmount}`)},{where:{id:user_id}},{});
+
       // console.log('------------incDriverRide----------',incDriverRide);
       
       let incUserRide= await libs.findAndUpdate(db.users,user_id,{total_rides: db.sequelize.literal(`total_rides + ${1}`)},{where:{id:user_id}});

@@ -836,6 +836,61 @@ const massPushPage = async (req, res) => {
 };
 
 
+// const sendMassPush = async (req, res) => {
+//   try {
+//     const {role,title,description} = req.body;
+
+//     let getUsers = await libs.getAllData(db.users, {});
+//     let getDrivers = await libs.getAllData(db.drivers, {});
+
+//     let data={
+//       title: title,
+//       message: description,
+//       pushType:'masspush'
+//     }
+
+//     let driversData = [];
+//     let usersData = [];
+
+//     let driverDeviceTokens = [];
+//     let userDeviceTokens = [];
+
+//     for(let key of getDrivers){
+//       driversData.push({
+//         driver_id: key.id,
+//         title: title,
+//         message: description,
+//         pushType:'masspush'
+//       })
+//       if(key.device_token){ driverDeviceTokens.push(key.device_token)}
+//     }
+
+//     for(let key of getUsers){
+//       usersData.push({
+//         user_id: key.id,
+//         title: title,
+//         message : description,
+//         pushType:'masspush'
+//       })
+//       if(key.device_token){ userDeviceTokens.push(key.device_token)}
+//     }
+    
+//     if (role === 'Driver' || role === 'Both') {
+//       Notify.sendMassNotifyToDriver(data, driverDeviceTokens);
+//       await libs.createData(db.notifications, driversData);
+//     }
+//     if (role === 'Rider' || role === 'Both') {
+//       Notify.sendMassNotifyToUser(data, userDeviceTokens);
+//       await libs.createData(db.notifications, usersData);
+//     }
+//     res.redirect('/admin/massPushPage');
+
+//   } catch (err) {
+//     res.redirect("/admin/login")
+//   }
+// };
+
+
 const sendMassPush = async (req, res) => {
   try {
     const {role,title,description} = req.body;
@@ -848,49 +903,33 @@ const sendMassPush = async (req, res) => {
       message: description,
       pushType:'masspush'
     }
-
-    let driversData = [];
-    let usersData = [];
-
-    let driverDeviceTokens = [];
-    let userDeviceTokens = [];
-
-    for(let key of getDrivers){
-      driversData.push({
-        driver_id: key.id,
-        title: title,
-        message: description,
-        pushType:'masspush'
-      })
-      if(key.device_token){ driverDeviceTokens.push(key.device_token)}
-    }
-
-    for(let key of getUsers){
-      usersData.push({
-        user_id: key.id,
-        title: title,
-        message : description,
-        pushType:'masspush'
-    })
-      if(key.device_token){ userDeviceTokens.push(key.device_token)}
-    }
-    
+  
     if (role === 'Driver' || role === 'Both') {
-      Notify.sendNotifyToDriver(data, driverDeviceTokens);
-      await libs.createData(db.notifications, driversData);
+      for(let key of getDrivers){
+
+        let driver_dt = { driver_id: key.id, ...data }
+
+        await libs.createData(db.notifications, driver_dt);
+        if(key.device_token){ Notify.sendNotifyToDriver(data, key.device_token);}
+      }
     }
+
     if (role === 'Rider' || role === 'Both') {
-      Notify.sendNotifyToUser(data, userDeviceTokens);
-      await libs.createData(db.notifications, usersData);
+      for(let key of getUsers){
+
+        let user_dt = { user_id: key.id, ...data }
+
+        await libs.createData(db.notifications, user_dt);
+        if(key.device_token){Notify.sendNotifyToUser(data,key.device_token)}
+      }
     }
     res.redirect('/admin/massPushPage');
 
   } catch (err) {
+    console.log('-------err--------------',err);
     res.redirect("/admin/login")
   }
 };
-
-
 
 
 

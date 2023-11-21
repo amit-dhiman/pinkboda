@@ -204,16 +204,18 @@ const calcRideAmount = async (req, res) => {
       data.updated_at = +new Date(Date.now());
       saveData = await libs.setData(getAddress, data);
     } else if (getAddress) {
+      console.log('-------2--------');
       let dr_lat = data.drop_lat;
       let dr_long = data.drop_long;
-
+      
       const drLat = new RegExp(`^${dr_lat.toString().slice(0, -1)}`);
       const drLong = new RegExp(`^${dr_long.toString().slice(0, -1)}`);
-
-      if ((drLat.test(getAddress.drop_lat)) && (drLong.test(getAddress.dr_long))) {
+      
+      // if ((drLat.test(getAddress.drop_lat)) && (drLong.test(getAddress.dr_long))) {
         data.updated_at = +new Date(Date.now());
+        console.log('-----------data----------',data);
         saveData = await libs.setData(getAddress, data);
-      }
+      // }
     } else {
       saveData = await libs.createData(db.search_history, data);
     }

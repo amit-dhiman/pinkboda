@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     profile_image: { type: DataTypes.STRING ,defaultValue: null},
     email: { type: DataTypes.STRING,defaultValue: null },
     password: { type: DataTypes.STRING ,defaultValue: null},
+    total_earning: { type: DataTypes.BIGINT ,defaultValue: 0},
     
     access_token: { type: DataTypes.STRING },
     device_type:{ type:DataTypes.ENUM("Android","Apple","Windows"),defaultValue:"Android"},

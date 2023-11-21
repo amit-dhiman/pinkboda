@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     
-    amount: { type: DataTypes.DECIMAL(6, 2)},
+    amount: { type: DataTypes.BIGINT},
     ride_type:{ type: DataTypes.ENUM("Ride","Delivery")},
     vechile_type: { type: DataTypes.STRING,defaultValue:"Bike"},     // Statically Bike
 
