@@ -217,7 +217,6 @@ const findDistanceByRoad = async(loc) => {
 
 
 
-
 module.exports = {
-  generateAccessToken, verify_token, securePassword, compPassword, sendMail, upload, driver_upload, admin_upload, admin_auth, findDistanceByRoad
+  generateAccessToken, verify_token, securePassword, compPassword, sendMail, upload, driver_upload, admin_upload, admin_auth, findDistanceByRoad,
 }

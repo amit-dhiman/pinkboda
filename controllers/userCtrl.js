@@ -191,8 +191,9 @@ const calcRideAmount = async (req, res) => {
     let perKm_price = 1.5;
     let km = parseFloat(distance.replace(/[, ]/g, ''));
 
-    let price = (base_price + (perKm_price * km))
-    data.amount = Number(price.toFixed(2));
+    let price = Math.round((base_price + (perKm_price * km)))
+
+    data.amount = price;
 
     let getData = await libs.getData(db.search_history, { where: { drop_lat: data.drop_lat, drop_long: data.drop_long } });
     let getAddress = await libs.getData(db.search_history, { where: { drop_address: data.drop_address } });
