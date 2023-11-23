@@ -429,7 +429,8 @@ async function cancelRideAfterAccept(data, io) {
 
   // console.log("===========================End ride user ",responceUser);
 
-  let updateEndRide = await libs.findAndUpdate(db.bookings, data.bookingId, { booking_status: 'cancel', cancelled_by: data.type });
+  let updateEndRide = await libs.findAndUpdate(db.bookings, data.bookingId, {booking_status: 'cancel', cancelled_by: data.type });
+  let updateDriverRideStatus = await libs.findAndUpdate(db.drivers, updateEndRide.driver_id,{already_on_ride:'No'});
 
   if (data.type == "User") {
     let notify_data = {

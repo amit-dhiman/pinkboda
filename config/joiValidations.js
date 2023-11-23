@@ -3,10 +3,10 @@ const ERROR = require('./responseMsgs').ERROR;
 
 const signupUserValid= async (req,res,next)=>{
     let validation = joi.object({
-        username: joi.string().required(),
-        country_code: joi.string().required(),
-        mobile_number: joi.string().required(),
-        gender: joi.string().required(),
+        username: joi.string().optional(),
+        country_code: joi.string().optional(),
+        mobile_number: joi.string().optional(),
+        gender: joi.string().optional(),
         device_type: joi.string().valid("Android","Apple",).optional(),
         device_token: joi.string().optional(),
     })

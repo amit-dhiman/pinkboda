@@ -15,7 +15,7 @@ const driverSignup = async (req, res) => {
     let {username,gender,country_code,mobile_number,model,license_plate,year,device_type, device_token} = req.body;
     // console.log('--------req.body----------',req.body); 
     console.log('--------req.files----------',req.files); 
-    const getData=await libs.getData(db.drivers,{where:{mobile_number: mobile_number}});
+    const getData=await libs.getData(db.drivers,{where:{mobile_number: mobile_number,deleted_at:0}});
 
     if (getData) {
       console.log('----getData----', getData);
@@ -71,7 +71,7 @@ const login = async(req,res) => {
       return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
     }
     console.log('---------country_code---------',country_code);
-    const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number}})
+    const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number,deleted_at:0}})
     console.log('-----2');
     if(!getData){
       return res.status(404).json({code:404,message:"mobile number does't exist"})
@@ -184,8 +184,9 @@ const editDriverProfile = async (req, res,next) => {
 
 const deleteDriverAccount = async (req, res) => {
   try {
-    let del =await libs.destroyData(db.drivers,{where:{id:req.creds.id}});   //It will store date in deleted_at's fields
-    res.status(200).json({code:204,message:"Account deleted",data:del});    
+    // let del =await libs.destroyData(db.drivers,{where:{id:req.creds.id}});   //It will store date in deleted_at's fields
+    let del = await libs.updateData(db.drivers,{deleted_at: +new Date(Date.now())}, { where: { id: req.creds.id } });
+    res.status(204).json({code:204,message:"Account deleted",data:del});    
 
   } catch (err) {
     ERROR.ERROR_OCCURRED(res, err);

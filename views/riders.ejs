@@ -194,6 +194,7 @@ function updateButton(button, riderId,riderAction) {
       return response.json();
     })
     .then(newButtonText => {
+    console.log('-----------newButtonText---------',newButtonText)
       button.textContent = newButtonText.data;
       const newAction = newButtonText.data;
       const newAct = newAction === 'Enable' ? 'Disable' : 'Enable';

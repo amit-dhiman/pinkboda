@@ -88,6 +88,14 @@ const destroyData = async (model, query) => {
     }
 }
 
+const disableData = async (model, data,query) => {
+    try {
+        let disableData = await model.update(data,query);
+        return disableData;
+    } catch (err) {
+        throw err;
+    }
+}
 
 
 module.exports={ 

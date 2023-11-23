@@ -689,8 +689,8 @@ const pendingRequests = async (req, res) => {
 
       for(let key of images){
         fs.unlink(`${process.env.driver_image_baseUrl}${getData[key]}`,(err)=>{if(err){return err}})
-        updateRequest = await libs.destroyData(getData,{force:true});
       }
+      updateRequest = await libs.destroyData(getData,{force:true});
     }
     
     res.status(200).send(updateRequest);

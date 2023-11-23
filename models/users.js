@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     updated_at:{type: DataTypes.BIGINT, defaultValue: function(){
       return +new Date(Date.now());
     }},
-    deleted_at: {type: DataTypes.DATE,defaultValue: null},
+    deleted_at: {type: DataTypes.BIGINT, defaultValue: 0},
     },{
       // hooks: {
       //   beforeValidate: (instance, options) => {
@@ -36,17 +36,14 @@ module.exports = (sequelize, DataTypes) => {
       //     instance.deleted_at = +new Date(Date.now())
       //   },
       // },
-      timestamps: true,
-    paranoid: true,
-    createdAt: 'created_at',
-    updatedAt: "updated_at",
-    deletedAt: 'deleted_at',
+      timestamps: false,
+    // paranoid: true,
+    // createdAt: 'created_at',
+    // updatedAt: "updated_at",
+    // deletedAt: 'deleted_at',
   })
-
-
   // Users.hasMany(db, { foreignKey: 'user_id' });
   // Users.hasMany(Booking, { foreignKey: 'user_id', as: 'bookings' });
-  
   return Users;
 }
 

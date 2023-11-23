@@ -15,7 +15,7 @@ const numberSignup = async (req, res) => {
   try {
     let { username, mobile_number, gender, country_code, device_type, device_token, } = req.body;
 
-    const getData = await libs.getData(User, { where: { mobile_number: mobile_number } });
+    const getData = await libs.getData(User, { where: { mobile_number: mobile_number,deleted_at:0} });
 
     if (getData) {
       return ERROR.MOBILE_ALREADY_EXIST(res);
@@ -63,7 +63,7 @@ const numberLogin = async (req, res) => {
     if (!(mobile_number.length <= 10)) return res.status(400).json({ code: 400, error: "mobile number should be less than 10 digits" });
     if (!mobile_number || !country_code) return res.status(400).json({ code: 400, error: "mobile_number,country_code is Required" });
 
-    const getData = await libs.getData(User, { where: { mobile_number: mobile_number } });
+    const getData = await libs.getData(User,{where:{mobile_number:mobile_number,deleted_at:0}});
 
     if (getData) {
       if(getData.action == "Disable"){
@@ -158,8 +158,10 @@ const editUserProfile = async (req, res, next) => {
 
 const deleteUserAccount = async (req, res) => {
   try {
-    let del = await libs.destroyData(User, { where: { id: req.creds.id } });  //It will store date in deleted_at's fields
-    res.status(200).json({ code: 204, message: "Account deleted", data: del });
+    // let del = await libs.destroyData(User, { where: { id: req.creds.id } });  //It will store date in deleted_at's fields
+    let del = await libs.updateData(User,{deleted_at: +new Date(Date.now())}, { where: { id: req.creds.id } });  //It will store date in deleted_at's fields
+
+    res.status(204).json({ code: 204, message: "Account deleted", data: del });
 
   } catch (err) {
     ERROR.ERROR_OCCURRED(res, err);
@@ -550,6 +552,7 @@ const clearNotifications = async (req, res) => {
 
 const getMyRides = async (req, res) => {
   try {
+    console.log('-------req.creds---------',req.creds);
     let getRides = await libs.getAllData(db.bookings, {
       where: { user_id: req.creds.id,
         booking_status: {
@@ -566,8 +569,9 @@ const getMyRides = async (req, res) => {
     for (let i = 0; i < getRides.length; i++) {
       let getRating = await libs.getData(db.ratings,{where:{booking_id: getRides[i].id}});
       let jsonData = getRides[i].toJSON();
+      console.log('---------jsonData--------',jsonData);
       if (getRating) {jsonData.star = getRating.star}
-      if(jsonData.driver.profile_image){jsonData.driver.profile_image = `${process.env.driver_image_baseUrl}${getRides[i].driver.profile_image}`}
+      if(jsonData.driver){jsonData.driver.profile_image = `${process.env.driver_image_baseUrl}${getRides[i].driver.profile_image}`}
       if(getRides[i].booking_status == 'completed'){ jsonData.booking_status = "Completed"}
       if(getRides[i].booking_status == 'cancel'){ jsonData.booking_status = "Canceled"}
       jsonData.ride_status = jsonData.booking_status
@@ -576,6 +580,7 @@ const getMyRides = async (req, res) => {
 
     res.status(200).json({ code: 200, message: "My All Rides", data: arr });
   } catch (err) {
+    console.log('--------err---------',err);
     ERROR.INTERNAL_SERVER_ERROR(res, err);
   }
 };
