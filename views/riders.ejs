@@ -67,9 +67,13 @@
                       <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>','<%= rider.action %>')"><%= rider.action %></button></td>
                       <td><%=rider.mobile_number %></td>
                     </tr>
-                  <% } %>
+                   <% } %>
+                   
                 </tbody>
               </table>
+                <% if(!getRiders.length){ %>
+                  <p style="text-align: center;">No data found</p>
+                <% } %>
               
               <div>
                 <ul class="pagination" id="myRiders">

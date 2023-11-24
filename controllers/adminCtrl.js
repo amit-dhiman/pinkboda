@@ -94,7 +94,7 @@ const renderProfile = async (req, res) => {
     // getAdminData.profile_image = `${process.env.admin_imageUrl_ejs}${getAdminData.profile_image}`;
     res.render('profile',{
     // res.status(200).json({ message: 'Status toggled successfully', 
-    getAdmin: getAdminData});
+    getAdmin: getAdminData,search:""});
   } catch (err) {
     console.log('---err---',err);
     return res.redirect('/admin/login');
@@ -107,7 +107,7 @@ const getEditProfilePage = async (req, res) => {
   try {
     let getData= await libs.getData(db.admins,{});
     // res.status(200).json({
-    res.render('edit-profile' ,{getAdmin: getData});
+    res.render('edit-profile' ,{getAdmin: getData,search:""});
   
   } catch (err) {
     return res.redirect('/admin/login');
@@ -118,6 +118,7 @@ const getEditProfilePage = async (req, res) => {
 const editProfile = async (req, res,next) => {
   try {
     let getData= await libs.getData(db.admins,{});
+    console.log('-------getData-------',getData);
     // let getData = req.session.admin;
 
     const {admin_name, admin_email} = req.body;
@@ -128,7 +129,7 @@ const editProfile = async (req, res,next) => {
 
     if(req.file){
       if(getData.profile_image){
-        fs.unlink(`${process.env.admin_image_baseUrl}${getData.profile_image}`,(err)=>{if(err)return})
+        fs.unlink(`${process.env.fs_admin_image_baseUrl}${getData.profile_image}`,(err)=>{if(err){return}})
       }
       update.profile_image= req.file.filename
     };
@@ -142,7 +143,7 @@ const editProfile = async (req, res,next) => {
     // res.status(200).json({
     // res.status(200).redirect('/admin/renderProfile')
     res.render('profile',{
-      getAdmin: editProfile
+      getAdmin: editProfile,search:""
     })
   } catch (err) {
     console.log('-----err-----',err);
@@ -155,7 +156,7 @@ const editProfile = async (req, res,next) => {
 
 const getChangePasswordPage = async (req, res) => {
   try {
-    res.render('change_password',{getAdmin:req.session.admin, message: req.query.message || ""})
+    res.render('change_password',{getAdmin:req.session.admin, message: req.query.message || "",search:""})
   } catch (err) {
     console.log('-------er-----',err);
     return res.redirect('/admin/login');
@@ -644,6 +645,7 @@ const actionOnDriver = async (req, res) => {
     const driver = await libs.getData(db.drivers,query);
     if (driver) {
       driver.action = driver.action === 'Enable' ? 'Disable' : 'Enable';
+      driver.access_token = null;
       await driver.save();
       // res.status(200).send(driver.action);
       res.status(200).json({ message: 'Status toggled successfully', data:driver.action});
@@ -662,6 +664,7 @@ const actionOnUser = async (req, res) => {
     const rider = await libs.getData(db.users,query);
     if (rider) {
       rider.action = rider.action === 'Enable' ? 'Disable' : 'Enable';
+      rider.access_token = null;
       await rider.save();
       res.status(200).json({ message: 'Status toggled successfully', data:rider.action });
     }
@@ -688,7 +691,7 @@ const pendingRequests = async (req, res) => {
       let images=['profile_image','license','id_card','passport_photo','vechile_insurance'];
 
       for(let key of images){
-        fs.unlink(`${process.env.driver_image_baseUrl}${getData[key]}`,(err)=>{if(err){return err}})
+        fs.unlink(`${process.env.fs_driver_image_baseUrl}${getData[key]}`,(err)=>{if(err){return}})
       }
       updateRequest = await libs.destroyData(getData,{force:true});
     }
@@ -800,11 +803,11 @@ try {
 
 
 const termsAndConditions = async (req, res) => {
-try {
-  res.render('termsAndConditions')
-  } catch (err) {
-  res.redirect("/admin/login")
-}
+  try {
+    res.render('termsAndConditions')
+    } catch (err) {
+    res.redirect("/admin/login")
+  }
 }
 
 
@@ -828,7 +831,7 @@ const resolvedIssue = async (req, res) => {
 
 const massPushPage = async (req, res) => {
   try {
-    res.render('mass_push', { getAdmin:req.session.admin});
+    res.render('mass_push', { getAdmin:req.session.admin,search:""});
   } catch (err) {
     console.log('----err----',err);
     res.redirect("/admin/login")

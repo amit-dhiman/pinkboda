@@ -52,15 +52,6 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- <tr class="tabel_size">
-                      <th scope="row"><img class="profile_img" src="/images/img.png" /></th>
-                      <td>Waloi <span class="helpsupport">(Driver)</span></td>
-                      <td>23 Jun,2023</td>
-                      <td class="helpsupport">Various versions have evolved over the years, sometimes by accident</td>
-                      <td>jasi@gmail.com</td>
-                      <td>565646564</td>
-                      <td><button class="btn btn-info data" type="button">Resolved</button></td>                   
-                    </tr> -->
                     <% for(let obj of supportData){%>
                       <tr class="tabel_size">
                       <% const formattedDate = new Date(obj.created_at).toLocaleDateString('en-US', { day: 'numeric',month: 'short', year: 'numeric' }); %>
@@ -80,7 +71,9 @@
                     <% } %>
                   </tbody>
                 </table>
-
+                <% if(!supportData.length){ %>
+                  <p style="text-align: center;">No data found</p>
+                <% } %>
                 <div>
                   <ul class="pagination" id="mysupportsPagination">
                     <% if (page > 1) { %>

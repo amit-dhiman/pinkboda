@@ -56,14 +56,14 @@
                       <th scope="col">Driver Profile</th>
                       <th scope="col">Full Name</th>
                       <th scope="col">Gender</th>
-                      <th scope="col"><a href="http://161.97.132.85/Designing/Houzmart_admin/Total_riders.ejs">Total Ride</a></th>
+                      <th scope="col">Total Ride</a></th>
                       <th scope="col">Passport photo</th>
                       <th scope="col">ID Card</th>
                       <th scope="col">License</th>
                       <th scope="col">Insurance</th>
                       <th scope="col">License Year</th>
                       <th scope="col">Complaint</th>
-                      <th scope="col"><a href="http://161.97.132.85/Designing/Houzmart_admin/total_earning.ejs">Total Earning</a></th>
+                      <th scope="col">Total Earning</a></th>
                       <th scope="col">Signup date</th>
                       <th scope="col">Action</th>
                       <th scope="col">Contact</th>
@@ -73,7 +73,7 @@
                     <% for(let driver of getDrivers) { %>
                       <% const formattedDate = new Date(driver.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class=""><a href="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" target="_blank"><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+                        <th scope="row" class=""><a href="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" target="_blank"><img class="profile_img" src="<%= driver.profile_image ? (driverImageUrl + driver.profile_image) : '/images/staticDriver.jpg'%>" alt="" onerror="this.onerror=null; this.src='/images/staticRider.jpg'; this.style.display='block';"/></a></th>
                         <td><%=driver.username %></td>
                         <td><%=driver.gender %></td>
                         <td><%=driver.total_rides %></td>
@@ -84,7 +84,7 @@
                         <th scope="row"><a href="<%=driverImageUrl + driver.vechile_insurance %>" target="_blank"><img class="license_img" src="<%=driverImageUrl + driver.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
                         <td><%= driver.year %></td>
                         <td>N/A</td>      <!-- have to add complaints here -->
-                        <td>$2030</td>    <!-- have to total earning here -->
+                        <td><%= driver.total_earning %></td>    <!-- have to total earning here -->
                         <td><%= formattedDate %></td>
                         <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= driver.id %>','<%= driver.action %>')"><%= driver.action %></button></td>
                         <td><%= driver.mobile_number %></td>
@@ -92,6 +92,10 @@
                     <% } %>
                   </tbody>
                 </table>
+                <% if(!getDrivers.length){ %>
+                  <p style="text-align: center;">No data found</p>
+                <% } %>
+              
                 <div>
                   <ul class="pagination" id="myDrivers">
                     <% if (page > 1) { %>
@@ -128,7 +132,7 @@
                     <% for(let pending of pendingRequests) { %>
                       <% const formattedDate = new Date(pending.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); %>
                       <tr class="tabl_size">
-                        <th scope="row" class=""><a href="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>"><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
+                        <th scope="row" class=""><a href="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>"><img class="profile_img" src="<%= pending.profile_image ? (driverImageUrl + pending.profile_image) : '/images/staticDriver.jpg' %>" alt="" onerror="this.onerror=null; this.src='/images/staticRider.jpg'; this.style.display='block';"/></a></th>
                         <td><%=pending.username %></td>
                         <td><%=pending.gender %></td>
                         <th scope="row"><a href="<%=driverImageUrl + pending.vechile_insurance %>" target="_blank"><img class="license_img" src="<%=driverImageUrl + pending.vechile_insurance %>" alt="" onerror="this.style.display='none'; this.style.content='';"/></a></th>
@@ -143,7 +147,10 @@
                     <% } %>
                   </tbody>
                 </table>
-
+                <% if(!pendingRequests.length){ %>
+                  <p style="text-align: center;">No data found</p>
+                <% } %>
+              
                 <div>
                   <ul class="pagination" id="mypendingDrivers">
                     <% if (pending_page > 1) { %>

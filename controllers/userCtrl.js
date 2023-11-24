@@ -136,7 +136,7 @@ const editUserProfile = async (req, res, next) => {
     if (device_token) { update.device_token = device_token }
     if (req.file) {
       if (userData.image) {
-        fs.unlink(`${process.env.user_image_baseUrl}${userData.image}`, (err) => { if (err) return })
+        fs.unlink(`${process.env.fs_user_image_baseUrl}${userData.image}`, (err) => { if (err) return })
       }
       update.image = req.file.filename
     };
@@ -189,8 +189,8 @@ const calcRideAmount = async (req, res) => {
 
     let distance = await commonFunc.findDistanceByRoad(data);
 
-    let base_price = 5;
-    let perKm_price = 1.5;
+    let base_price = 50;
+    let perKm_price = 25;
     let km = parseFloat(distance.replace(/[, ]/g, ''));
 
     let price = Math.round((base_price + (perKm_price * km)))
@@ -206,16 +206,16 @@ const calcRideAmount = async (req, res) => {
       data.updated_at = +new Date(Date.now());
       saveData = await libs.setData(getAddress, data);
     } else if (getAddress) {
-      console.log('-------2--------');
-      let dr_lat = data.drop_lat;
-      let dr_long = data.drop_long;
+      // console.log('-------2--------');
+      // let dr_lat = data.drop_lat;
+      // let dr_long = data.drop_long;
       
-      const drLat = new RegExp(`^${dr_lat.toString().slice(0, -1)}`);
-      const drLong = new RegExp(`^${dr_long.toString().slice(0, -1)}`);
+      // const drLat = new RegExp(`^${dr_lat.toString().slice(0, -1)}`);
+      // const drLong = new RegExp(`^${dr_long.toString().slice(0, -1)}`);
       
       // if ((drLat.test(getAddress.drop_lat)) && (drLong.test(getAddress.dr_long))) {
         data.updated_at = +new Date(Date.now());
-        console.log('-----------data----------',data);
+        // console.log('-----------data----------',data);
         saveData = await libs.setData(getAddress, data);
       // }
     } else {

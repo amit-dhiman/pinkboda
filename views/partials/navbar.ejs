@@ -63,7 +63,8 @@
 
 <div class="col-md-3 col-7 d-flex justify-content-center align-items-center">
     <!--/uploads/admin/ -->
-    <a href="/uploads/admin/<%= getAdmin.profile_image %>" target="_blank"><img class="img-profile" src="/uploads/admin/<%= getAdmin.profile_image %>" /></a>  
+  <!-- <a href="/uploads/admin/<%= getAdmin.profile_image %>" target="_blank"><img class="img-profile" src="<%= getAdmin.profile_image ? '/uploads/admin/' + getAdmin.profile_image : '/images/staticRider.jpg' %>" onerror="this.onerror=null; this.src='/images/staticRider.jpg'; this.style.display='block';"/></a>   -->
+  <a href="/uploads/admin/<%= getAdmin.profile_image %>" target="_blank"><img class="img-profile" src="<%= '/uploads/admin/' + getAdmin.profile_image %>" onerror="this.onerror=null; this.src='/images/staticRider.jpg'; this.style.display='block';"/></a>  
   <ul class="nav navbar-nav ms-auto" style="width: 67%">
     <li class="nav-item dropdown">
       <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><%= getAdmin.full_name %></a>
