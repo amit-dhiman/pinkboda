@@ -33,6 +33,8 @@ module.exports = (sequelize, DataTypes) => {
 
     total_earning: { type: DataTypes.BIGINT ,defaultValue: 0},        // Earning
 
+    total_complaints: { type: DataTypes.INTEGER ,defaultValue: 0},        // Complaints
+
     action: { type: DataTypes.ENUM("Enable","Disable"),defaultValue:"Disable"},
     already_on_ride: { type: DataTypes.ENUM("Yes","No"),defaultValue:"No"},
 

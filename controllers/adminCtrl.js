@@ -570,17 +570,12 @@ const renderDriver = async (req, res) => {
     const totalDriversCount = await db.drivers.count({ where: {is_admin_verified:'accepted'}});
     const totalRidersCount= await db.users.count({where:{}});
     const totalUsersCount= (totalDriversCount + totalRidersCount);
-    console.log('--------totalUsersCount-------',totalUsersCount);
   
     let search = req.query.searchInput || '';              // Get search input value
 
-    // console.log('----------req.body----------',req.body);
-    console.log('----------req.query--------',req.query);
-    // console.log('------------search 1---------------',search);
-
     const page =  parseInt(req.query.page) || 1;                        // Current page
     let pending_page =  parseInt(req.query.pending_page) || 1;          // Current pending_page
-    const itemsPerPage = 10;                                             // Number of items per page
+    const itemsPerPage = 10;                                            // Number of items per page
     const offset = (page - 1) * itemsPerPage;                           // Calculate offset for pagination
     let pending_page_offset = (pending_page - 1) * itemsPerPage;        // Calculate offset for pagination
 

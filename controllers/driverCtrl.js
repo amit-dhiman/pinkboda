@@ -276,7 +276,7 @@ const endRide = async (req, res) => {
         already_on_ride:"No"
       });
 
-      let incAdminEarning= await libs.updateData(db.admins,{total_earning: db.sequelize.literal(`total_earning + ${adminAmount}`)},{where:{id:user_id}},{});
+      let incAdminEarning= await libs.updateData(db.admins,{total_earning: db.sequelize.literal(`total_earning + ${adminAmount}`)},{where:{id:user_id}});
 
       // console.log('------------incDriverRide----------',incDriverRide);
       

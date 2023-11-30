@@ -446,15 +446,15 @@ const reportOnDriver = async (req, res) => {
       reported_by: "User"
     }
 
-    let getData = await libs.getData(db.reports, { where: { user_id: data.user_id, booking_id: data.booking_id, reported_by: "User" } });
+    let getData = await libs.getData(db.reports,{where:{user_id:data.user_id,booking_id:data.booking_id,reported_by:"User"}});
 
     if (getData) {
       res.status(409).json({ code: 409, message: "You have already reported on this booking and driver" });
     } else {
       await libs.createData(db.reports, data);
-      res.status(200).json({ code: 200, message: "Reported successfully" });
+      await libs.updateData(db.drivers,{total_complaints: db.sequelize.literal(`total_complaints + 1`)},{where:{id:data.driver_id}}); //Complaints
+      res.status(200).json({code: 200,message:"Reported successfully"});
     }
-
   } catch (err) {
     ERROR.INTERNAL_SERVER_ERROR(res, err);
   }
