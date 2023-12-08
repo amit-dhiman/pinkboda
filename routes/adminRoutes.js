@@ -32,8 +32,6 @@ router.get('/admin/renderProfile', admin_auth, adminCtrl.renderProfile);
 router.get('/admin/getEditProfilePage',admin_auth, adminCtrl.getEditProfilePage);
 router.post('/admin/editProfile',admin_auth, admin_upload.single('profile_image'), adminCtrl.editProfile);
 
-router.get('/admin/renderIndex', admin_auth, adminCtrl.renderIndex);
-
 router.get('/admin/renderRider', admin_auth, adminCtrl.renderRider);
 
 router.get('/admin/renderDriver', admin_auth, adminCtrl.renderDriver);

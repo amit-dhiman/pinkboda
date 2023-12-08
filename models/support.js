@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     user_id:{ type: DataTypes.INTEGER, references:{model:'users',key:'id'}},
     driver_id:{type:DataTypes.INTEGER, references:{model:'drivers',key:'id'}},
 
-    issue_status:{type:DataTypes.ENUM("Resolved","Unselected"),defaultValue:"Unselected"},
+    issue_status:{type:DataTypes.ENUM("Pending","Progress","Resolved"),defaultValue:"Pending"},
    
     message: { type:DataTypes.STRING,defaultValue:1},
     created_at:{type: DataTypes.BIGINT, defaultValue: function(){

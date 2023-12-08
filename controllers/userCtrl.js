@@ -136,7 +136,7 @@ const editUserProfile = async (req, res, next) => {
     if (device_token) { update.device_token = device_token }
     if (req.file) {
       if (userData.image) {
-        fs.unlink(`${process.env.fs_user_image_baseUrl}${userData.image}`, (err) => { if (err) return })
+        fs.unlink(`public/uploads/users/${userData.image}`, (err) => { if (err) return })
       }
       update.image = req.file.filename
     };
@@ -428,7 +428,7 @@ const getAllMessages = async (req, res) => {
 
     let getData = await libs.getAllData(db.chats, query);
 
-    res.status(200).json({ code: 200, message: "message saved", data: getData });
+    res.status(200).json({ code: 200, message: "Get all messages", data: getData });
   } catch (err) {
     console.log('------err------', err);
     ERROR.INTERNAL_SERVER_ERROR(res, err);

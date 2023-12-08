@@ -91,7 +91,7 @@ const renderProfile = async (req, res) => {
   try {
     // let getAdminData = await libs.getData(db.admins,{});
     let getAdminData = req.session.admin;
-    // getAdminData.profile_image = `${process.env.admin_imageUrl_ejs}${getAdminData.profile_image}`;
+    // getAdminData.profile_image = `/uploads/admin/${getAdminData.profile_image}`;
     res.render('profile',{
     // res.status(200).json({ message: 'Status toggled successfully', 
     getAdmin: getAdminData,search:""});
@@ -129,7 +129,7 @@ const editProfile = async (req, res,next) => {
 
     if(req.file){
       if(getData.profile_image){
-        fs.unlink(`${process.env.fs_admin_image_baseUrl}${getData.profile_image}`,(err)=>{if(err){return}})
+        fs.unlink(`public/uploads/admin/${getData.profile_image}`,(err)=>{if(err){return}})
       }
       update.profile_image= req.file.filename
     };
@@ -138,7 +138,7 @@ const editProfile = async (req, res,next) => {
     // const editProfile = await libs.findAndUpdate(db.admins, req.session.admin.id, update);
     if(editProfile.profile_image){
       req.session.admin.profile_image = editProfile.profile_image
-      // editProfile.profile_image = `${process.env.admin_imageUrl_ejs}${editProfile.profile_image}`;
+      // editProfile.profile_image = `public/uploads/admin/${editProfile.profile_image}`;
     }
     // res.status(200).json({
     // res.status(200).redirect('/admin/renderProfile')
@@ -233,284 +233,6 @@ const logout = async (req, res) => {
 };
 
 
-// render full index.ejs
-// const renderIndex = async (req, res) => {
-//   try {
-//     let skp = req.body.skip || 0;
-//     // let query= {where:{},limit:10,offset:skp};
-//     let query= {where:{is_admin_verified: "accepted"}, order: [['created_at', 'DESC']],};
-
-//     let getDrivers = await libs.getAllData(db.drivers,query);
-    
-//     let getRiders= await libs.getAllData(db.users,{order: [['created_at', 'DESC']]});
-
-//     // res.status(200).json({code:200,message:"ALL Drivers and Riders",
-//     res.render('index',{
-//       getRiders: getRiders,
-//       getDrivers: getDrivers,
-//       getAdmin: req.session.admin,
-//       totalUsers:[...getDrivers,...getRiders],
-//       userImageUrl: process.env.user_imageUrl_ejs,
-//       driverImageUrl : process.env.driver_imageUrl_ejs
-//     });
-
-//   } catch (err) {
-//     console.log('-----err-----',err);
-//     return res.redirect('/admin/login')
-//   }
-// };
-
-// const renderIndex = async (req, res) => {
-// try {
-//   // console.log('----------req.body----------',req.body);
-//   // console.log('----------req.query--------',req.query);
-//   // console.log('------------search 1------------',search);
-//   const totalDriversCount = await db.drivers.count({ where: {is_admin_verified:'accepted'}});
-//   const totalRidersCount= await db.users.count({where:{}});
-//   const totalUsersCount= (totalDriversCount + totalRidersCount);
-//   console.log('-----------totalUsersCount-------------',totalUsersCount);
-
-//   let search = req.query.searchInput || '';                           // Get search input value
-
-//   const driver_page =  parseInt(req.query.driver_page) || 1;       // Current page
-//   const rider_page =  parseInt(req.query.rider_page) || 1;        // Current page
-
-//   const itemsPerPage = 10;                                // Number of items per page
-//   const driverOffset = (driver_page - 1) * itemsPerPage;        // Calculate offset for pagination
-//   const riderOffset = (rider_page - 1) * itemsPerPage;        // Calculate offset for pagination
-
-//   // console.log('------------search 1---------------',search);
-
-//   let whereCondition = search ? {username:{[Op.like]:`%${search}%`}}:{};
-//   whereCondition.is_admin_verified = 'accepted';
-
-//   console.log('----------whereCondition-----------',whereCondition);
-//   const getDrivers = await libs.getAllData(db.drivers, {
-//     where: whereCondition,
-//     limit: itemsPerPage,
-//     driverOffset,
-//     order: [['created_at', 'DESC']]
-//   });
-//   // console.log('--------------getDrivers-------------',getDrivers);
-
-//   const totalDrivers = await db.drivers.count({ where: whereCondition});
-//   const total_DriversPages = Math.ceil(totalDrivers / itemsPerPage);
-//   console.log('------------total_DriversPages---------------',total_DriversPages);
-
-//   const whereConditionUser = search ? {username:{[Op.like]:`%${search}%`}}:{};
-
-//   const getRiders = await libs.getAllData(db.users,{
-//     where: whereConditionUser,
-//     limit: itemsPerPage,
-//     riderOffset,
-//     order: [['created_at', 'DESC']]
-//   });
-//   // console.log('--------------getRiders-------------',getRiders);
-  
-//   const totalRiders= await db.users.count({where:whereConditionUser});
-//   const total_RidersPages = Math.ceil(totalRiders / itemsPerPage);
-//   console.log('----------total_RidersPages---------',total_RidersPages);
-
-// //  all Users section
-//   let userslimit = 5;
-//   let usersOffset = (riderOffset - 1) * userslimit;
-
-//   // const getAllDrivers = await libs.getAllData(db.drivers, {
-//   //   where: whereCondition,
-//   //   limit: userslimit,
-//   //   offset:usersOffset,
-//   //   order: [['created_at', 'DESC']]
-//   // });
-//   const getAllDrivers =[];
-//   // const getAllRiders = await libs.getAllData(db.users,{
-//   //   where: whereConditionUser,
-//   //   limit: userslimit,
-//   //   offset: usersOffset,
-//   //   order: [['created_at', 'DESC']]
-//   // });
-//   const getAllRiders =[];
-
-//   const totalAllDrivers = await db.drivers.count({ where: whereCondition});
-//   const total_AllDriversPages = Math.ceil(totalAllDrivers / itemsPerPage);
-
-//   const totalAllRiders= await db.users.count({where:whereConditionUser});
-//   const total_AllRidersPages = Math.ceil(totalAllRiders / itemsPerPage);
-
-//   let totalUsers = [...getAllDrivers,...getAllRiders];
-
-//   const total_UsersPages = Math.ceil(total_AllDriversPages+total_AllRidersPages);
-//   console.log('----------total_UsersPages---------',total_UsersPages);
-
-//   totalUsers.sort((a, b) => b.created_at - a.created_at);
-
-//   // getDrivers.sort((a, b) => b.created_at - a.created_at);
-//   // getRiders.sort((a, b) => b.created_at - a.created_at);
-
-//   // res.status(200).json({
-//   res.render('index', {
-//     getDrivers: getDrivers,
-//     getRiders : getRiders,
-//     totalUsersCount,
-//     totalDriversCount,
-//     totalRidersCount,
-//     totalRiders,
-//     totalDrivers,
-//     totalUsers: totalUsers,
-//     userImageUrl: process.env.user_imageUrl_ejs,
-//     driverImageUrl : process.env.driver_imageUrl_ejs,
-//     getAdmin: req.session.admin || getAdmin,
-//     itemsPerPage,
-//     driver_page,
-//     rider_page,
-//     search,
-//     total_UsersPages,
-//     total_DriversPages,
-//     total_RidersPages,
-//   });
-    
-// } catch (err) {
-//   console.log('-----err-------',err);
-//   return res.redirect('/admin/login')
-// }
-// };
-
-
-const renderIndex = async (req, res) => {
-  try {
-    // console.log('----------req.body----------',req.body);
-    // console.log('----------req.query--------',req.query);
-    // console.log('------------search 1------------',search);
-    const totalDriversCount = await db.drivers.count({ where: {is_admin_verified:'accepted'}});
-    const totalRidersCount= await db.users.count({where:{}});
-    const totalUsersCount= (totalDriversCount + totalRidersCount);
-    console.log('--------totalUsersCount-------',totalUsersCount);
-  
-    let search = req.query.searchInput || '';                           // Get search input value
-  
-    const driver_page =  parseInt(req.query.driver_page) || 1;        // Current page
-    const rider_page =  parseInt(req.query.rider_page) || 1;          // Current page
-    
-    const itemsPerPage = 10;                                          // Number of items per page
-    const driverOffset = (driver_page - 1) * itemsPerPage;            // Calculate offset for pagination
-    const riderOffset = (rider_page - 1) * itemsPerPage;              // Calculate offset for pagination
-  
-    // console.log('------------search 1---------------',search);
-  
-    let whereCondition = search ? {username:{[Op.like]:`%${search}%`}}:{};
-    whereCondition.is_admin_verified = 'accepted';
-  
-    console.log('----------whereCondition-----------',whereCondition);
-    const getDrivers = await libs.getAllData(db.drivers, {
-      where: whereCondition,
-      limit: itemsPerPage,
-      driverOffset,
-      order: [['created_at', 'DESC']]
-    });
-    // console.log('--------------getDrivers-------------',getDrivers);
-  
-    const totalDrivers = await db.drivers.count({ where: whereCondition});
-    const total_DriversPages = Math.ceil(totalDrivers / itemsPerPage);
-    console.log('------------total_DriversPages---------------',total_DriversPages);
-  
-    const whereConditionUser = search ? {username:{[Op.like]:`%${search}%`}}:{};
-  
-    const getRiders = await libs.getAllData(db.users,{
-      where: whereConditionUser,
-      limit: itemsPerPage,
-      riderOffset,
-      order: [['created_at', 'DESC']]
-    });
-    // console.log('--------------getRiders-------------',getRiders);
-    
-    const totalRiders= await db.users.count({where:whereConditionUser});
-    const total_RidersPages = Math.ceil(totalRiders / itemsPerPage);
-    console.log('----------total_RidersPages---------',total_RidersPages);
-  
-    //  all Users section
-    let userslimit = 5;
-    let usersOffset = (riderOffset - 1) * userslimit;
-  
-    // const getAllDrivers = await libs.getAllData(db.drivers, {
-    //   where: whereCondition,
-    //   limit: userslimit,
-    //   offset:usersOffset,
-    //   order: [['created_at', 'DESC']]
-    // });
-    const getAllDrivers =[];
-    // const getAllRiders = await libs.getAllData(db.users,{
-    //   where: whereConditionUser,
-    //   limit: userslimit,
-    //   offset: usersOffset,
-    //   order: [['created_at', 'DESC']]
-    // });
-    const getAllRiders =[];
-  
-    const totalAllDrivers = await db.drivers.count({ where: whereCondition});
-    const total_AllDriversPages = Math.ceil(totalAllDrivers / itemsPerPage);
-  
-    const totalAllRiders= await db.users.count({where:whereConditionUser});
-    const total_AllRidersPages = Math.ceil(totalAllRiders / itemsPerPage);
-  
-    let totalUsers = [...getAllDrivers,...getAllRiders];
-  
-    const total_UsersPages = Math.ceil(total_AllDriversPages+total_AllRidersPages);
-    console.log('----------total_UsersPages---------',total_UsersPages);
-  
-    totalUsers.sort((a, b) => b.created_at - a.created_at);
-  
-    // getDrivers.sort((a, b) => b.created_at - a.created_at);
-    // getRiders.sort((a, b) => b.created_at - a.created_at);
-  
-    // res.status(200).json({
-    res.render('index', {
-      getDrivers: getDrivers,
-      getRiders : getRiders,
-      totalUsersCount,
-      totalDriversCount,
-      totalRidersCount,
-      totalRiders,
-      totalDrivers,
-      totalUsers: totalUsers,
-      userImageUrl: process.env.user_imageUrl_ejs,
-      driverImageUrl : process.env.driver_imageUrl_ejs,
-      getAdmin: req.session.admin || getAdmin,
-      itemsPerPage,
-      driver_page,
-      rider_page,
-      search,
-      total_UsersPages,
-      total_DriversPages,
-      total_RidersPages,
-    });
-      
-  } catch (err) {
-    console.log('-----err-------',err);
-    return res.redirect('/admin/login')
-  }
-};
-
-
-// const renderRider = async (req, res) => {
-//   try {
-//     let skp = req.body.skip || 0;
-//     // let query= {where:{},limit:10,offset:skp};
-//     let query= {order: [['created_at', 'DESC']]};
-
-//     let getRiders = await libs.getAllData(db.users,query);
-//     console.log('------getRiders------',getRiders);
-    
-//     // res.status(200).json({code:200,message:"getRiders",
-//     res.render('riders',{
-//       getRiders: getRiders,
-//       userImageUrl: process.env.user_imageUrl_ejs,
-//       getAdmin: req.session.admin
-//     });
-//   } catch (err) {
-//     console.log('----err----',err);
-//     return res.render('login')
-//   }
-// };
-
 const renderRider = async (req, res) => {
   try {
     const totalDriversCount = await db.drivers.count({ where: {is_admin_verified:'accepted'}});
@@ -547,7 +269,7 @@ const renderRider = async (req, res) => {
     // res.status(200).json({
     res.render('riders', {
       getRiders: getRiders,
-      userImageUrl: process.env.user_imageUrl_ejs,
+      userImageUrl: "/uploads/users/",
       getAdmin: req.session.admin,
       itemsPerPage,
       totalItems: getRiders.length,
@@ -613,7 +335,7 @@ const renderDriver = async (req, res) => {
     res.render('drivers', {
       getDrivers: getDrivers,
       pendingRequests : getPendingRequests,
-      driverImageUrl : process.env.driver_imageUrl_ejs,
+      driverImageUrl : '/uploads/drivers/',
       getAdmin: req.session.admin ,
       itemsPerPage,
       page,
@@ -686,7 +408,7 @@ const pendingRequests = async (req, res) => {
       let images=['profile_image','license','id_card','passport_photo','vechile_insurance'];
 
       for(let key of images){
-        fs.unlink(`${process.env.fs_driver_image_baseUrl}${getData[key]}`,(err)=>{if(err){return}})
+        fs.unlink(`public/uploads/drivers/${getData[key]}`,(err)=>{if(err){return}})
       }
       updateRequest = await libs.destroyData(getData,{force:true});
     }
@@ -698,38 +420,6 @@ const pendingRequests = async (req, res) => {
   }
 };
 
-// const renderHelpSupport = async (req, res) => {
-//   try {
-//     console.log('----------req.session.admin-----------',req.session.admin);
-    // const usersData = await libs.getAllData(db.supports,{
-    //   where: {user_id: {[Op.gt]: 0}},
-    //   include: [{model: db.users,attributes:["id","username","image","mobile_number"]}],
-    // });
-    
-//     const driversData = await libs.getAllData(db.supports,{
-//       where: {driver_id: {[Op.gt]: 0}},
-//       include: [{model: db.drivers,attributes:["id","username","profile_image","mobile_number"]}],
-//     });
-    
-//     // For example, combine usersData and driversData into a single array
-//     const combinedData = usersData.concat(driversData);
-//     combinedData.sort((a, b) => b.created_at - a.created_at);
-       
-//     // res.status(200).json({message:'help support data',
-//     res.render('help&support',{
-//      supportData: combinedData,
-//      driverImageUrl : process.env.driver_imageUrl_ejs,
-//      userImageUrl: process.env.user_imageUrl_ejs,
-//      getAdmin: req.session.admin
-//     });
-//   } catch (err) {
-//     console.log('--------err---------',err);
-//     res.redirect("/admin/login")
-//   }
-// };
-
-
-// working in this
 
 const renderHelpSupport = async (req, res) => {
 try {
@@ -781,8 +471,8 @@ try {
   // res.status(200).json({message:'help support data',
     res.render('help&support', {
     supportData: supportData,
-    driverImageUrl: process.env.driver_imageUrl_ejs,
-    userImageUrl: process.env.user_imageUrl_ejs,
+    driverImageUrl: "/uploads/drivers/",
+    userImageUrl: "/uploads/users/",
     getAdmin: req.session.admin,
     page,
     search,
@@ -805,15 +495,16 @@ const termsAndConditions = async (req, res) => {
   }
 }
 
-
 const resolvedIssue = async (req, res) => {
   try {
     const { issueId } = req.params;
     let query = {where:{id: issueId}}
-
+    console.log('---------issueId--------',issueId);
     const getSupport = await libs.getData(db.supports,query);
 
-    if(getSupport.issue_status == 'Unselected'){
+    if(getSupport.issue_status == 'Pending'){
+      getSupport.issue_status = 'Progress'
+    }else{  // if(getSupport.issue_status == 'Progress'){
       getSupport.issue_status = 'Resolved'
     }
     await getSupport.save();
@@ -931,4 +622,4 @@ const sendMassPush = async (req, res) => {
 
 
 
-module.exports= {addAdmin,getloginPage,login,getChangePasswordPage,changePassword,getForgotPswrdPage,forgotPassword,logout,renderIndex,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,termsAndConditions,renderProfile,resolvedIssue, massPushPage, sendMassPush}
+module.exports= {addAdmin,getloginPage,login,getChangePasswordPage,changePassword,getForgotPswrdPage,forgotPassword,logout,actionOnDriver,getEditProfilePage,editProfile,renderRider,renderDriver,actionOnUser,pendingRequests,renderHelpSupport,termsAndConditions,renderProfile,resolvedIssue, massPushPage, sendMassPush}
