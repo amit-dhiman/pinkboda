@@ -481,8 +481,8 @@ try {
 
 } catch (err) {
   console.log('--------err---------', err);
-  return res.status(200).json({err})
   res.redirect('/admin/login');
+  // return res.status(200).json({err})
 }
 };
 
