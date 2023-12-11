@@ -36,14 +36,6 @@ const getloginPage = async (req, res) => {
         return;
       }
     }
-    // if (pinkbodaToken) {
-    //   console.log('---------req.cookies getLogin---------',req.cookies);
-    //   const user = await libs.getData(db.admins,{where:{access_token: pinkbodaToken}});
-    //   if (user) {
-    //     res.render('login',{email:user.email, password:user.password});
-    //     return;
-    //   }
-    // }
     res.render('login',{email:'',password:'',message: req.query.message || ""});
   } catch (err) {
     console.log('----err----',err);
