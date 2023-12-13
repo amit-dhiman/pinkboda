@@ -1533,7 +1533,7 @@ input[type=checkbox] {
 }
 
 .form-check-input:checked[type=checkbox] {
-    background-image: url('../../uploads/tick1.svg');
+    background-image: url('../../images/tick1.svg');
     background-size: 100% 56%;
 }
 
