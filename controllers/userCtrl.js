@@ -77,7 +77,6 @@ const numberLogin = async (req, res) => {
       if (token.image) {
         token.image = `${process.env.user_image_baseUrl}${token.image}`
       }
-
       return SUCCESS.DEFAULT(res, "logged in", token);
     }
     else {

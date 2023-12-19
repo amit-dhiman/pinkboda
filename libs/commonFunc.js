@@ -132,8 +132,6 @@ let sendMail = (otp, email) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // const userPath= path.join(`${__dirname}`,'../',process.env.user_image_baseUrl);   // '../public/uploads/users/'
-    // console.log('---------u path----------',process.env.user_image_baseUrl)
     cb(null, './public/uploads/users/')
   },
   filename: function (req, file, cb) {

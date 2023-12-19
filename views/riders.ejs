@@ -64,7 +64,7 @@
                       <td><%=rider.gender %></td>
                       <td><%=rider.total_rides %></td>
                       <td><%=formattedDate %></td>
-                      <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>','<%= rider.action %>')"><%= rider.action %></button></td>
+                      <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>','<%= rider.action %>')"><%=rider.action== 'Disable' ? 'Enable' : 'Disable'%></button></td>
                       <td><%=rider.mobile_number %></td>
                     </tr>
                    <% } %>
@@ -188,7 +188,7 @@
 // });
 
 function updateButton(button, riderId,riderAction) {
-  let act = riderAction == 'Enable' ? 'Disable' : 'Enable';
+  let act = button.textContent;
   if (confirm(`Are you sure you want to ${act} this rider ?`)) {
     fetch(`/admin/actionOnUser/${riderId}`)
     .then(response => {
@@ -198,11 +198,8 @@ function updateButton(button, riderId,riderAction) {
       return response.json();
     })
     .then(newButtonText => {
-    console.log('-----------newButtonText---------',newButtonText)
-      button.textContent = newButtonText.data;
-      const newAction = newButtonText.data;
-      const newAct = newAction === 'Enable' ? 'Disable' : 'Enable';
-      button.setAttribute('onclick', `updateButton(this, '${riderId}', '${newAction}')`);
+      const newAction = newButtonText.data == 'Disable' ? 'Enable' : 'Disable';
+      button.textContent = newAction;
     })
     .catch(error => {
       console.error('Error occurred while updating the button:', error);

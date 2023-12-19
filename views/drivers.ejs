@@ -86,7 +86,7 @@
                         <td><%=driver.total_complaints %></td>  
                         <td><%= driver.total_earning %></td>    
                         <td><%= formattedDate %></td>
-                        <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= driver.id %>','<%= driver.action %>')"><%= driver.action %></button></td>
+                        <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= driver.id %>')"><%=driver.action== 'Disable' ? 'Enable' : 'Disable'%></button></td>
                         <td><%= driver.mobile_number %></td>
                       </tr>
                     <% } %>
@@ -203,8 +203,8 @@
   };
 
 
-  function updateButton(button, driverId,driverAction) {
-    let act = driverAction == 'Enable' ? 'Disable' : 'Enable';
+  function updateButton(button, driverId) {
+    let act = button.textContent;
     if (confirm(`Are you sure you want to ${act} this driver ?`)) {
       fetch(`/admin/actionOnDriver/${driverId}`)
       .then(response => {
@@ -214,10 +214,8 @@
       return response.json();
     })
     .then(newButtonText => {
-      button.textContent = newButtonText.data;
-      const newAction = newButtonText.data;
-      const newAct = newAction === 'Enable' ? 'Disable' : 'Enable';
-      button.setAttribute('onclick', `updateButton(this, '${driverId}', '${newAction}')`);
+      const newAction = newButtonText.data == 'Disable' ? 'Enable' : 'Disable';
+      button.textContent = newAction;
     })
     .catch(error => {
       console.error('Error occurred while updating the button:', error);
