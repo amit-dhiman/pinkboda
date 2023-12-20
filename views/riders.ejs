@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Houzmart</title>
+    <title>Pinkboda</title>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -50,8 +50,9 @@
                     <th scope="col">Full Name</th>
                     <th scope="col">Gender</th>
                     <th scope="col">Total Rides</th>
-                    <th scope="col">Signup date</th>
+                    <th scope="col">Signup Date</th>
                     <th scope="col">Action</th>
+                    <th scope="col">Country Code</th>
                     <th scope="col">Contact</th>
                   </tr>
                 </thead>
@@ -65,6 +66,7 @@
                       <td><%=rider.total_rides %></td>
                       <td><%=formattedDate %></td>
                       <td><button class="btn btn-info data" type="button" onclick="updateButton(this,'<%= rider.id %>','<%= rider.action %>')"><%=rider.action== 'Disable' ? 'Enable' : 'Disable'%></button></td>
+                      <td><%=rider.country_code %></td>
                       <td><%=rider.mobile_number %></td>
                     </tr>
                    <% } %>
