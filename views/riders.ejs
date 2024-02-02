@@ -207,7 +207,7 @@ function updateButton(button, riderId,riderAction) {
       console.error('Error occurred while updating the button:', error);
     })
   } else {
-    console.log('-----------------cancel--------------')
+    console.log('-------cancel--------')
   }
 }
 
@@ -217,12 +217,12 @@ function driverButtons(page) {
   window.location.href = url;
 }
 
-  const iconTrigger = document.getElementById("searchIcon");
-  const searchButton = document.getElementById("searchButton");
+const iconTrigger = document.getElementById("searchIcon");
+const searchButton = document.getElementById("searchButton");
 
-  iconTrigger.addEventListener("click", () => {
-    searchButton.click();
-  });
+iconTrigger.addEventListener("click", () => {
+  searchButton.click();
+});
 
 
 </script>

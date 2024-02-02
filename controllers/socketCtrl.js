@@ -14,10 +14,12 @@ const driverSockets = new Map();
 // Function to set up Socket.io events
 function setupSocketEvents(socket, io) {
   socket.on('new_ride_request_send', (riderPickupLocation) => {
+
     //console.log(socket.id);
     console.log('--------------new_ride_request_send-1-----------------');
     const socketId = socket.id;
     driverSockets.set(1, socket.id);
+
     //console.log('New ride request:', riderPickupLocation);
     requestRide(riderPickupLocation, io);
   });
@@ -95,7 +97,7 @@ function setupSocketEvents(socket, io) {
 
 
 async function requestRide(riderPickupLocation, io) {
-  // console.log('--------------riderPickupLocation---------------',riderPickupLocation);
+  console.log('-------------riderPickupLocation-----------',riderPickupLocation);
   let models = db.drivers;
   let modelsRequest = db.requests;
   try {
@@ -103,7 +105,7 @@ async function requestRide(riderPickupLocation, io) {
     let userLongitude = riderPickupLocation.pickupLongitude;
     let genderPreference = riderPickupLocation.genderPreference;
     let response = await models.findAll({
-      attributes: ['id', 'username', 'latitude', 'longitude', 'socket_id','access_token',
+      attributes: ['id', 'username', 'latitude', 'longitude', 'socket_id','access_token','device_token',
         [sequelize.literal(`6371 * acos(
           cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
           sin(radians(${userLatitude})) * sin(radians(latitude)))`),'distance'],
@@ -112,9 +114,9 @@ async function requestRide(riderPickupLocation, io) {
         [sequelize.Op.and]: [sequelize.where(sequelize.literal(`6371 * acos(
             cos(radians(${userLatitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLongitude})) +
             sin(radians(${userLatitude})) * sin(radians(latitude)))`), '<=', 10),     // 10 km radius
-        { driving_status: 'Online' }, // Adding the status condition here 
-        { already_on_ride: 'No' }, // if aready on ride
-        { gender: genderPreference } // Gender condition
+        { driving_status: 'Online' },     // Adding the status condition here 
+        { already_on_ride: 'No' },       // if aready on ride
+        { gender: genderPreference }    // Gender condition
         ]
       },
       order: [[sequelize.col('distance'), 'ASC']], limit: 10, // Limit the results to 10 drivers
@@ -125,15 +127,19 @@ async function requestRide(riderPickupLocation, io) {
       if (driver && driver.socket_id) {
         // Send a ride request to the driver
         // console.log("----Here we send request to driver====================");
+        console.log('-------------getNearDriver-------------',driver.toJSON());
 
         dataRequest = { request_id: riderPickupLocation.rideTimestamp, driver_id: driver.id, };
         
         let saveRequest = await modelsRequest.create(dataRequest);
         // console.log('----------saveRequest----------',saveRequest.toJSON());
         riderPickupLocation.access_token = driver.access_token;
-
         io.to(driver.socket_id).emit('new_ride_request', riderPickupLocation);
         //io.emit('new_ride_request', riderPickupLocation);
+
+        console.log('-----------riderPickupLocation-----------',riderPickupLocation);
+        Notify.sendNotifyToDriver({title:"New ride request",message:"Pls accept ride request",notificationData:riderPickupLocation}, driver.device_token)
+        
         // Add push notifiction code here also save notification message in db
         // You can add additional logic here, like tracking which drivers received the request
       }
@@ -413,7 +419,7 @@ async function rideChat(chatData, io) {
 async function updateDriverLocAfterConfirm(data, io) {
 
   let responceUser = await db.users.findOne({ where: { id: data.userId } });
-  // console.log("===========================End ride user ",responceUser);
+  console.log("------updateDriverLocAfterConfirm--------- ",responceUser);
   io.to(responceUser.socket_id).emit('show_driver_loc_user', data);
 }
 

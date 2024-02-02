@@ -30,6 +30,7 @@ const sendNotifyToUser = async (data,deviceToken) => {
 
 const sendNotifyToDriver = async (data,deviceToken) => {
     let fcm = new FCM(process.env.driver_serverKey);
+    console.log('-----------data----------',data);
     console.log('-----------ToDriver----------',deviceToken);
 
     let message = {
@@ -39,6 +40,7 @@ const sendNotifyToDriver = async (data,deviceToken) => {
             message : data.message,
             pushType : data.pushType,
             body : data.message,
+            notificationData: data.notificationData,
             sound : "default",
             badge : 0,
         },
@@ -54,7 +56,6 @@ const sendNotifyToDriver = async (data,deviceToken) => {
         if(err) {console.log("---------fcm err driver-------------",err)}
         else{console.log("-------------fcm result driver--------------",result)}
     });
-
 };
 
 
