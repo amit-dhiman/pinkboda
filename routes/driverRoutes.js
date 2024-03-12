@@ -54,6 +54,7 @@ router.get('/driver/getTotalRatings',verify_token(CONFIG.SCOPE.drivers), driverC
 
 router.get('/driver/find-previous-ride',verify_token(CONFIG.SCOPE.drivers),driverCtrl.findPreviousRide);
 
+router.get('/driver/checkDriverStatus',verify_token(CONFIG.SCOPE.drivers), driverCtrl.checkDriverStatus);
 
 
 module.exports = router;

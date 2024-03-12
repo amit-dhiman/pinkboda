@@ -70,9 +70,8 @@ const login = async(req,res) => {
     if(!country_code || !mobile_number){
       return res.status(400).json({code:400,message:"country_code  & mobile_number is required"})
     }
-    console.log('---------country_code---------',country_code);
-    const getData= await libs.getData(db.drivers,{where:{mobile_number:mobile_number,deleted_at:0}})
-    console.log('-----2');
+    const getData= await libs.getData(db.drivers,{where:{ country_code: country_code, mobile_number: mobile_number, deleted_at: 0}})
+
     if(!getData){
       return res.status(404).json({code:404,message:"mobile number does't exist"})
     }
@@ -576,6 +575,15 @@ const findPreviousRide = async (req, res) => {
   }
 };
 
+const checkDriverStatus = async (req, res) => {
+  try {
+    // let getData = await libs.getData(db.users, { where: { user_id: req.creds.id } });
+    res.status(200).json({code: 200, message: "Driver token exist"});
+  } catch (err) {
+    console.log('------err---------', err);
+    ERROR.INTERNAL_SERVER_ERROR(res, err);
+  }
+};
 
 
-module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings,findPreviousRide}
+module.exports={driverSignup, login,logout,driverProfile,editDriverProfile,deleteDriverAccount,cancelRide,endRide,sendMessage, getAllMessages, pendingListing, reportOnUser,support,getNotifications,clearNotifications,getMyRides, getSingleRide,getTotalRatings,findPreviousRide,checkDriverStatus}

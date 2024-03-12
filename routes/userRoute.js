@@ -61,6 +61,7 @@ router.get('/user/getOffers',verify_token(CONFIG.SCOPE.users), userCtrl.getOffer
 router.get('/user/previousHistory',verify_token(CONFIG.SCOPE.users), userCtrl.previousHistory);
 
 router.get('/user/findNearByDrivers',verify_token(CONFIG.SCOPE.users), userCtrl.findNearByDrivers);
+router.get('/user/checkUserStatus',verify_token(CONFIG.SCOPE.users), userCtrl.checkUserStatus);
 
 
 

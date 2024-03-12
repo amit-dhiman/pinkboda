@@ -43,7 +43,7 @@ router.get('/admin/actionOnUser/:riderId', admin_auth, adminCtrl.actionOnUser);
 router.get('/admin/pendingRequests', admin_auth, adminCtrl.pendingRequests);
 
 router.get('/admin/renderHelpSupport', admin_auth, adminCtrl.renderHelpSupport);
-router.get('/admin/termsAndConditions',admin_auth,  adminCtrl.termsAndConditions);
+router.get('/admin/termsAndConditions', adminCtrl.termsAndConditions);
 
 router.get('/admin/resolvedIssue/:issueId', admin_auth, adminCtrl.resolvedIssue); 
 

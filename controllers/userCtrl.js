@@ -59,11 +59,11 @@ const numberSignup = async (req, res) => {
 const numberLogin = async (req, res) => {
   try {
     const { mobile_number, country_code, device_type, device_token } = req.body;
-
+    console.log('--------req.body---------',req.body);
     if (!(mobile_number.length <= 10)) return res.status(400).json({ code: 400, error: "mobile number should be less than 10 digits" });
     if (!mobile_number || !country_code) return res.status(400).json({ code: 400, error: "mobile_number,country_code is Required" });
 
-    const getData = await libs.getData(User,{where:{mobile_number:mobile_number,deleted_at:0}});
+    const getData = await libs.getData(User,{where:{country_code: country_code,mobile_number: mobile_number,deleted_at:0}});
 
     if (getData) {
       if(getData.action == "Disable"){
@@ -670,10 +670,19 @@ const findNearByDrivers = async (req, res) => {
   }
 };
 
+const checkUserStatus = async (req, res) => {
+  try {
+    // let getData = await libs.getData(db.users, { where: { user_id: req.creds.id } });
+    res.status(200).json({code: 200, message: "Users token exist"});
+  } catch (err) {
+    console.log('------err---------', err);
+    ERROR.INTERNAL_SERVER_ERROR(res, err);
+  }
+};
 
 
 module.exports = {
   numberSignup, numberLogin, logout, userProfile, editUserProfile, deleteUserAccount, calcRideAmount, cancelRide, findPreviousRide,//findNearbyDrivers ,
-  sendMessage, getAllMessages, reportOnDriver, giveRating, support, getNotifications, clearNotifications, getMyRides, getSingleRide, getOffers, previousHistory, findNearByDrivers
+  sendMessage, getAllMessages, reportOnDriver, giveRating, support, getNotifications, clearNotifications, getMyRides, getSingleRide, getOffers,checkUserStatus, previousHistory, findNearByDrivers
 };
 
