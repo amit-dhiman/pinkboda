@@ -60,8 +60,8 @@ const numberLogin = async (req, res) => {
   try {
     const { mobile_number, country_code, device_type, device_token } = req.body;
     console.log('--------req.body---------',req.body);
-    if (!(mobile_number.length <= 10)) return res.status(400).json({ code: 400, error: "mobile number should be less than 10 digits" });
-    if (!mobile_number || !country_code) return res.status(400).json({ code: 400, error: "mobile_number,country_code is Required" });
+    if (!(mobile_number.length <= 10)) return res.status(400).json({ code: 400, message: "mobile number should be less than 10 digits" });
+    if (!mobile_number || !country_code) return res.status(400).json({ code: 400, message: "mobile_number,country_code is Required" });
 
     const getData = await libs.getData(User,{where:{country_code: country_code,mobile_number: mobile_number,deleted_at:0}});
 
@@ -172,6 +172,9 @@ const deleteUserAccount = async (req, res) => {
 const calcRideAmount = async (req, res) => {
   try {
     const { pickup_long, pickup_lat, drop_long, drop_lat, pickup_address, drop_address, ride_type, driver_gender } = req.body;
+    // if(!pickup_long || !pickup_lat || !drop_long || !drop_lat){
+    //   return res.status(500).json({ code: 500, message: "pickup_long, drop_long are required"});
+    // }
 
     let data = {
       pickup_long: pickup_long,
@@ -187,7 +190,11 @@ const calcRideAmount = async (req, res) => {
     }
 
     let distance = await commonFunc.findDistanceByRoad(data);
-
+    console.log('---------distance---------',distance);
+    
+    if(distance.err_msg){
+      return res.status(404).json({code: 404, message: distance.err_msg});
+    }
     let base_price = 50;
     let perKm_price = 25;
     let km = parseFloat(distance.replace(/[, ]/g, ''));

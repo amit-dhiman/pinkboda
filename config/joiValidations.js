@@ -18,7 +18,7 @@ const signupUserValid= async (req,res,next)=>{
     }
     next();
 }
-             
+
 const loginUserValid= async (req,res,next)=>{
     let validation = joi.object({
         email: joi.string().email().required(),
@@ -68,15 +68,15 @@ const editUserValid= async (req,res,next)=>{
 
 const bookRideValid= async (req,res,next)=>{
     let validation = joi.object({
-        pickup_long: joi.number().min(-180).max(180).required(),
-        pickup_lat: joi.number().min(-90).max(90).required(),
-        drop_long: joi.number().min(-180).max(180).required(),
-        drop_lat: joi.number().min(-90).max(90).required(),
+        // pickup_long: joi.number().min(-180).max(180).required(),
+        // pickup_lat: joi.number().min(-90).max(90).required(),
+        // drop_long: joi.number().min(-180).max(180).required(),
+        // drop_lat: joi.number().min(-90).max(90).required(),
         pickup_address: joi.string().required(),
         drop_address: joi.string().required(),
         ride_type:joi.string().valid("Ride","Delivery").required(),
         driver_gender:joi.string().valid("Male","Female","Both").required(),
-    })
+    }).unknown(true);
 
     let {error}= validation.validate(req.body);
     if(error){
@@ -87,16 +87,17 @@ const bookRideValid= async (req,res,next)=>{
 }
 
 const calcAmountValid= async (req,res,next)=>{
+    console.log('------req.body joi---------',req.body);
     let validation = joi.object({
-        pickup_long: joi.number().min(-180).max(180).required(),
-        pickup_lat: joi.number().min(-90).max(90).required(),
-        drop_long: joi.number().min(-180).max(180).required(),
-        drop_lat: joi.number().min(-90).max(90).required(),
+        // pickup_long: joi.number().min(-180).max(180).required(),
+        // pickup_lat: joi.number().min(-90).max(90).required(),
+        // drop_long: joi.number().min(-180).max(180).required(),
+        // drop_lat: joi.number().min(-90).max(90).required(),
         pickup_address: joi.string().required(),
         drop_address: joi.string().required(),
         ride_type:joi.string().valid("Ride","Delivery").required(),
         driver_gender:joi.string().valid("Male","Female","Both").required(),
-    })
+    }).unknown(true);
 
     let {error}= validation.validate(req.body);
     if(error){
@@ -173,6 +174,7 @@ const signupDriverValid= async (req,res,next)=>{
         username: joi.string().optional(),
         gender: joi.number().valid("Male","Female","Both").optional(),
         mobile_number: joi.string().optional(),
+        country_code: joi.string().optional(),
         license: joi.object().optional(),   //Ihave to do optional all these fields
         id_card: joi.object().optional(),
         passport_photo: joi.object().optional(),

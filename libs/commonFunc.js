@@ -196,12 +196,16 @@ const findDistanceByRoad = async(loc) => {
     const apiUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickup}&destinations=${drop}&key=${apiKey}`;
 
     const response = await axios.get(apiUrl);
-    const data = response.data;
+    const data = await response.data;
     if (data.status === 'OK') {
       console.log('--------data.rows[0]--------',data.rows[0]);
-      const distance = data.rows[0].elements[0].distance.text;
-      console.log(`Distance by road: ${distance}`);
-      return distance;
+      if(data.rows[0].elements[0].status == "OK"){
+        const distance = data.rows[0].elements[0].distance.text;
+        console.log(`Distance by road: ${distance}`);
+        return distance;
+      }else{
+        return {err_msg:"No direct route available between these locations"}
+      }
     } else {
       console.error('No results found');
       return 'No results found';

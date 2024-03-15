@@ -22,7 +22,7 @@ const driverSignup = async (req, res) => {
       if (req.files) {
         Object.values(req.files).map(files=>files.map(file=>fs.unlink(file.path,(err)=>{if(err)return})));
       }
-      return res.status(409).json({code:409,message:"mobile number already exist"});
+      return res.status(409).json({code:409,message:"Phone number already exist"});
     }
 
     let data = {

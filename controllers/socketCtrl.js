@@ -443,24 +443,30 @@ async function cancelRideAfterAccept(data, io) {
       title: "Ride Canceled",
       message: `${responceUser.username} canceled your ride`,
     }
-
-    Notify.sendNotifyToDriver(notify_data, responceUser.device_token)
+    const getDriver = await libs.getData(db.users,{
+      where:{id: updateEndRide.driver_id},
+      attributes:['id','device_type','device_token']
+    })
+    Notify.sendNotifyToDriver(notify_data, getDriver.device_token)
 
     notify_data.driver_id = updateEndRide.driver_id;
 
-    let saveNotify = await libs.createData(db.notifications, notify_data)
-    // console.log('-------saveNotify---------', saveNotify);
+    await libs.createData(db.notifications, notify_data)
    
   } else {
     let notify_data = {
       title: "Ride Canceled",
       message: `${responceUser.username} canceled your ride`,
-    }
-    Notify.sendNotifyToUser(notify_data, responceUser.device_token)
+    }    
+    const getUser = await libs.getData(db.users,{
+      where:{id: updateEndRide.user_id},
+      attributes:['id','device_type','device_token']
+    })
+    Notify.sendNotifyToUser(notify_data, getUser.device_token)
+    
     notify_data.user_id = updateEndRide.user_id;
 
-    let saveNotify = await libs.createData(db.notifications, notify_data)
-    // console.log('-------saveNotify---------', saveNotify);
+    await libs.createData(db.notifications, notify_data)
   }
   io.to(responceUser.socket_id).emit('ride_cancel_after_accept', data);
 }

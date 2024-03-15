@@ -5,13 +5,13 @@ exports.ERROR ={
         res.status(StatusCodes.ERROR_OCCURRED||500).json({
             code: 500,
             message:err.message,
-            error: err.toString()||"ERROR_OCCURRED",
+            // error: err.toString()||"ERROR_OCCURRED",
         })
     },
     MOBILE_ALREADY_EXIST:(res)=>{
         return res.status(StatusCodes.CONFLICT).send({
             code: StatusCodes.CONFLICT,
-            message: "MOBILE already exist",
+            message: "Phone number already exist",
         })
     },
  
@@ -53,7 +53,8 @@ exports.ERROR ={
         return res.status(404).json('DATA_NOT_FOUND')
     },
     JOI_ERROR:(res,err)=>{
-        res.status(StatusCodes.ERROR_OCCURRED||400).json({code: StatusCodes.ERROR_OCCURRED, error:err.toString()||"ERROR_OCCURRED"})
+        console.log('-----------a--------',{ message: err.toString()||"ERROR_OCCURRED"});
+        res.status(400).json({code: 400, message: err.toString()||"ERROR_OCCURRED"})
     },
     
 
